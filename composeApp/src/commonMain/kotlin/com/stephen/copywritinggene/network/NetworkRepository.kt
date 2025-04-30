@@ -27,7 +27,7 @@ class NetworkRepository(private val httpClient: HttpClient) {
         }
     }
 
-    suspend fun chatWithAI(text: String) = withContext(Dispatchers.IO) {
+    suspend fun generateCopyWritingByAI(text: String) = withContext(Dispatchers.IO) {
         httpClient.post("${BASE_URL}/chat/completions") {
             // 配置请求头
             headers {

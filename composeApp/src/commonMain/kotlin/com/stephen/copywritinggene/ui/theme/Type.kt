@@ -8,17 +8,17 @@ import androidx.compose.ui.unit.sp
 val defaultText = TextStyle(
     fontSize = 16.sp,
     fontWeight = FontWeight.Normal,
-    textAlign = TextAlign.Center,
+    textAlign = TextAlign.Left,
 )
 
 val titleText = TextStyle(
-    fontSize = 18.sp,
+    fontSize = 22.sp,
     fontWeight = FontWeight.Normal,
     textAlign = TextAlign.Left,
 )
 
 val infoText = TextStyle(
-    fontSize = 12.sp,
+    fontSize = 14.sp,
     fontWeight = FontWeight.Normal,
     textAlign = TextAlign.Left,
 )

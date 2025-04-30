@@ -19,6 +19,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.unit.dp
+import com.stephen.copywritinggene.ui.theme.defaultText
 import com.stephen.copywritinggene.ui.theme.infoText
 
 @Composable
@@ -37,9 +38,10 @@ fun WrappedEditText(
 
     TextField(
         value = value,
-        textStyle = infoText,
+        textStyle = defaultText,
         colors = TextFieldDefaults.colors(
             focusedTextColor = MaterialTheme.colorScheme.onPrimary,
+            unfocusedTextColor = MaterialTheme.colorScheme.onPrimary,
             cursorColor = MaterialTheme.colorScheme.onPrimary,
             focusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
             unfocusedIndicatorColor = MaterialTheme.colorScheme.onPrimary,
