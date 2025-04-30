@@ -8,9 +8,9 @@ import kotlinx.coroutines.launch
 
 class MainViewModel(private val networkRepository: NetworkRepository) : ViewModel() {
 
-    fun chatWithAI(text:String) {
+    fun chatWithAI(text: String) {
         viewModelScope.launch {
-          val result =   networkRepository.chatWithAI(text)
+            val result = networkRepository.chatWithAI(text)
             Napier.d("chatWithAI -> result = $result")
         }
     }

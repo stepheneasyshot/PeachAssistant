@@ -2,17 +2,23 @@ package com.stephen.copywritinggene.data.bean
 
 import kotlinx.serialization.Serializable
 
-
-/**
- * 各个模型应该为通用参数
- */
 @Serializable
-data class AiRequestData(
-    val max_tokens: Int,
+data class DeepSeekRequestBean(
+    val frequency_penalty: Int? = null,
+    val logprobs: Boolean? = null,
+    val max_tokens: Int? = null,
     val messages: List<RequestMessage>,
     val model: String,
-    val stream: Boolean,
-    val temperature: Double
+    val presence_penalty: Int? = null,
+    val response_format: ResponseFormat? = null,
+    val stop: String? = null,
+    val stream: Boolean? = false,
+    val stream_options: String? =   null,
+    val temperature: Float? = 0.3f,
+    val tool_choice: String? = null,
+    val tools: String? = null,
+    val top_logprobs: String? = null,
+    val top_p: Int? = null,
 )
 
 @Serializable
@@ -21,8 +27,7 @@ data class RequestMessage(
     val role: String
 )
 
-enum class Role(val roleDescription: String) {
-    USER("user"),
-    ASSISTANT("assistant"),
-    SYSTEM("system")
-}
+@Serializable
+data class ResponseFormat(
+    val type: String
+)

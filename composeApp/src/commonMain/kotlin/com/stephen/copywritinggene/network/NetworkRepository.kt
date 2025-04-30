@@ -1,9 +1,8 @@
 package com.stephen.copywritinggene.network
 
-import com.stephen.copywritinggene.data.bean.AiRequestData
-import com.stephen.copywritinggene.data.bean.QwenResult
+import com.stephen.copywritinggene.data.bean.DeepSeekRequestBean
+import com.stephen.copywritinggene.data.bean.DeepSeekResult
 import com.stephen.copywritinggene.data.bean.RequestMessage
-import com.stephen.copywritinggene.data.bean.Role
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.headers
@@ -17,31 +16,36 @@ class NetworkRepository(private val httpClient: HttpClient) {
 
     companion object {
         const val BASE_URL =
-            "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
+            "https://api.deepseek.com"
         const val COMMON_SYSTEM_PROMT = "你是一个人工智能系统，可以根据用户的输入来返回生成式的回复"
-        const val API_KEY = "sk-053e7743ae6a416790f90d833a019d63"
-        const val MODEL_NAME = "DeepSeek-V3"
+        const val API_KEY = "sk-5d1ebf9b757344e7939a2e4e5bdc0e21"
+        const val MODEL_NAME = "deepseek-chat"
+
+        enum class ChatRole(val roleDescription: String) {
+            SYSTEM("system"),
+            USER("user"),
+        }
     }
 
     suspend fun chatWithAI(text: String) = withContext(Dispatchers.IO) {
-        httpClient.post(BASE_URL) {
+        httpClient.post("${BASE_URL}/chat/completions") {
             // 配置请求头
             headers {
                 append("Content-Type", "application/json")
                 append("Authorization", "Bearer $API_KEY")
             }
             setBody(
-                AiRequestData(
+                DeepSeekRequestBean(
                     model = MODEL_NAME,
                     max_tokens = 2048,
-                    temperature = 0.3,
+                    temperature = 0.3f,
                     stream = false,
                     messages = listOf(
-                        RequestMessage(COMMON_SYSTEM_PROMT, Role.SYSTEM.roleDescription),
-                        RequestMessage(text, Role.USER.roleDescription)
+                        RequestMessage(COMMON_SYSTEM_PROMT, ChatRole.SYSTEM.roleDescription),
+                        RequestMessage(text, ChatRole.USER.roleDescription)
                     )
                 )
             )
-        }.body<QwenResult>()
+        }.body<DeepSeekResult>()
     }
 }

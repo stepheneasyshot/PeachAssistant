@@ -3,13 +3,13 @@ package com.stephen.copywritinggene.data.bean
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class QwenResult(
+data class DeepSeekResult(
     val choices: List<Choice>,
     val created: Int,
     val id: String,
     val model: String,
     val `object`: String,
-    val system_fingerprint: String?,
+    val system_fingerprint: String,
     val usage: Usage
 )
 
@@ -24,6 +24,8 @@ data class Choice(
 @Serializable
 data class Usage(
     val completion_tokens: Int,
+    val prompt_cache_hit_tokens: Int,
+    val prompt_cache_miss_tokens: Int,
     val prompt_tokens: Int,
     val prompt_tokens_details: PromptTokensDetails,
     val total_tokens: Int

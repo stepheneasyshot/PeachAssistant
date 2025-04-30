@@ -31,7 +31,7 @@ fun ContentView(
     val toastState = rememberToastState()
 
     LaunchedEffect(Unit){
-        viewModel.chatWithAI("你好")
+        viewModel.chatWithAI("帮我生成一段酒桌上的场面话，酒局刚刚开始，我要讨好坐我对面的王总")
     }
 
     Surface(Modifier.fillMaxSize(1f)) {
@@ -53,5 +53,4 @@ fun ContentView(
             }
         }
     }
-
 }
