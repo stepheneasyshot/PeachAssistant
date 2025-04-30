@@ -2,6 +2,7 @@ package com.stephen.copywritinggene.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.stephen.copywritinggene.copyTextToClipBoard
 import com.stephen.copywritinggene.data.uistate.ResultState
 import com.stephen.copywritinggene.network.NetworkRepository
 import io.github.aakira.napier.Napier
@@ -27,6 +28,15 @@ class MainViewModel(private val networkRepository: NetworkRepository) : ViewMode
             _copyWritingStateFlow.update {
                 it.copy(isLoading = false, result = result.choices.first().message.content)
             }
+        }
+    }
+
+    /**
+     * 将这段文字复制到剪切板
+     */
+    fun copyText(text: String) {
+        viewModelScope.launch {
+            copyTextToClipBoard(text)
         }
     }
 }

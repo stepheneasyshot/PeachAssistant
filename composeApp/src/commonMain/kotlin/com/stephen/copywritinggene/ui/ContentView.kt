@@ -2,6 +2,7 @@ package com.stephen.copywritinggene.ui
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,6 +21,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -27,6 +31,7 @@ import com.stephen.copywritinggene.ui.component.CenterText
 import com.stephen.copywritinggene.ui.component.CommonButton
 import com.stephen.copywritinggene.ui.component.WrappedEditText
 import com.stephen.copywritinggene.ui.component.rememberToastState
+import com.stephen.copywritinggene.ui.theme.defaultText
 import com.stephen.copywritinggene.ui.theme.titleText
 import com.stephen.copywritinggene.vm.MainViewModel
 import org.koin.compose.getKoin
@@ -36,8 +41,10 @@ fun ContentView(
     viewModel: MainViewModel = getKoin().get(),
     navController: NavHostController = rememberNavController(),
 ) {
-
     val toastState = rememberToastState()
+
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
 
     val copyWritingState = viewModel.copyWritingStateFlow.collectAsState()
 
@@ -47,15 +54,16 @@ fun ContentView(
     Surface(Modifier.fillMaxSize(1f)) {
         Column(
             Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-                .padding(top = 48.dp, start = 5.dp, end = 5.dp, bottom = 10.dp)
+                .padding(top = 48.dp, start = 5.dp, end = 5.dp, bottom = 28.dp)
         ) {
             CenterText(
                 text = "社交圈文案生成器",
                 style = titleText,
-                modifier = Modifier.padding(bottom = 10.dp)
+                modifier = Modifier.padding(start = 10.dp, bottom = 10.dp)
             )
             Column(
                 Modifier
+                    .animateContentSize()
                     .padding(bottom = 10.dp)
                     .fillMaxWidth(1f)
                     .clip(RoundedCornerShape(10.dp))
@@ -73,7 +81,10 @@ fun ContentView(
                         onValueChange = {
                             themeString = it
                         },
-                        modifier = Modifier.fillMaxWidth(1f)
+                        onEnterPressed = {
+                            focusManager.clearFocus()
+                        },
+                        modifier = Modifier.fillMaxWidth(1f).focusRequester(focusRequester)
                     )
                 }
                 Row(
@@ -86,7 +97,10 @@ fun ContentView(
                         onValueChange = {
                             styleString = it
                         },
-                        modifier = Modifier.fillMaxWidth(1f)
+                        onEnterPressed = {
+                            focusManager.clearFocus()
+                        },
+                        modifier = Modifier.fillMaxWidth(1f).focusRequester(focusRequester)
                     )
                 }
 
@@ -100,6 +114,7 @@ fun ContentView(
                         } else if (styleString.isEmpty()) {
                             toastState.show("请输入文案的风格")
                         } else {
+                            focusManager.clearFocus()
                             viewModel.generateCopyWriting(themeString, styleString)
                         }
                     },
@@ -109,6 +124,7 @@ fun ContentView(
 
             Column(
                 Modifier
+                    .animateContentSize()
                     .weight(1f)
                     .fillMaxWidth(1f)
                     .clip(RoundedCornerShape(10.dp))
@@ -118,18 +134,31 @@ fun ContentView(
             ) {
                 if (copyWritingState.value.isLoading) {
                     CircularProgressIndicator()
-                } else if (copyWritingState.value.isError) {
-                    CenterText(
-                        text = "生成文案失败",
-                        style = titleText,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    )
-                } else if (copyWritingState.value.result.isNotEmpty()) {
-                    CenterText(
-                        text = copyWritingState.value.result,
-                        style = titleText,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    )
+                } else {
+                    if (copyWritingState.value.isError) {
+                        CenterText(
+                            text = "生成失败，请重试",
+                            style = defaultText,
+                            modifier = Modifier.padding(bottom = 10.dp)
+                        )
+                    } else if (copyWritingState.value.result.isNotEmpty()) {
+                        CenterText(
+                            text = copyWritingState.value.result,
+                            style = defaultText,
+                            modifier = Modifier.padding(bottom = 10.dp)
+                        )
+                        Box(modifier = Modifier.fillMaxWidth(1f)) {
+                            CommonButton(
+                                text = "复制",
+                                onClick = {
+                                    toastState.show("文案复制成功，可粘贴至其他app")
+                                    viewModel.copyText(copyWritingState.value.result)
+                                },
+                                modifier = Modifier.padding(bottom = 10.dp)
+                                    .align(Alignment.CenterEnd)
+                            )
+                        }
+                    }
                 }
             }
         }
