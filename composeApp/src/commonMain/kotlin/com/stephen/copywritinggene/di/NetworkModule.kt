@@ -1,5 +1,6 @@
 package com.stephen.copywritinggene.di
 
+import com.stephen.copywritinggene.network.KtorClient
 import io.github.aakira.napier.Napier
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
@@ -26,5 +27,8 @@ val httpClientModule = module {
                 level = LogLevel.ALL
             }
         }
+    }
+    factory {
+        KtorClient()
     }
 }

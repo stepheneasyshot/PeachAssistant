@@ -45,9 +45,11 @@ kotlin {
             implementation(libs.koin.compose.jb)
             implementation(libs.navigation.compose)
             implementation(libs.bundles.ktor)
-            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.kotlin.serialization)
+            implementation(libs.ktor.client.cio)
+            implementation(libs.ktor.client.core)
             implementation(libs.ktor.client.logging)
-            implementation(libs.kotlin.serialization)
+            implementation(libs.ktor.client.content.negotiation)
             implementation(libs.aakira.napier)
             implementation(libs.pullrefresh)
         }

@@ -5,7 +5,6 @@ import com.stephen.copywritinggene.data.bean.DeepSeekResult
 import com.stephen.copywritinggene.data.bean.DeepSeekStreamResult
 import com.stephen.copywritinggene.data.bean.RequestMessage
 import io.github.aakira.napier.Napier
-import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.headers
 import io.ktor.client.request.post
@@ -22,7 +21,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
-class NetworkRepository(private val httpClient: HttpClient) {
+class NetworkRepository(private val ktorClient: KtorClient) {
 
     companion object {
         const val BASE_URL =
@@ -38,7 +37,7 @@ class NetworkRepository(private val httpClient: HttpClient) {
     }
 
     suspend fun generateCopyWritingByAI(text: String) = withContext(Dispatchers.IO) {
-        httpClient.post("${BASE_URL}/chat/completions") {
+        ktorClient.client.post("${BASE_URL}/chat/completions") {
             // 配置请求头
             headers {
                 append("Content-Type", "application/json")
@@ -61,7 +60,7 @@ class NetworkRepository(private val httpClient: HttpClient) {
 
     fun generateCopyWritingByAIWithStream(text: String): Flow<String> =
         flow {
-            val response: HttpResponse = httpClient.post("${BASE_URL}/chat/completions") {
+            val response: HttpResponse = ktorClient.client.post("${BASE_URL}/chat/completions") {
                 // 配置请求头
                 headers {
                     append(HttpHeaders.ContentType, "application/json")
