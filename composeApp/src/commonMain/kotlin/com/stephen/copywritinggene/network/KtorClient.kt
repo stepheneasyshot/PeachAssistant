@@ -1,19 +1,21 @@
 package com.stephen.copywritinggene.network
 
-import io.ktor.client.*
-import io.ktor.client.engine.cio.CIO
+import com.stephen.copywritinggene.getHttpEngine
+import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
-import io.ktor.client.plugins.contentnegotiation.*
-import io.ktor.client.plugins.logging.*
-import io.ktor.client.plugins.websocket.*
-import io.ktor.serialization.kotlinx.json.*
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logging
+import io.ktor.client.plugins.websocket.WebSockets
+import io.ktor.client.plugins.websocket.pingInterval
+import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import kotlin.time.Duration
 
 class KtorClient {
 
-    val client = HttpClient(CIO) {
-        install(HttpTimeout){
+    val client = HttpClient(getHttpEngine()) {
+        install(HttpTimeout) {
             requestTimeoutMillis = 30_000L
             connectTimeoutMillis = 10_000L
             socketTimeoutMillis = 30_000L

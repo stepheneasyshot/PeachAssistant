@@ -24,12 +24,19 @@ class MainViewModel(private val networkRepository: NetworkRepository) : ViewMode
             it.copy(isLoading = true)
         }
         viewModelScope.launch {
-            val request =
-                "帮我生成一段社交软件使用的文案，主题是：$theme，风格是：$style，字数在100字左右"
-            val result = networkRepository.generateCopyWritingByAI(request)
-            Napier.d("chatWithAI -> result = $result")
-            _copyWritingStateFlow.update {
-                it.copy(isLoading = false, result = result.choices.first().message.content)
+            runCatching {
+                val request =
+                    "帮我生成一段社交软件使用的文案，主题是：$theme，风格是：$style，字数在100字左右"
+                val result = networkRepository.generateCopyWritingByAI(request)
+                Napier.d("chatWithAI -> result = $result")
+                _copyWritingStateFlow.update {
+                    it.copy(isLoading = false, result = result.choices.first().message.content)
+                }
+            }.onFailure { e ->
+                Napier.e("chatWithAI -> error = $e")
+                _copyWritingStateFlow.update {
+                    it.copy(isLoading = false, isError = true)
+                }
             }
         }
     }

@@ -5,6 +5,8 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import android.view.inputmethod.InputMethodManager
+import io.ktor.client.engine.HttpClientEngineFactory
+import io.ktor.client.engine.cio.CIO
 
 class AndroidPlatform : Platform {
     override val name: String = "Android ${Build.VERSION.SDK_INT}"
@@ -19,4 +21,8 @@ actual fun copyTextToClipBoard(text: String) {
     val clip = ClipData.newPlainText("Copied Text", text)
     // Set the ClipData to the clipboard
     clipboard.setPrimaryClip(clip)
+}
+
+actual fun getHttpEngine(): HttpClientEngineFactory<*> {
+    return CIO
 }
