@@ -25,3 +25,11 @@ actual fun copyTextToClipBoard(text: String) {
 actual fun getHttpEngine(): HttpClientEngineFactory<*> {
     return CIO
 }
+
+actual fun textToSpeech(text: String) {
+    SpeechUtils.speak(text)
+}
+
+actual fun stopSpeaking() {
+    SpeechUtils.stop()
+}

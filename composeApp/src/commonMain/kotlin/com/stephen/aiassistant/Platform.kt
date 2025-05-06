@@ -11,3 +11,7 @@ expect fun getPlatform(): Platform
 expect fun copyTextToClipBoard(text: String)
 
 expect fun getHttpEngine(): HttpClientEngineFactory<*>
+
+expect fun textToSpeech(text: String)
+
+expect fun stopSpeaking()
