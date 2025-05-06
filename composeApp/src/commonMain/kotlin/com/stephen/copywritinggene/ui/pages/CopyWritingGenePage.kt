@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -101,6 +102,12 @@ fun CopyWritingGenePage(
                 .fillMaxWidth(1f)
                 .clip(RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surface)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) {
+                    focusManager.clearFocus()
+                }
                 .padding(horizontal = 10.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -140,6 +147,7 @@ fun CopyWritingGenePage(
             CommonButton(
                 text = "生成文案",
                 onClick = {
+                    focusManager.clearFocus()
                     if (copyWritingState.value.isLoading) {
                         toastState.show("正在生成中，请稍后再试")
                     } else if (themeString.isEmpty()) {
@@ -147,7 +155,6 @@ fun CopyWritingGenePage(
                     } else if (styleString.isEmpty()) {
                         toastState.show("请输入文案的风格")
                     } else {
-                        focusManager.clearFocus()
                         viewModel.generateCopyWriting(themeString, styleString)
                     }
                 })
@@ -160,6 +167,12 @@ fun CopyWritingGenePage(
                 .fillMaxWidth(1f)
                 .clip(RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surface)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) {
+                    focusManager.clearFocus()
+                }
                 .padding(10.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
