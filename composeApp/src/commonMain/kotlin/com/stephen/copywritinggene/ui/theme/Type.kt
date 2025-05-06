@@ -11,8 +11,14 @@ val defaultText = TextStyle(
     textAlign = TextAlign.Left,
 )
 
-val titleText = TextStyle(
+val titleFirstText = TextStyle(
     fontSize = 22.sp,
+    fontWeight = FontWeight.Normal,
+    textAlign = TextAlign.Left,
+)
+
+val titleSecondText = TextStyle(
+    fontSize = 20.sp,
     fontWeight = FontWeight.Normal,
     textAlign = TextAlign.Left,
 )
