@@ -36,6 +36,7 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.luckySentence
+import com.stephen.aiassistant.stopSpeaking
 import com.stephen.aiassistant.textToSpeech
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
@@ -77,15 +78,13 @@ fun CopyWritingGenePage(
                 randomSentence = luckySentence[(0..maxIndex).random()]
             }
         }
-
-        delay(3000L)
-        textToSpeech("test test test")
     }
 
     DisposableEffect(Unit) {
         onDispose {
             scope.cancel()
             focusManager.clearFocus()
+            stopSpeaking()
         }
     }
 
