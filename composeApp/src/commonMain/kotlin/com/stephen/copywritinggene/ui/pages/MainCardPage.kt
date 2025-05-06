@@ -37,7 +37,7 @@ fun MainCardPage(
 ) {
     Column {
         CenterText(
-            text = "功能列表", modifier = Modifier.padding(bottom = 10.dp),
+            text = "功能列表", modifier = Modifier.padding(10.dp),
             style = titleFirstText
         )
         LazyColumn {

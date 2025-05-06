@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -18,6 +20,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -42,6 +45,7 @@ import com.stephen.copywritinggene.ui.theme.defaultText
 import com.stephen.copywritinggene.ui.theme.infoText
 import com.stephen.copywritinggene.ui.theme.titleFirstText
 import com.stephen.copywritinggene.vm.MainViewModel
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.compose.getKoin
@@ -72,6 +76,13 @@ fun CopyWritingGenePage(
                 delay(3000L)
                 randomSentence = luckySentence[(0..maxIndex).random()]
             }
+        }
+    }
+
+    DisposableEffect(Unit) {
+        onDispose {
+            scope.cancel()
+            focusManager.clearFocus()
         }
     }
 
@@ -197,21 +208,25 @@ fun CopyWritingGenePage(
                         modifier = Modifier.padding(bottom = 10.dp)
                     )
                 } else if (copyWritingState.value.result.isNotEmpty()) {
-                    CenterText(
-                        text = copyWritingState.value.result,
-                        style = defaultText,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    )
-                    Box(modifier = Modifier.fillMaxWidth(1f)) {
-                        CommonButton(
-                            text = "复制",
-                            onClick = {
-                                toastState.show("文案复制成功，可粘贴至其他app")
-                                viewModel.copyText(copyWritingState.value.result)
-                            },
-                            modifier = Modifier.padding(bottom = 10.dp)
-                                .align(Alignment.CenterEnd)
-                        )
+                    LazyColumn {
+                        item {
+                            CenterText(
+                                text = copyWritingState.value.result,
+                                style = defaultText,
+                                modifier = Modifier.padding(bottom = 10.dp)
+                            )
+                            Box(modifier = Modifier.fillMaxWidth(1f)) {
+                                CommonButton(
+                                    text = "复制",
+                                    onClick = {
+                                        toastState.show("文案复制成功，可粘贴至其他app")
+                                        viewModel.copyText(copyWritingState.value.result)
+                                    },
+                                    modifier = Modifier.padding(bottom = 10.dp)
+                                        .align(Alignment.CenterEnd)
+                                )
+                            }
+                        }
                     }
                 } else if (copyWritingStreamState.value.isNotEmpty()) {
                     CenterText(
