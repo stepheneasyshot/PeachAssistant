@@ -62,11 +62,11 @@ kotlin {
 }
 
 android {
-    namespace = "com.stephen.copywritinggene"
+    namespace = "com.stephen.aiassistant"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
 
     defaultConfig {
-        applicationId = "com.stephen.copywritinggene"
+        applicationId = "com.stephen.aiassistant"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
         versionCode = 1

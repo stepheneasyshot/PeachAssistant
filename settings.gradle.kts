@@ -1,4 +1,4 @@
-rootProject.name = "CopyWritingGene"
+rootProject.name = "AIAssistant"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
