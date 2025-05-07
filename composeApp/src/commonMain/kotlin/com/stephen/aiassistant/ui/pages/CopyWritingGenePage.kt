@@ -3,6 +3,9 @@ package com.stephen.aiassistant.ui.pages
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.arrow_left
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -12,6 +15,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -34,27 +38,33 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.luckySentence
 import com.stephen.aiassistant.stopSpeaking
+import com.stephen.aiassistant.ui.PageNavKey
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.WrappedEditText
 import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.defaultText
 import com.stephen.aiassistant.ui.theme.infoText
-import com.stephen.aiassistant.ui.theme.titleFirstText
+import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun CopyWritingGenePage(
+fun SharedTransitionScope.CopyWritingGenePage(
     viewModel: MainViewModel = getKoin().get(),
+    funcInfo: Pair<PageNavKey, DrawableResource>,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onBackpressed: () -> Unit = {}
 ) {
     val toastState = rememberToastState()
@@ -106,9 +116,28 @@ fun CopyWritingGenePage(
             )
             CenterText(
                 text = "社交圈文案生成器",
-                style = titleFirstText,
+                style = titleSecondText,
+                modifier = Modifier.sharedElement(
+                    sharedContentState = rememberSharedContentState(
+                        key = funcInfo.first.content
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope
+                )
             )
         }
+
+        Image(
+            painter = painterResource(funcInfo.second),
+            contentScale = ContentScale.FillBounds,
+            contentDescription = null,
+            modifier = Modifier.sharedElement(
+                sharedContentState = rememberSharedContentState(
+                    key = funcInfo.second.toString()
+                ),
+                animatedVisibilityScope = animatedVisibilityScope
+            ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+        )
+
         Column(
             Modifier
                 .animateContentSize()

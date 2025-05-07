@@ -1,8 +1,8 @@
 package com.stephen.aiassistant.ui.pages
 
-import aiassistant.composeapp.generated.resources.Res
-import aiassistant.composeapp.generated.resources.bg_calorie_cal
-import aiassistant.composeapp.generated.resources.bg_social_post_gene
+import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -27,12 +27,11 @@ import com.stephen.aiassistant.ui.theme.titleSecondText
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun MainCardPage(
-    funcList: List<Pair<PageNavKey, DrawableResource>> = listOf(
-        Pair(PageNavKey.COPY_WRITING_GENE, Res.drawable.bg_social_post_gene),
-        Pair(PageNavKey.CALORIE_CALCULATOR, Res.drawable.bg_calorie_cal),
-    ),
+fun SharedTransitionScope.MainCardPage(
+    funcList: List<Pair<PageNavKey, DrawableResource>>,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onItemChoosed: (PageNavKey) -> Unit = {}
 ) {
     Column {
@@ -42,7 +41,10 @@ fun MainCardPage(
         )
         LazyColumn {
             items(funcList, key = { it.first.name }) {
-                FunctionCard(it, Modifier.fillMaxWidth(1f).height(220.dp)) {
+                FunctionCard(
+                    funcInfo = it,
+                    animatedVisibilityScope = animatedVisibilityScope,
+                ) {
                     onItemChoosed(it.first)
                 }
             }
@@ -50,29 +52,37 @@ fun MainCardPage(
     }
 }
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
-fun FunctionCard(
+fun SharedTransitionScope.FunctionCard(
     funcInfo: Pair<PageNavKey, DrawableResource>,
-    modifier: Modifier = Modifier,
+    animatedVisibilityScope: AnimatedVisibilityScope,
     onClick: () -> Unit = {}
 ) {
     Box(
-        modifier = modifier
-            .padding(10.dp)
-            .clip(RoundedCornerShape(10.dp))
-            .clickable {
-                onClick()
-            }) {
+        modifier = Modifier.clickable {
+            onClick()
+        }) {
         Image(
             painter = painterResource(funcInfo.second),
             contentScale = ContentScale.FillBounds,
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(1f)
+            modifier = Modifier.sharedElement(
+                sharedContentState = rememberSharedContentState(
+                    key = funcInfo.second.toString()
+                ),
+                animatedVisibilityScope = animatedVisibilityScope
+            ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
         )
         CenterText(
             text = funcInfo.first.content,
             style = titleSecondText,
-            modifier = Modifier.padding(10.dp).align(Alignment.BottomEnd)
+            modifier = Modifier.padding(20.dp).align(Alignment.BottomEnd).sharedElement(
+                sharedContentState = rememberSharedContentState(
+                    key = funcInfo.first.content
+                ),
+                animatedVisibilityScope = animatedVisibilityScope
+            )
         )
     }
 }

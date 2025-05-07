@@ -1,5 +1,18 @@
 package com.stephen.aiassistant.ui
 
+import aiassistant.composeapp.generated.resources.Res
+import aiassistant.composeapp.generated.resources.bg_calorie_cal
+import aiassistant.composeapp.generated.resources.bg_social_post_gene
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.ExperimentalSharedTransitionApi
+import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,31 +31,52 @@ import com.stephen.aiassistant.ui.pages.CalorieCalculatePage
 import com.stephen.aiassistant.ui.pages.CopyWritingGenePage
 import com.stephen.aiassistant.ui.pages.MainCardPage
 
+@OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ContentView(
     navController: NavHostController = rememberNavController(),
 ) {
+
+    val funcList = listOf(
+        Pair(PageNavKey.COPY_WRITING_GENE, Res.drawable.bg_social_post_gene),
+        Pair(PageNavKey.CALORIE_CALCULATOR, Res.drawable.bg_calorie_cal),
+    )
+
     Surface(Modifier.fillMaxSize(1f)) {
         Column(
             Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
                 .padding(top = 58.dp, start = 5.dp, end = 5.dp, bottom = 28.dp)
         ) {
-            NavHost(
-                navController, startDestination = PageNavKey.MAIN_PAGE.name,
-            ) {
-                composable(route = PageNavKey.MAIN_PAGE.name) {
-                    MainCardPage {
-                        navController.navigate(it.name)
+            SharedTransitionLayout {
+                NavHost(
+                    navController, startDestination = PageNavKey.MAIN_PAGE.name,
+                    enterTransition = {
+                        fadeIn()
+                    },
+                    exitTransition = {
+                        fadeOut()
                     }
-                }
-                composable(route = PageNavKey.COPY_WRITING_GENE.name) {
-                    CopyWritingGenePage {
-                        navController.navigate(PageNavKey.MAIN_PAGE.name)
+                ) {
+                    composable(route = PageNavKey.MAIN_PAGE.name) {
+                        MainCardPage(funcList, animatedVisibilityScope = this@composable) {
+                            navController.navigate(it.name)
+                        }
                     }
-                }
-                composable(route = PageNavKey.CALORIE_CALCULATOR.name) {
-                    CalorieCalculatePage {
-                        navController.navigate(PageNavKey.MAIN_PAGE.name)
+                    composable(route = PageNavKey.COPY_WRITING_GENE.name) {
+                        CopyWritingGenePage(
+                            funcInfo = funcList[0],
+                            animatedVisibilityScope = this@composable
+                        ) {
+                            navController.navigate(PageNavKey.MAIN_PAGE.name)
+                        }
+                    }
+                    composable(route = PageNavKey.CALORIE_CALCULATOR.name) {
+                        CalorieCalculatePage(
+                            funcInfo = funcList[1],
+                            animatedVisibilityScope = this@composable
+                        ) {
+                            navController.navigate(PageNavKey.MAIN_PAGE.name)
+                        }
                     }
                 }
             }
