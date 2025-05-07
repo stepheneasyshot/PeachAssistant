@@ -1,7 +1,10 @@
 package com.stephen.aiassistant.ui.pages
 
+import aiassistant.composeapp.generated.resources.Res
+import aiassistant.composeapp.generated.resources.arrow_left
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -13,10 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -33,11 +33,11 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.luckySentence
 import com.stephen.aiassistant.stopSpeaking
-import com.stephen.aiassistant.textToSpeech
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.WrappedEditText
@@ -49,6 +49,7 @@ import com.stephen.aiassistant.vm.MainViewModel
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
 
 @Composable
@@ -94,13 +95,13 @@ fun CopyWritingGenePage(
             modifier = Modifier.fillMaxWidth(1f).padding(bottom = 20.dp)
         ) {
             // 返回图标
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                tint = MaterialTheme.colorScheme.onPrimary,
+            Image(
+                painter = painterResource(Res.drawable.arrow_left),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
                 contentDescription = "back",
                 modifier = Modifier
-                    .size(36.dp)
-                    .padding(end = 10.dp)
+                    .padding(horizontal = 10.dp)
+                    .size(28.dp)
                     .clickable { onBackpressed() }
             )
             CenterText(
