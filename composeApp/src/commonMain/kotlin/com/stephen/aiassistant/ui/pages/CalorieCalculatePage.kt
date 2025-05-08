@@ -11,7 +11,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -33,7 +32,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.ui.PageNavKey
 import com.stephen.aiassistant.ui.component.CenterText
-import com.stephen.aiassistant.ui.theme.titleFirstText
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
 import org.jetbrains.compose.resources.DrawableResource
