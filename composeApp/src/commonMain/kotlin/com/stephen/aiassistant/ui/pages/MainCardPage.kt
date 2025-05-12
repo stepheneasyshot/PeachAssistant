@@ -43,7 +43,6 @@ fun SharedTransitionScope.MainCardPage(
                     funcInfo = Pair(it, functionMap[it]!!),
                     animatedVisibilityScope = animatedVisibilityScope,
                 ) {
-                    println("test : $it")
                     onItemChoosed(it)
                 }
             }

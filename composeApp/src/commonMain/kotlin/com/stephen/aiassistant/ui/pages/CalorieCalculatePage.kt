@@ -31,7 +31,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.mohamedrejeb.calf.permissions.ExperimentalPermissionsApi
+import com.mohamedrejeb.calf.permissions.Permission
+import com.mohamedrejeb.calf.permissions.isGranted
+import com.mohamedrejeb.calf.permissions.isNotGranted
+import com.mohamedrejeb.calf.permissions.rememberPermissionState
 import com.stephen.aiassistant.ui.component.CenterText
+import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.calorieCardBg
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
@@ -44,7 +50,7 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
 
-@OptIn(ExperimentalSharedTransitionApi::class)
+@OptIn(ExperimentalSharedTransitionApi::class, ExperimentalPermissionsApi::class)
 @Composable
 fun SharedTransitionScope.CalorieCalculatePage(
     viewModel: MainViewModel = getKoin().get(),
@@ -52,6 +58,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBackpressed: () -> Unit = {}
 ) {
+
+    val toastState = rememberToastState()
 
     // 食物和卡路里的对应关系
     val fakeList = remember { mutableStateListOf<Pair<String, Int>>() }
@@ -67,6 +75,11 @@ fun SharedTransitionScope.CalorieCalculatePage(
         composition,
         iterations = Compottie.IterateForever,
         speed = 0.7f
+    )
+
+    // Camera permission state
+    val galleryReadPermissionState = rememberPermissionState(
+        Permission.Gallery
     )
 
     LaunchedEffect(Unit) {
@@ -123,7 +136,16 @@ fun SharedTransitionScope.CalorieCalculatePage(
         Box(
             modifier = Modifier.padding(10.dp).fillMaxWidth(1f).heightIn(min = 200.dp)
                 .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.surface),
+                .background(MaterialTheme.colorScheme.surface).clickable {
+                    println("permission state: ${galleryReadPermissionState.status}")
+                    // 检查权限
+                    if (galleryReadPermissionState.status.isGranted) {
+                        println("permission granted")
+                    } else {
+                        println("permission not granted")
+                        galleryReadPermissionState.launchPermissionRequest()
+                    }
+                },
             contentAlignment = Alignment.Center
         ) {
             CenterText(

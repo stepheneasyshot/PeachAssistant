@@ -52,6 +52,7 @@ kotlin {
             implementation(libs.aakira.napier)
             implementation(libs.pullrefresh)
             implementation(libs.compottie)
+            implementation(libs.calf.permissions)
         }
 
         iosMain.dependencies {

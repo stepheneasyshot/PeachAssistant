@@ -24,6 +24,7 @@ pullrefresh = "1.4.0-beta03"
 # log
 napier = "2.7.1"
 compottie="2.0.0-rc04"
+calf-permissions = "0.7.1"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -59,6 +60,7 @@ compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "comp
 compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
 compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottie" }
 compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
+calf-permissions = { module = "com.mohamedrejeb.calf:calf-permissions", version.ref = "calf-permissions" }
 
 [bundles]
 ktor = ["ktor-client-core", "ktor-client-content-negotiation"]
