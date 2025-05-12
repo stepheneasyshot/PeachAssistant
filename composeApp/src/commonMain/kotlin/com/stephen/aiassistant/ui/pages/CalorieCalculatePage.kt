@@ -35,6 +35,7 @@ import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.theme.calorieCardBg
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
+import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
@@ -62,7 +63,11 @@ fun SharedTransitionScope.CalorieCalculatePage(
         )
     }
 
-    val progress by animateLottieCompositionAsState(composition)
+    val progress by animateLottieCompositionAsState(
+        composition,
+        iterations = Compottie.IterateForever,
+        speed = 0.7f
+    )
 
     LaunchedEffect(Unit) {
         fakeList.add(Pair("苹果", 100))
