@@ -23,6 +23,7 @@ navigationCompose = "2.9.0-alpha17"
 pullrefresh = "1.4.0-beta03"
 # log
 napier = "2.7.1"
+compottie="2.0.0-rc04"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -53,6 +54,11 @@ aakira_napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 # navigation
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 pullrefresh = { module = "dev.materii.pullrefresh:pullrefresh", version.ref = "pullrefresh" }
+# lottie for compose
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
+compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottie" }
+compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
 
 [bundles]
 ktor = ["ktor-client-core", "ktor-client-content-negotiation"]

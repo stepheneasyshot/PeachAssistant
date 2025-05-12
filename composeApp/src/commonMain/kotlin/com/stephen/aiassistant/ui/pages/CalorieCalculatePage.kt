@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -32,8 +33,13 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.ui.PageNavKey
 import com.stephen.aiassistant.ui.component.CenterText
+import com.stephen.aiassistant.ui.theme.calorieCardBg
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
+import io.github.alexzhirkevich.compottie.LottieCompositionSpec
+import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
+import io.github.alexzhirkevich.compottie.rememberLottieComposition
+import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
@@ -49,6 +55,15 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
     // 食物和卡路里的对应关系
     val fakeList = remember { mutableStateListOf<Pair<String, Int>>() }
+
+    // lottie测试
+    val composition by rememberLottieComposition {
+        LottieCompositionSpec.JsonString(
+            Res.readBytes("files/lottie_dish.json").decodeToString()
+        )
+    }
+
+    val progress by animateLottieCompositionAsState(composition)
 
     LaunchedEffect(Unit) {
         fakeList.add(Pair("苹果", 100))
@@ -86,15 +101,21 @@ fun SharedTransitionScope.CalorieCalculatePage(
         }
 
         Image(
-            painter = painterResource(funcInfo.second),
-            contentScale = ContentScale.FillBounds,
+            painter = rememberLottiePainter(
+                composition = composition,
+                progress = { progress },
+            ),
+            contentScale = ContentScale.FillHeight,
             contentDescription = null,
-            modifier = Modifier.sharedElement(
+            modifier = Modifier.padding(10.dp).clip(RoundedCornerShape(10.dp))
+                .background(calorieCardBg).sharedElement(
                 sharedContentState = rememberSharedContentState(
                     key = funcInfo.second.toString()
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+            ).fillMaxWidth(1f).height(220.dp)
+                .padding(10.dp)
+                .clip(RoundedCornerShape(10.dp))
         )
 
         Box(

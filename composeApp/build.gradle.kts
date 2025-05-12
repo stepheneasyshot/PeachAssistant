@@ -51,6 +51,7 @@ kotlin {
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.aakira.napier)
             implementation(libs.pullrefresh)
+            implementation(libs.compottie)
         }
 
         iosMain.dependencies {
