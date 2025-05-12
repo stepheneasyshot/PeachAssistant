@@ -31,7 +31,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.stephen.aiassistant.ui.PageNavKey
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.theme.calorieCardBg
 import com.stephen.aiassistant.ui.theme.titleSecondText
@@ -48,7 +47,7 @@ import org.koin.compose.getKoin
 @Composable
 fun SharedTransitionScope.CalorieCalculatePage(
     viewModel: MainViewModel = getKoin().get(),
-    funcInfo: Pair<PageNavKey, DrawableResource>,
+    funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBackpressed: () -> Unit = {}
 ) {
@@ -93,7 +92,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 style = titleSecondText,
                 modifier = Modifier.sharedElement(
                     sharedContentState = rememberSharedContentState(
-                        key = funcInfo.first.content
+                        key = funcInfo.first
                     ),
                     animatedVisibilityScope = animatedVisibilityScope
                 )
@@ -107,15 +106,13 @@ fun SharedTransitionScope.CalorieCalculatePage(
             ),
             contentScale = ContentScale.FillHeight,
             contentDescription = null,
-            modifier = Modifier.padding(10.dp).clip(RoundedCornerShape(10.dp))
-                .background(calorieCardBg).sharedElement(
+            modifier = Modifier.sharedElement(
                 sharedContentState = rememberSharedContentState(
                     key = funcInfo.second.toString()
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).height(220.dp)
-                .padding(10.dp)
-                .clip(RoundedCornerShape(10.dp))
+            ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+                .background(calorieCardBg)
         )
 
         Box(

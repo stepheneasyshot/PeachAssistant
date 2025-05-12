@@ -43,7 +43,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.luckySentence
 import com.stephen.aiassistant.stopSpeaking
-import com.stephen.aiassistant.ui.PageNavKey
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.WrappedEditText
@@ -63,7 +62,7 @@ import org.koin.compose.getKoin
 @Composable
 fun SharedTransitionScope.CopyWritingGenePage(
     viewModel: MainViewModel = getKoin().get(),
-    funcInfo: Pair<PageNavKey, DrawableResource>,
+    funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBackpressed: () -> Unit = {}
 ) {
@@ -119,7 +118,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
                 style = titleSecondText,
                 modifier = Modifier.sharedElement(
                     sharedContentState = rememberSharedContentState(
-                        key = funcInfo.first.content
+                        key = funcInfo.first
                     ),
                     animatedVisibilityScope = animatedVisibilityScope
                 )

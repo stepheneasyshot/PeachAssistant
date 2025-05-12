@@ -19,7 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.stephen.aiassistant.ui.PageNavKey
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.theme.titleFirstText
 import com.stephen.aiassistant.ui.theme.titleSecondText
@@ -29,9 +28,9 @@ import org.jetbrains.compose.resources.painterResource
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.MainCardPage(
-    funcList: List<Pair<PageNavKey, DrawableResource>>,
+    functionMap: Map<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onItemChoosed: (PageNavKey) -> Unit = {}
+    onItemChoosed: (String) -> Unit = {}
 ) {
     Column {
         CenterText(
@@ -39,12 +38,13 @@ fun SharedTransitionScope.MainCardPage(
             style = titleFirstText
         )
         LazyColumn {
-            items(funcList, key = { it.first.name }) {
+            items(functionMap.keys.toList(), key = { it }) {
                 FunctionCard(
-                    funcInfo = it,
+                    funcInfo = Pair(it, functionMap[it]!!),
                     animatedVisibilityScope = animatedVisibilityScope,
                 ) {
-                    onItemChoosed(it.first)
+                    println("test : $it")
+                    onItemChoosed(it)
                 }
             }
         }
@@ -54,7 +54,7 @@ fun SharedTransitionScope.MainCardPage(
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.FunctionCard(
-    funcInfo: Pair<PageNavKey, DrawableResource>,
+    funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     onClick: () -> Unit = {}
 ) {
@@ -74,11 +74,11 @@ fun SharedTransitionScope.FunctionCard(
             ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
         )
         CenterText(
-            text = funcInfo.first.content,
+            text = funcInfo.first,
             style = titleSecondText,
             modifier = Modifier.padding(20.dp).align(Alignment.BottomEnd).sharedElement(
                 sharedContentState = rememberSharedContentState(
-                    key = funcInfo.first.content
+                    key = funcInfo.first
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
             )

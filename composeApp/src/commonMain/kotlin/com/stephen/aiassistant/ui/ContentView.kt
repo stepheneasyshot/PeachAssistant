@@ -31,9 +31,9 @@ fun ContentView(
     navController: NavHostController = rememberNavController(),
 ) {
 
-    val funcList = listOf(
-        Pair(PageNavKey.COPY_WRITING_GENE, Res.drawable.bg_social_post_gene),
-        Pair(PageNavKey.CALORIE_CALCULATOR, Res.drawable.bg_calorie_cal),
+    val functionMap = mapOf(
+        PageNavKey.COPY_WRITING_GENE to Res.drawable.bg_social_post_gene,
+        PageNavKey.CALORIE_CALCULATOR to Res.drawable.bg_calorie_cal,
     )
 
     Surface(Modifier.fillMaxSize(1f)) {
@@ -43,7 +43,7 @@ fun ContentView(
         ) {
             SharedTransitionLayout {
                 NavHost(
-                    navController, startDestination = PageNavKey.MAIN_PAGE.name,
+                    navController, startDestination = PageNavKey.MAIN_PAGE,
                     enterTransition = {
                         fadeIn()
                     },
@@ -51,25 +51,25 @@ fun ContentView(
                         fadeOut()
                     }
                 ) {
-                    composable(route = PageNavKey.MAIN_PAGE.name) {
-                        MainCardPage(funcList, animatedVisibilityScope = this@composable) {
-                            navController.navigate(it.name)
+                    composable(route = PageNavKey.MAIN_PAGE) {
+                        MainCardPage(functionMap, animatedVisibilityScope = this@composable) {
+                            navController.navigate(it)
                         }
                     }
-                    composable(route = PageNavKey.COPY_WRITING_GENE.name) {
+                    composable(route = PageNavKey.COPY_WRITING_GENE) {
                         CopyWritingGenePage(
-                            funcInfo = funcList[0],
+                            funcInfo = Pair(PageNavKey.COPY_WRITING_GENE, functionMap[PageNavKey.COPY_WRITING_GENE]!!),
                             animatedVisibilityScope = this@composable
                         ) {
-                            navController.navigate(PageNavKey.MAIN_PAGE.name)
+                            navController.navigate(PageNavKey.MAIN_PAGE)
                         }
                     }
-                    composable(route = PageNavKey.CALORIE_CALCULATOR.name) {
+                    composable(route = PageNavKey.CALORIE_CALCULATOR) {
                         CalorieCalculatePage(
-                            funcInfo = funcList[1],
+                            funcInfo = Pair(PageNavKey.CALORIE_CALCULATOR, functionMap[PageNavKey.CALORIE_CALCULATOR]!!),
                             animatedVisibilityScope = this@composable
                         ) {
-                            navController.navigate(PageNavKey.MAIN_PAGE.name)
+                            navController.navigate(PageNavKey.MAIN_PAGE)
                         }
                     }
                 }
@@ -78,13 +78,13 @@ fun ContentView(
     }
 }
 
-enum class PageNavKey(val content: String) {
+object PageNavKey {
     // 主页
-    MAIN_PAGE("主页"),
+    const val MAIN_PAGE = "主页"
 
     // 社交文案生成器
-    COPY_WRITING_GENE("社交圈文案生成器"),
+    const val COPY_WRITING_GENE = "社交圈文案生成器"
 
     // 卡路里计算器
-    CALORIE_CALCULATOR("拍照计算食物卡路里"),
+    const val CALORIE_CALCULATOR = "拍照计算食物卡路里"
 }
