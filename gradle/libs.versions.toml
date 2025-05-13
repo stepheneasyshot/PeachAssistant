@@ -24,7 +24,9 @@ pullrefresh = "1.4.0-beta03"
 # log
 napier = "2.7.1"
 compottie="2.0.0-rc04"
-calf-permissions = "0.7.1"
+moko = "0.19.1"
+lifecycleViewModel = "2.8.3"
+lifecycleViewModelCompose = "2.8.0"
 
 [libraries]
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
@@ -54,13 +56,18 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 aakira_napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 # navigation
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+moko-permissions-gallery = { module = "dev.icerock.moko:permissions-gallery", version.ref = "moko" }
 pullrefresh = { module = "dev.materii.pullrefresh:pullrefresh", version.ref = "pullrefresh" }
 # lottie for compose
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
 compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottie" }
 compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
-calf-permissions = { module = "com.mohamedrejeb.calf:calf-permissions", version.ref = "calf-permissions" }
+# permissions
+moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
+moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }
+lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewModel"}
+lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelCompose"}
 
 [bundles]
 ktor = ["ktor-client-core", "ktor-client-content-negotiation"]

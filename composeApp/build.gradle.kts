@@ -52,7 +52,11 @@ kotlin {
             implementation(libs.aakira.napier)
             implementation(libs.pullrefresh)
             implementation(libs.compottie)
-            implementation(libs.calf.permissions)
+            implementation(libs.lifecycle.viewmodel)
+            implementation(libs.lifecycle.viewmodel.compose)
+            api(libs.moko.permissions)
+            api(libs.moko.permissions.compose)
+            api(libs.moko.permissions.gallery)
         }
 
         iosMain.dependencies {

@@ -1,23 +1,62 @@
 package com.stephen.aiassistant.vm
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stephen.aiassistant.copyTextToClipBoard
 import com.stephen.aiassistant.data.uistate.ResultState
 import com.stephen.aiassistant.network.NetworkRepository
+import dev.icerock.moko.permissions.DeniedAlwaysException
+import dev.icerock.moko.permissions.DeniedException
+import dev.icerock.moko.permissions.Permission
+import dev.icerock.moko.permissions.PermissionState
+import dev.icerock.moko.permissions.PermissionsController
+import dev.icerock.moko.permissions.RequestCanceledException
+import dev.icerock.moko.permissions.gallery.GALLERY
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class MainViewModel(private val networkRepository: NetworkRepository) : ViewModel() {
+class MainViewModel(
+    private val networkRepository: NetworkRepository,
+) : ViewModel() {
 
     private val _copyWritingStateFlow = MutableStateFlow(ResultState())
     val copyWritingStateFlow = _copyWritingStateFlow.asStateFlow()
 
     private val _streamingText = MutableStateFlow("")
     val streamingText = _streamingText.asStateFlow()
+
+    var galleryPermissionState by mutableStateOf(PermissionState.NotDetermined)
+        private set
+
+    private lateinit var permissionsController: PermissionsController
+    fun setPermissionController(controller: PermissionsController) {
+        this.permissionsController = controller
+        viewModelScope.launch {
+            galleryPermissionState =
+                permissionsController.getPermissionState(Permission.GALLERY)
+        }
+    }
+
+    fun provideOrRequestGalleryPermission() {
+        viewModelScope.launch {
+            try {
+                permissionsController.providePermission(Permission.GALLERY)
+                galleryPermissionState = PermissionState.Granted
+            } catch (e: DeniedAlwaysException) {
+                galleryPermissionState = PermissionState.DeniedAlways
+            } catch (e: DeniedException) {
+                galleryPermissionState = PermissionState.Denied
+            } catch (e: RequestCanceledException) {
+                e.printStackTrace()
+            }
+        }
+    }
 
     fun generateCopyWriting(theme: String, style: String) {
         _copyWritingStateFlow.update {
