@@ -2,6 +2,7 @@ package com.stephen.aiassistant.ui
 
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.bg_calorie_cal
+import aiassistant.composeapp.generated.resources.bg_english_chat
 import aiassistant.composeapp.generated.resources.bg_social_post_gene
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
@@ -23,6 +24,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.stephen.aiassistant.ui.pages.CalorieCalculatePage
 import com.stephen.aiassistant.ui.pages.CopyWritingGenePage
+import com.stephen.aiassistant.ui.pages.EnglishSpeakingPage
 import com.stephen.aiassistant.ui.pages.MainCardPage
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -34,6 +36,7 @@ fun ContentView(
     val functionMap = mapOf(
         PageNavKey.COPY_WRITING_GENE to Res.drawable.bg_social_post_gene,
         PageNavKey.CALORIE_CALCULATOR to Res.drawable.bg_calorie_cal,
+        PageNavKey.SPEAKING_TRAINING to Res.drawable.bg_english_chat
     )
 
     Surface(Modifier.fillMaxSize(1f)) {
@@ -72,6 +75,14 @@ fun ContentView(
                             navController.navigate(PageNavKey.MAIN_PAGE)
                         }
                     }
+                    composable(route = PageNavKey.SPEAKING_TRAINING) {
+                        EnglishSpeakingPage(
+                            funcInfo = Pair(PageNavKey.SPEAKING_TRAINING, functionMap[PageNavKey.SPEAKING_TRAINING]!!),
+                            animatedVisibilityScope = this@composable
+                        ){
+                            navController.navigate(PageNavKey.MAIN_PAGE)
+                        }
+                    }
                 }
             }
         }
@@ -87,4 +98,7 @@ object PageNavKey {
 
     // 卡路里计算器
     const val CALORIE_CALCULATOR = "拍照计算食物卡路里"
+
+    // 英语口语训练
+    const val SPEAKING_TRAINING = "英语口语训练"
 }

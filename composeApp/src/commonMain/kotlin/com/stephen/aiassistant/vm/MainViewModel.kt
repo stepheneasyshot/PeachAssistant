@@ -1,20 +1,18 @@
 package com.stephen.aiassistant.vm
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.stephen.aiassistant.platform.copyTextToClipBoard
 import com.stephen.aiassistant.data.uistate.ResultState
 import com.stephen.aiassistant.network.NetworkRepository
+import com.stephen.aiassistant.platform.copyTextToClipBoard
+import com.stephen.aiassistant.platform.permissions.GALLERY
+import com.stephen.aiassistant.platform.permissions.RECORD_AUDIO
 import com.stephen.permissions.DeniedAlwaysException
 import com.stephen.permissions.DeniedException
 import com.stephen.permissions.Permission
 import com.stephen.permissions.PermissionState
 import com.stephen.permissions.PermissionsController
 import com.stephen.permissions.RequestCanceledException
-import com.stephen.aiassistant.platform.permissions.GALLERY
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,31 +33,76 @@ class MainViewModel(
     private val _streamingText = MutableStateFlow("")
     val streamingText = _streamingText.asStateFlow()
 
-    var galleryPermissionState by mutableStateOf(PermissionState.NotDetermined)
-        private set
+    private val _galleryPermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
+    val galleryPermissionState = _galleryPermissionStateFlow.asStateFlow()
+
+    private val _microphonePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
+    val microphonePermissionState = _microphonePermissionStateFlow.asStateFlow()
 
     private lateinit var permissionsController: PermissionsController
     fun setPermissionController(controller: PermissionsController) {
         this.permissionsController = controller
         viewModelScope.launch {
-            galleryPermissionState =
+            _galleryPermissionStateFlow.update {
                 permissionsController.getPermissionState(Permission.GALLERY)
+            }
+            _microphonePermissionStateFlow.update {
+                permissionsController.getPermissionState(Permission.RECORD_AUDIO)
+            }
         }
+    }
+
+    fun openPermissionSettings(){
+        permissionsController.openAppSettings()
     }
 
     fun provideOrRequestGalleryPermission() {
         viewModelScope.launch {
             try {
                 permissionsController.providePermission(Permission.GALLERY)
-                galleryPermissionState = PermissionState.Granted
+                _galleryPermissionStateFlow.update {
+                    PermissionState.Granted
+                }
             } catch (e: DeniedAlwaysException) {
-                galleryPermissionState = PermissionState.DeniedAlways
+                _galleryPermissionStateFlow.update {
+                    PermissionState.DeniedAlways
+                }
             } catch (e: DeniedException) {
-                galleryPermissionState = PermissionState.Denied
+                _galleryPermissionStateFlow.update {
+                    PermissionState.Denied
+                }
             } catch (e: RequestCanceledException) {
                 e.printStackTrace()
             }
         }
+    }
+
+    fun provideOrRequestMicrophonePermission() {
+        viewModelScope.launch {
+            try {
+                permissionsController.providePermission(Permission.RECORD_AUDIO)
+                _microphonePermissionStateFlow.update {
+                    PermissionState.Granted
+                }
+            } catch (e: DeniedAlwaysException) {
+                _microphonePermissionStateFlow.update {
+                    PermissionState.DeniedAlways
+                }
+            } catch (e: DeniedException) {
+                _microphonePermissionStateFlow.update {
+                    PermissionState.Denied
+                }
+            } catch (e: RequestCanceledException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * 语音转文字
+     */
+    fun startToProcessSpeechToText(){
+        Napier.i("startToProcessSpeechToText")
     }
 
     fun generateCopyWriting(theme: String, style: String) {

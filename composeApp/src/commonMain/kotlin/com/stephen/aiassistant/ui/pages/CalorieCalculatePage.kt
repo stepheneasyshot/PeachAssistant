@@ -32,10 +32,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
-import com.stephen.aiassistant.platform.permissions.BindEffect
-import com.stephen.aiassistant.platform.permissions.rememberPermissionsControllerFactory
 import com.stephen.aiassistant.ui.component.CenterText
-import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.calorieCardBg
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
@@ -62,9 +59,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBackpressed: () -> Unit = {}
 ) {
-
-    val toastState = rememberToastState()
-
     // 食物和卡路里的对应关系
     val fakeList = remember { mutableStateListOf<Pair<String, Int>>() }
 
@@ -81,12 +75,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
         speed = 0.7f
     )
 
-    val factory = rememberPermissionsControllerFactory()
-    val controller = remember(factory) {
-        factory.createPermissionsController()
-    }
-    BindEffect(controller)
-
     val galleryPermissionState = viewModel.galleryPermissionState
 
     val scope = rememberCoroutineScope()
@@ -98,7 +86,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
     }
 
     LaunchedEffect(Unit) {
-        viewModel.setPermissionController(controller)
         fakeList.add(Pair("苹果", 100))
         fakeList.add(Pair("可乐", 200))
         fakeList.add(Pair("汉堡", 300))
@@ -122,7 +109,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     .clickable { onBackpressed() }
             )
             CenterText(
-                text = "拍照计算食物卡路里",
+                text = funcInfo.first,
                 style = titleSecondText,
                 modifier = Modifier.sharedElement(
                     sharedContentState = rememberSharedContentState(
@@ -153,7 +140,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
             modifier = Modifier.padding(10.dp).fillMaxWidth(1f).heightIn(min = 200.dp)
                 .clip(RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surface).clickable {
-                    when (galleryPermissionState) {
+                    when (galleryPermissionState.value) {
                         PermissionState.Granted -> {
                             println("Gallery permission granted!")
                             scope.launch {
@@ -163,7 +150,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
                         PermissionState.DeniedAlways -> {
                             println("Permission was permanently declined.")
-                            controller.openAppSettings()
+                            viewModel.openPermissionSettings()
                         }
 
                         else -> {

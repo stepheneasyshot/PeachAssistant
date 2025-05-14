@@ -34,6 +34,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":permissions"))
+            implementation(libs.kotlinx.coroutines.core)
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

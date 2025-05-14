@@ -114,7 +114,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
                     .clickable { onBackpressed() }
             )
             CenterText(
-                text = "社交圈文案生成器",
+                text = funcInfo.first,
                 style = titleSecondText,
                 modifier = Modifier.sharedElement(
                     sharedContentState = rememberSharedContentState(
