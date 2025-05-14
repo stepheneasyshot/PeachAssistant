@@ -84,7 +84,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
         if (chatListState.value.chatList.isNotEmpty())
             listState.animateScrollToItem(chatListState.value.chatList.size - 1)
         // 语音播报ai的反馈
-        withContext(Dispatchers.IO){
+        withContext(Dispatchers.IO) {
             chatListState.value.chatList.lastOrNull()?.let {
                 if (it.role == ChatRole.ASSISTANT) {
                     textToSpeech(it.content)
@@ -182,9 +182,11 @@ fun SharedTransitionScope.EnglishSpeakingPage(
                             }
                         },
                         onUp = {
-                            // 发送识别的文字到 AI
-                            speechToText.value = "How are you"
-                            viewModel.englishSpeakingExercise(speechToText.value)
+                            if (microPermissionState.value == PermissionState.Granted) {
+                                // 发送识别的文字到 AI
+                                speechToText.value = "How are you"
+                                viewModel.englishSpeakingExercise(speechToText.value)
+                            }
                         })
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.surface)
