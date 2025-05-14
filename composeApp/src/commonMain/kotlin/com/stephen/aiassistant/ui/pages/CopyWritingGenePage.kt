@@ -42,7 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.luckySentence
-import com.stephen.aiassistant.stopSpeaking
+import com.stephen.aiassistant.platform.stopSpeaking
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.WrappedEditText

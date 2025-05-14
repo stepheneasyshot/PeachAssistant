@@ -1,9 +1,11 @@
-package com.stephen.aiassistant
+package com.stephen.aiassistant.platform
 
 import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
+import com.stephen.aiassistant.SpeechUtils
+import com.stephen.aiassistant.appContext
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.cio.CIO
 

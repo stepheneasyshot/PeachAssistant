@@ -49,6 +49,7 @@ import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -93,7 +94,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Image,
     ) { image ->
-        Napier.d("image: ${image?.name}")
+        Napier.d("Image File Choosed imagefile: ${image?.path}")
         // Handle the image
     }
 

@@ -28,6 +28,10 @@ compottie="2.0.0-rc04"
 moko = "0.19.1"
 lifecycleViewModel = "2.9.0"
 lifecycleViewModelCompose = "2.8.2"
+kotlinStdlib = "2.1.20"
+activityKtx = "1.10.1"
+# coroutine
+coroutine = "1.6.4"
 
 [libraries]
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekitCore" }
@@ -61,18 +65,18 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 aakira_napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 # navigation
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-moko-permissions-gallery = { module = "dev.icerock.moko:permissions-gallery", version.ref = "moko" }
 pullrefresh = { module = "dev.materii.pullrefresh:pullrefresh", version.ref = "pullrefresh" }
 # lottie for compose
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
 compottie-network = { module = "io.github.alexzhirkevich:compottie-network", version.ref = "compottie" }
 compottie-resources = { module = "io.github.alexzhirkevich:compottie-resources", version.ref = "compottie" }
-# permissions
-moko-permissions = { module = "dev.icerock.moko:permissions", version.ref = "moko" }
-moko-permissions-compose = { module = "dev.icerock.moko:permissions-compose", version.ref = "moko" }
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycleViewModel"}
 lifecycle-viewmodel-compose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewModelCompose"}
+kotlin-stdlib = { group = "org.jetbrains.kotlin", name = "kotlin-stdlib", version.ref = "kotlinStdlib" }
+androidx-activity-ktx = { group = "androidx.activity", name = "activity-ktx", version.ref = "activityKtx" }
+# cotoutines
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutine" }
 
 [bundles]
 ktor = ["ktor-client-core", "ktor-client-content-negotiation"]
@@ -84,3 +88,4 @@ composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose-mu
 composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+androidKotlinMultiplatformLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }

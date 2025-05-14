@@ -1,4 +1,4 @@
-package com.stephen.aiassistant
+package com.stephen.aiassistant.platform
 
 import io.ktor.client.engine.HttpClientEngineFactory
 
@@ -15,3 +15,4 @@ expect fun getHttpEngine(): HttpClientEngineFactory<*>
 expect fun textToSpeech(text: String)
 
 expect fun stopSpeaking()
+

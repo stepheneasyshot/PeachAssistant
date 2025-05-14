@@ -33,6 +33,10 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
         commonMain.dependencies {
+            implementation(project(":permissions"))
+            // compose multiplatform
+            api("dev.icerock.moko:permissions-compose:0.19.1") // permissions api + compose extensions
+
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)
@@ -52,12 +56,8 @@ kotlin {
             implementation(libs.aakira.napier)
             implementation(libs.pullrefresh)
             implementation(libs.compottie)
-            // 权限申请
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.viewmodel.compose)
-            api(libs.moko.permissions)
-            api(libs.moko.permissions.compose)
-            api(libs.moko.permissions.gallery)
             // 选取图片
             implementation(libs.filekit.core)
             implementation(libs.filekit.dialogs)

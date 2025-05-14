@@ -1,6 +1,6 @@
 package com.stephen.aiassistant.network
 
-import com.stephen.aiassistant.getHttpEngine
+import com.stephen.aiassistant.platform.getHttpEngine
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
