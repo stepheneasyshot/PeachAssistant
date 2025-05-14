@@ -20,7 +20,7 @@
 ### 英语对话
 <div style="display: flex; justify-content: center;">
   <img src="/screenshots/pic_ios_englishchat.png" alt="Image 1" style="width: 45%; margin-right: 5%;">
-  <img src="/screenshots/pic_ios_englishchat.png" alt="Image 2" style="width: 45%;">
+  <img src="/screenshots/pic_ios_englishchat_light.png" alt="Image 2" style="width: 45%;">
 </div>
 
 
