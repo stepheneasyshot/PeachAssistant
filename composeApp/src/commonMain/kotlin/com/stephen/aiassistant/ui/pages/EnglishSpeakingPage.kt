@@ -32,6 +32,7 @@ import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
 import com.stephen.permissions.PermissionState
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
@@ -47,6 +48,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
     val microPermissionState = viewModel.microphonePermissionState
 
     LaunchedEffect(Unit) {
+        delay(1000L)
         textToSpeech("Hi, I'm your personal English teacher. How can I help you today?")
     }
 
