@@ -7,8 +7,9 @@ import androidx.compose.ui.graphics.Color
 // 网络链接颜色
 val networkTextColor = Color(0xff62bffc)
 
-// 卡路里卡片背景色
-val calorieCardBg = Color(0xff7fb4b2)
+val lightCalorieColor = Color(0xffe9e9e9)
+
+val darkCalorieColor = Color(0xff1a2425)
 
 val DarkColorScheme = darkColorScheme(
     // 使用最多的按钮色

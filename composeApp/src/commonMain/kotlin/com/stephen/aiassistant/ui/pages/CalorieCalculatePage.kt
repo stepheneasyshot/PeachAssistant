@@ -8,6 +8,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +34,8 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.ui.component.CenterText
-import com.stephen.aiassistant.ui.theme.calorieCardBg
+import com.stephen.aiassistant.ui.theme.darkCalorieColor
+import com.stephen.aiassistant.ui.theme.lightCalorieColor
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
 import com.stephen.permissions.PermissionState
@@ -133,7 +135,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
             ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
-                .background(calorieCardBg)
+                .background(if (isSystemInDarkTheme()) darkCalorieColor else lightCalorieColor)
         )
 
         Box(
@@ -144,7 +146,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         PermissionState.Granted -> {
                             println("Gallery permission granted!")
                             scope.launch {
-                              launcher.launch()
+                                launcher.launch()
                             }
                         }
 
