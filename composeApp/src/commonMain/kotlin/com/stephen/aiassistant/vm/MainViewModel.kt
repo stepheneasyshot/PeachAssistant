@@ -41,6 +41,7 @@ class MainViewModel(
 
     private lateinit var permissionsController: PermissionsController
     fun setPermissionController(controller: PermissionsController) {
+        Napier.i("setPermissionController")
         this.permissionsController = controller
         viewModelScope.launch {
             _galleryPermissionStateFlow.update {

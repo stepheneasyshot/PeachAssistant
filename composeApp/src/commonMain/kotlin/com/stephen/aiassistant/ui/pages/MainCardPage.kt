@@ -39,6 +39,7 @@ fun SharedTransitionScope.MainCardPage(
     viewModel: MainViewModel = getKoin().get(),
     onItemChoosed: (String) -> Unit = {}
 ) {
+    // 初始化权限管理器
     val factory = rememberPermissionsControllerFactory()
     val controller = remember(factory) {
         factory.createPermissionsController()
