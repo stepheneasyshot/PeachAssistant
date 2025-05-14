@@ -25,6 +25,10 @@ class MainViewModel(
     private val networkRepository: NetworkRepository,
 ) : ViewModel() {
 
+    init {
+        Napier.i("=====>MainViewModel init<=======")
+    }
+
     private val _copyWritingStateFlow = MutableStateFlow(ResultState())
     val copyWritingStateFlow = _copyWritingStateFlow.asStateFlow()
 
@@ -59,6 +63,7 @@ class MainViewModel(
     }
 
     fun generateCopyWriting(theme: String, style: String) {
+        Napier.i("generateCopyWriting -> theme = $theme, style = $style")
         _copyWritingStateFlow.update {
             it.copy(isLoading = true)
         }
@@ -81,6 +86,7 @@ class MainViewModel(
     }
 
     fun generateCopyWritingStreamVersion(theme: String, style: String) {
+        Napier.i("generateCopyWritingStreamVersion -> theme = $theme, style = $style")
         _copyWritingStateFlow.update {
             it.copy(isLoading = true)
         }
