@@ -12,6 +12,7 @@ androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 compose-multiplatform = "1.8.0"
+filekitCore = "0.10.0-beta04"
 junit = "4.13.2"
 kotlin = "2.1.20"
 # Koin
@@ -25,10 +26,14 @@ pullrefresh = "1.4.0-beta03"
 napier = "2.7.1"
 compottie="2.0.0-rc04"
 moko = "0.19.1"
-lifecycleViewModel = "2.8.3"
-lifecycleViewModelCompose = "2.8.0"
+lifecycleViewModel = "2.9.0"
+lifecycleViewModelCompose = "2.8.2"
 
 [libraries]
+filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekitCore" }
+filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekitCore" }
+filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekitCore" }
+filekit-coil = { module = "io.github.vinceglb:filekit-coil", version.ref = "filekitCore" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 kotlin-test-junit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }

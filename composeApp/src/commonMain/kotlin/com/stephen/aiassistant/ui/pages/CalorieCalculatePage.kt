@@ -25,6 +25,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -39,11 +40,16 @@ import com.stephen.aiassistant.vm.MainViewModel
 import dev.icerock.moko.permissions.PermissionState
 import dev.icerock.moko.permissions.compose.BindEffect
 import dev.icerock.moko.permissions.compose.rememberPermissionsControllerFactory
+import io.github.aakira.napier.Napier
 import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
 import io.github.alexzhirkevich.compottie.rememberLottiePainter
+import io.github.vinceglb.filekit.dialogs.FileKitType
+import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.name
+import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
@@ -82,6 +88,14 @@ fun SharedTransitionScope.CalorieCalculatePage(
     BindEffect(controller)
 
     val galleryPermissionState = viewModel.galleryPermissionState
+
+    val scope = rememberCoroutineScope()
+    val launcher = rememberFilePickerLauncher(
+        type = FileKitType.Image,
+    ) { image ->
+        Napier.d("image: ${image?.name}")
+        // Handle the image
+    }
 
     LaunchedEffect(Unit) {
         viewModel.setPermissionController(controller)
@@ -142,6 +156,9 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     when (galleryPermissionState) {
                         PermissionState.Granted -> {
                             println("Gallery permission granted!")
+                            scope.launch {
+                              launcher.launch()
+                            }
                         }
 
                         PermissionState.DeniedAlways -> {

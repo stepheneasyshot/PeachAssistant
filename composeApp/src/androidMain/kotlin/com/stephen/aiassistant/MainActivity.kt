@@ -9,11 +9,15 @@ import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
+import io.github.vinceglb.filekit.FileKit
+import io.github.vinceglb.filekit.manualFileKitCoreInitialization
 
 class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // Initialize FileKit
+        FileKit.manualFileKitCoreInitialization(this)
         enableEdgeToEdge()
         setContent {
             App()

@@ -52,11 +52,17 @@ kotlin {
             implementation(libs.aakira.napier)
             implementation(libs.pullrefresh)
             implementation(libs.compottie)
+            // 权限申请
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.viewmodel.compose)
             api(libs.moko.permissions)
             api(libs.moko.permissions.compose)
             api(libs.moko.permissions.gallery)
+            // 选取图片
+            implementation(libs.filekit.core)
+            implementation(libs.filekit.dialogs)
+            implementation(libs.filekit.dialogs.compose)
+            implementation(libs.filekit.coil)
         }
 
         iosMain.dependencies {
