@@ -2,6 +2,9 @@ package com.stephen.aiassistant.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.stephen.aiassistant.data.ChatRole
+import com.stephen.aiassistant.data.uistate.EnglishChatState
+import com.stephen.aiassistant.data.uistate.ChatItem
 import com.stephen.aiassistant.data.uistate.ResultState
 import com.stephen.aiassistant.network.NetworkRepository
 import com.stephen.aiassistant.platform.copyTextToClipBoard
@@ -14,6 +17,9 @@ import com.stephen.permissions.PermissionState
 import com.stephen.permissions.PermissionsController
 import com.stephen.permissions.RequestCanceledException
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -39,6 +45,10 @@ class MainViewModel(
     private val _microphonePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
     val microphonePermissionState = _microphonePermissionStateFlow.asStateFlow()
 
+    // ai模型对话
+    private val _aiModelChatListState = MutableStateFlow(EnglishChatState())
+    val aiModelChatListStateFlow = _aiModelChatListState.asStateFlow()
+
     private lateinit var permissionsController: PermissionsController
     fun setPermissionController(controller: PermissionsController) {
         Napier.i("setPermissionController")
@@ -53,7 +63,7 @@ class MainViewModel(
         }
     }
 
-    fun openPermissionSettings(){
+    fun openPermissionSettings() {
         permissionsController.openAppSettings()
     }
 
@@ -102,9 +112,74 @@ class MainViewModel(
     /**
      * 语音转文字
      */
-    fun startToProcessSpeechToText(){
+    fun startToProcessSpeechToText() {
         Napier.i("startToProcessSpeechToText")
     }
+
+    fun doEnglishTeacherTest() {
+        _aiModelChatListState.update {
+            it.copy(
+                chatList = it.chatList + listOf(
+                    ChatItem(
+                        content = "Hi, I'm your personal English teacher. How can I help you today?",
+                        role = ChatRole.ASSISTANT
+                    )
+                ),
+                listSize = it.listSize + 1
+            )
+        }
+    }
+
+    /**
+     * AI模型 英语口语对话
+     */
+    fun englishSpeakingExercise(text: String) {
+        Napier.i("chatWithAI -> text = $text")
+        // 用户输入的内容
+        _aiModelChatListState.update {
+            it.copy(
+                chatList = it.chatList + listOf(ChatItem(content = text, role = ChatRole.USER)),
+                listSize = it.listSize + 1
+            )
+        }
+        _aiModelChatListState.value = _aiModelChatListState.value.toUiState()
+        // 在线call，等待AI模型生成回复
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                val result = "I'm fine. Thank you. And you?"
+                Napier.i(result)
+                // 回复的内容
+                _aiModelChatListState.update {
+                    it.copy(
+                        chatList = it.chatList + listOf(
+                            ChatItem(
+                                content = result,
+                                role = ChatRole.ASSISTANT
+                            )
+                        ),
+                        listSize = it.listSize + 1
+                    )
+                }
+                _aiModelChatListState.value = _aiModelChatListState.value.toUiState()
+            }.onFailure { e ->
+                Napier.e(e.message.toString())
+                // 回复的内容
+                _aiModelChatListState.update {
+                    it.copy(
+                        chatList = it.chatList + listOf(
+                            ChatItem(
+                                content = "通信过程中出现异常",
+                                role = ChatRole.ASSISTANT
+                            )
+                        ),
+                        listSize = it.listSize + 1
+                    )
+                }
+                _aiModelChatListState.value = _aiModelChatListState.value.toUiState()
+            }
+        }
+    }
+
 
     fun generateCopyWriting(theme: String, style: String) {
         Napier.i("generateCopyWriting -> theme = $theme, style = $style")

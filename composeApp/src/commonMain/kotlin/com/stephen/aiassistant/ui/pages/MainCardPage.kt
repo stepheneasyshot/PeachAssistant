@@ -8,7 +8,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -81,14 +81,14 @@ fun SharedTransitionScope.FunctionCard(
         }) {
         Image(
             painter = painterResource(funcInfo.second),
-            contentScale = ContentScale.FillBounds,
+            contentScale = ContentScale.FillWidth,
             contentDescription = null,
             modifier = Modifier.sharedElement(
                 sharedContentState = rememberSharedContentState(
                     key = funcInfo.second.toString()
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+            ).fillMaxWidth(1f).heightIn(max = 220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
         )
         CenterText(
             text = funcInfo.first,

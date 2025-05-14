@@ -127,14 +127,14 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 composition = composition,
                 progress = { progress },
             ),
-            contentScale = ContentScale.FillHeight,
+            contentScale = ContentScale.FillWidth,
             contentDescription = null,
             modifier = Modifier.sharedElement(
                 sharedContentState = rememberSharedContentState(
                     key = funcInfo.second.toString()
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).height(220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+            ).fillMaxWidth(1f).heightIn(max = 220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
                 .background(if (isSystemInDarkTheme()) darkCalorieColor else lightCalorieColor)
         )
 

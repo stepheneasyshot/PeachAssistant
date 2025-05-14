@@ -1,5 +1,6 @@
 package com.stephen.aiassistant.network
 
+import com.stephen.aiassistant.data.ChatRole
 import com.stephen.aiassistant.data.bean.DeepSeekRequestBean
 import com.stephen.aiassistant.data.bean.DeepSeekResult
 import com.stephen.aiassistant.data.bean.DeepSeekStreamResult
@@ -29,11 +30,6 @@ class NetworkRepository(private val ktorClient: KtorClient) {
         const val COMMON_SYSTEM_PROMT = "你是一个人工智能系统，可以根据用户的输入来返回生成式的回复"
         const val API_KEY = "sk-5d1ebf9b757344e7939a2e4e5bdc0e21"
         const val MODEL_NAME = "deepseek-chat"
-
-        enum class ChatRole(val roleDescription: String) {
-            SYSTEM("system"),
-            USER("user"),
-        }
     }
 
     suspend fun generateCopyWritingByAI(text: String) = withContext(Dispatchers.IO) {

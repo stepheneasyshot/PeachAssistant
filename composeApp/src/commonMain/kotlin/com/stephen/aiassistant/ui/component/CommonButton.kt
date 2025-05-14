@@ -45,7 +45,7 @@ fun CommonButton(
 
 enum class ButtonState { Pressed, Idle }
 
-fun Modifier.bounceClick() = composed {
+fun Modifier.bounceClick(onDown: () -> Unit = {}, onUp: () -> Unit = {}) = composed {
     var buttonState by remember { mutableStateOf(ButtonState.Idle) }
     val scale by animateFloatAsState(if (buttonState == ButtonState.Pressed) 0.90f else 1f)
 
@@ -60,9 +60,11 @@ fun Modifier.bounceClick() = composed {
         awaitPointerEventScope {
             buttonState = if (buttonState == ButtonState.Pressed) {
                 waitForUpOrCancellation()
+                onUp()
                 ButtonState.Idle
             } else {
                 awaitFirstDown(false)
+                onDown()
                 ButtonState.Pressed
             }
         }
