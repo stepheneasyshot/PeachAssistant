@@ -34,9 +34,6 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(project(":permissions"))
-            // compose multiplatform
-            api("dev.icerock.moko:permissions-compose:0.19.1") // permissions api + compose extensions
-
             implementation(compose.runtime)
             implementation(compose.foundation)
             implementation(compose.material3)

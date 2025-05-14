@@ -25,7 +25,6 @@ pullrefresh = "1.4.0-beta03"
 # log
 napier = "2.7.1"
 compottie="2.0.0-rc04"
-moko = "0.19.1"
 lifecycleViewModel = "2.9.0"
 lifecycleViewModelCompose = "2.8.2"
 kotlinStdlib = "2.1.20"
