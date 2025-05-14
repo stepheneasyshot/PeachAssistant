@@ -180,7 +180,9 @@ class MainViewModel(
         }
     }
 
-
+    /**
+     * 社交圈文案生成
+     */
     fun generateCopyWriting(theme: String, style: String) {
         Napier.i("generateCopyWriting -> theme = $theme, style = $style")
         _copyWritingStateFlow.update {
@@ -204,6 +206,10 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 社交圈文案生成 流式输出
+     */
+    @Suppress("unused")
     fun generateCopyWritingStreamVersion(theme: String, style: String) {
         Napier.i("generateCopyWritingStreamVersion -> theme = $theme, style = $style")
         _copyWritingStateFlow.update {
@@ -234,6 +240,7 @@ class MainViewModel(
      * 测试接口
      */
     @Deprecated("测试接口")
+    @Suppress("unused")
     fun testChat() {
         viewModelScope.launch {
             networkRepository.testChat()
