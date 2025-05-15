@@ -2,20 +2,30 @@ package com.stephen.aiassistant.ui.pages
 
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.arrow_left
+import aiassistant.composeapp.generated.resources.ic_camera
 import aiassistant.composeapp.generated.resources.ic_close_small
+import aiassistant.composeapp.generated.resources.ic_picture_album
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
@@ -38,6 +48,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.stephen.aiassistant.data.navBarHeight
 import com.stephen.aiassistant.platform.hardware.rememberVibrationManager
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
@@ -88,6 +99,9 @@ fun SharedTransitionScope.CalorieCalculatePage(
     )
 
     val galleryPermissionState = viewModel.galleryPermissionState
+    val cameraPermissionState = viewModel.cameraPermissionState
+    val expandPicturaAddState = remember { mutableStateOf(false) }
+    val cameraPreviewState = remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
@@ -99,7 +113,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
         Napier.d("Chose imageFile: ${imageFile?.path}")
         imageFile?.let {
             imageFileState.value = it
-//            viewModel.calCalorieByAI(imageFile)
         }
     }
 
@@ -112,7 +125,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
         }
     }
 
-    LazyColumn {
+    LazyColumn(modifier = Modifier.padding(bottom = navBarHeight)) {
         item {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -162,25 +175,11 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     .heightIn(min = 200.dp, max = 250.dp)
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .clickable {
-                        when (galleryPermissionState.value) {
-                            PermissionState.Granted -> {
-                                println("Gallery permission granted!")
-                                scope.launch {
-                                    launcher.launch()
-                                }
-                            }
-
-                            PermissionState.DeniedAlways -> {
-                                println("Permission was permanently declined.")
-                                viewModel.openPermissionSettings()
-                            }
-
-                            else -> {
-                                viewModel.provideOrRequestGalleryPermission()
-                                println("Request permission")
-                            }
-                        }
+                    .clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                    ) {
+                        expandPicturaAddState.value = true
                     }.padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -189,7 +188,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     color = MaterialTheme.colorScheme.onSecondary,
                 )
                 CenterText(
-                    text = "点击上传照片",
+                    text = "点击添加图片",
                 )
                 imageFileState.value?.let {
                     AsyncImage(
@@ -249,6 +248,77 @@ fun SharedTransitionScope.CalorieCalculatePage(
             }
         }
     }
+
+    // 定义从底部滑入和滑出的动画
+    val enterTransition: EnterTransition = slideInVertically(
+        initialOffsetY = { it },
+        animationSpec = tween(durationMillis = 300)
+    )
+    val exitTransition: ExitTransition = slideOutVertically(
+        targetOffsetY = { it },
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    AnimatedVisibility(
+        visible = expandPicturaAddState.value,
+        enter = enterTransition, exit = exitTransition,
+        modifier = Modifier.fillMaxSize(1f)
+    ) {
+        CameraOrGallery(
+            onCameraClick = {
+                expandPicturaAddState.value = false
+                when (cameraPermissionState.value) {
+                    PermissionState.Granted -> {
+                        Napier.i("Camera permission granted!")
+                        cameraPreviewState.value = true
+                    }
+
+                    PermissionState.DeniedAlways -> {
+                        Napier.i("Permission was permanently declined.")
+                        viewModel.openPermissionSettings()
+                    }
+
+                    else -> {
+                        viewModel.provideOrRequestCameraPermission()
+                        Napier.i("Request permission")
+                    }
+                }
+            },
+            onGalleryClick = {
+                expandPicturaAddState.value = false
+                when (galleryPermissionState.value) {
+                    PermissionState.Granted -> {
+                        Napier.i("Gallery permission granted!")
+                        scope.launch {
+                            launcher.launch()
+                        }
+                    }
+
+                    PermissionState.DeniedAlways -> {
+                        Napier.i("Permission was permanently declined.")
+                        viewModel.openPermissionSettings()
+                    }
+
+                    else -> {
+                        viewModel.provideOrRequestGalleryPermission()
+                        Napier.i("Request permission")
+                    }
+                }
+            },
+            onDismissRequest = {
+                expandPicturaAddState.value = false
+            }
+        )
+    }
+
+    AnimatedVisibility(
+        visible = cameraPreviewState.value,
+        modifier = Modifier.fillMaxSize(1f)
+    ) {
+        CameraPreviewPage { bytes ->
+            Napier.i("Capture success!")
+        }
+    }
 }
 
 @Composable
@@ -285,6 +355,65 @@ fun FoodListItem(
                 text = "$calories kcal",
                 modifier = Modifier.padding(end = 10.dp)
             )
+        }
+    }
+}
+
+/**
+ * 选择是打开图库还是拍照
+ */
+@Composable
+fun CameraOrGallery(
+    onCameraClick: () -> Unit,
+    onGalleryClick: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    Row(
+        modifier = Modifier.fillMaxSize(1f).clickable(
+            interactionSource = remember { MutableInteractionSource() },
+            indication = null,
+        ) {
+            onDismissRequest()
+        },
+        verticalAlignment = Alignment.Bottom
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(1f)
+                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                .background(MaterialTheme.colorScheme.surface)
+                .padding(vertical = 48.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Column(
+                modifier = Modifier.clickable {
+                    onCameraClick()
+                }.padding(end = 78.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_camera),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                    modifier = Modifier.size(32.dp),
+                    contentDescription = "camera"
+                )
+                CenterText(text = "拍照")
+            }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.clickable {
+                    onGalleryClick()
+                }
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_picture_album),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                    modifier = Modifier.size(32.dp),
+                    contentDescription = "gallery"
+                )
+                CenterText(text = "相册")
+            }
         }
     }
 }

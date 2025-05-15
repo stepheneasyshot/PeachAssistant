@@ -11,6 +11,7 @@ import com.stephen.aiassistant.data.uistate.ResultState
 import com.stephen.aiassistant.network.DeepseekChatRepository
 import com.stephen.aiassistant.network.DoubaoVisionRepository
 import com.stephen.aiassistant.platform.copyTextToClipBoard
+import com.stephen.aiassistant.platform.permissions.CAMERA
 import com.stephen.aiassistant.platform.permissions.GALLERY
 import com.stephen.aiassistant.platform.permissions.RECORD_AUDIO
 import com.stephen.permissions.DeniedAlwaysException
@@ -54,6 +55,9 @@ class MainViewModel(
     private val _microphonePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
     val microphonePermissionState = _microphonePermissionStateFlow.asStateFlow()
 
+    private val _cameraPermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
+    val cameraPermissionState = _cameraPermissionStateFlow.asStateFlow()
+
     // ai模型对话
     private val _aiModelChatListState = MutableStateFlow(EnglishChatState())
     val aiModelChatListStateFlow = _aiModelChatListState.asStateFlow()
@@ -79,6 +83,9 @@ class MainViewModel(
         permissionsController.openAppSettings()
     }
 
+    /**
+     * 相册浏览权限
+     */
     fun provideOrRequestGalleryPermission() {
         viewModelScope.launch {
             try {
@@ -100,6 +107,9 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 录音权限
+     */
     fun provideOrRequestMicrophonePermission() {
         viewModelScope.launch {
             try {
@@ -113,6 +123,30 @@ class MainViewModel(
                 }
             } catch (e: DeniedException) {
                 _microphonePermissionStateFlow.update {
+                    PermissionState.Denied
+                }
+            } catch (e: RequestCanceledException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * 相机权限
+     */
+    fun provideOrRequestCameraPermission() {
+        viewModelScope.launch {
+            try {
+                permissionsController.providePermission(Permission.CAMERA)
+                _cameraPermissionStateFlow.update {
+                    PermissionState.Granted
+                }
+            } catch (e: DeniedAlwaysException) {
+                _cameraPermissionStateFlow.update {
+                    PermissionState.DeniedAlways
+                }
+            } catch (e: DeniedException) {
+                _cameraPermissionStateFlow.update {
                     PermissionState.Denied
                 }
             } catch (e: RequestCanceledException) {

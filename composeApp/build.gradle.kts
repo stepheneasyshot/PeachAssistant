@@ -63,6 +63,8 @@ kotlin {
             implementation(libs.filekit.coil)
             // coil official
             implementation(libs.coil.compose)
+            // camera
+            implementation(libs.camerak)
         }
 
         iosMain.dependencies {

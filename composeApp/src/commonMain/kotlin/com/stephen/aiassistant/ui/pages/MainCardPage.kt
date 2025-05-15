@@ -29,6 +29,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.stephen.aiassistant.data.navBarHeight
 import com.stephen.aiassistant.platform.permissions.BindEffect
 import com.stephen.aiassistant.platform.permissions.rememberPermissionsControllerFactory
 import com.stephen.aiassistant.ui.component.CenterText
@@ -59,7 +60,7 @@ fun SharedTransitionScope.MainCardPage(
         viewModel.setPermissionController(controller)
     }
 
-    Column {
+    Column(modifier = Modifier.padding(bottom = navBarHeight)) {
 
         Row(
             modifier = Modifier.fillMaxWidth(1f),

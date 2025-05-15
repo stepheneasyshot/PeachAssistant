@@ -1,5 +1,7 @@
 package com.stephen.aiassistant.data
 
+import androidx.compose.ui.unit.dp
+
 val luckySentence = listOf(
     "生活是一场旅行，每一步都是一个机会，要珍惜每一个机会。",
     "人生没有彩排，每一天都是现场直播。",
@@ -29,3 +31,6 @@ val luckySentence = listOf(
     "最困难的时候，就是最接近成功的时候。",
     "愿你历经山河，仍觉人间值得。"
 )
+
+val statusBarHeight = 58.dp
+val navBarHeight = 28.dp

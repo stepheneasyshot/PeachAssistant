@@ -42,6 +42,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.luckySentence
+import com.stephen.aiassistant.data.navBarHeight
 import com.stephen.aiassistant.platform.stopSpeaking
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
@@ -98,7 +99,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
         }
     }
 
-    Column {
+    Column(modifier = Modifier.padding(bottom = navBarHeight)) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(1f).padding(bottom = 20.dp)

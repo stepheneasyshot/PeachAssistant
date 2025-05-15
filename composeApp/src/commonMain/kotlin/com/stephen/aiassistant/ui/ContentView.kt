@@ -22,7 +22,9 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.stephen.aiassistant.data.statusBarHeight
 import com.stephen.aiassistant.ui.pages.CalorieCalculatePage
+import com.stephen.aiassistant.ui.pages.CameraPreviewPage
 import com.stephen.aiassistant.ui.pages.CopyWritingGenePage
 import com.stephen.aiassistant.ui.pages.EnglishSpeakingPage
 import com.stephen.aiassistant.ui.pages.MainCardPage
@@ -42,7 +44,7 @@ fun ContentView(
     Surface(Modifier.fillMaxSize(1f)) {
         Column(
             Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-                .padding(top = 58.dp, start = 5.dp, end = 5.dp, bottom = 28.dp)
+                .padding(top = statusBarHeight)
         ) {
             SharedTransitionLayout {
                 NavHost(
@@ -61,7 +63,10 @@ fun ContentView(
                     }
                     composable(route = PageNavKey.COPY_WRITING_GENE) {
                         CopyWritingGenePage(
-                            funcInfo = Pair(PageNavKey.COPY_WRITING_GENE, functionMap[PageNavKey.COPY_WRITING_GENE]!!),
+                            funcInfo = Pair(
+                                PageNavKey.COPY_WRITING_GENE,
+                                functionMap[PageNavKey.COPY_WRITING_GENE]!!
+                            ),
                             animatedVisibilityScope = this@composable
                         ) {
                             navController.navigate(PageNavKey.MAIN_PAGE)
@@ -69,7 +74,10 @@ fun ContentView(
                     }
                     composable(route = PageNavKey.CALORIE_CALCULATOR) {
                         CalorieCalculatePage(
-                            funcInfo = Pair(PageNavKey.CALORIE_CALCULATOR, functionMap[PageNavKey.CALORIE_CALCULATOR]!!),
+                            funcInfo = Pair(
+                                PageNavKey.CALORIE_CALCULATOR,
+                                functionMap[PageNavKey.CALORIE_CALCULATOR]!!
+                            ),
                             animatedVisibilityScope = this@composable
                         ) {
                             navController.navigate(PageNavKey.MAIN_PAGE)
@@ -77,9 +85,12 @@ fun ContentView(
                     }
                     composable(route = PageNavKey.SPEAKING_TRAINING) {
                         EnglishSpeakingPage(
-                            funcInfo = Pair(PageNavKey.SPEAKING_TRAINING, functionMap[PageNavKey.SPEAKING_TRAINING]!!),
+                            funcInfo = Pair(
+                                PageNavKey.SPEAKING_TRAINING,
+                                functionMap[PageNavKey.SPEAKING_TRAINING]!!
+                            ),
                             animatedVisibilityScope = this@composable
-                        ){
+                        ) {
                             navController.navigate(PageNavKey.MAIN_PAGE)
                         }
                     }
