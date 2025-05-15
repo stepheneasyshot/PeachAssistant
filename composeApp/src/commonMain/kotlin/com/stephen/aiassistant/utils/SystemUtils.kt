@@ -1,4 +1,4 @@
-package com.stephen.simpleweather.utils
+package com.stephen.aiassistant.utils
 
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.statusBars

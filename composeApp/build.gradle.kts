@@ -61,6 +61,8 @@ kotlin {
             implementation(libs.filekit.dialogs)
             implementation(libs.filekit.dialogs.compose)
             implementation(libs.filekit.coil)
+            // coil official
+            implementation(libs.coil.compose)
         }
 
         iosMain.dependencies {

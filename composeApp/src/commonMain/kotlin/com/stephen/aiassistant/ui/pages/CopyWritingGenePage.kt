@@ -135,7 +135,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
                     key = funcInfo.second.toString()
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).heightIn(max = 220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+            ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
         )
 
         Column(
