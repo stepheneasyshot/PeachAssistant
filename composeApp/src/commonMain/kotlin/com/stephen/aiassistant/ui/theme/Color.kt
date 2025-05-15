@@ -9,7 +9,7 @@ val networkTextColor = Color(0xff62bffc)
 
 val lightCalorieColor = Color(0xccb3b4af)
 
-val darkCalorieColor = Color(0xff1a2425)
+val darkCalorieColor = Color(0xff2c4839)
 
 val DarkColorScheme = darkColorScheme(
     // 使用最多的按钮色

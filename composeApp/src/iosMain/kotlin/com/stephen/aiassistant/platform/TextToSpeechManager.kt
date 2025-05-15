@@ -1,4 +1,4 @@
-package com.stephen.aiassistant
+package com.stephen.aiassistant.platform
 
 import io.github.aakira.napier.Napier
 import platform.AVFAudio.AVSpeechBoundary

@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
+import com.stephen.aiassistant.platform.hardware.rememberVibrationManager
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.theme.darkCalorieColor
 import com.stephen.aiassistant.ui.theme.lightCalorieColor
@@ -53,6 +54,7 @@ import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
 import io.github.vinceglb.filekit.path
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -97,7 +99,13 @@ fun SharedTransitionScope.CalorieCalculatePage(
         }
     }
 
+    val vibrationManager = rememberVibrationManager()
+
     LaunchedEffect(Unit) {
+        launch(Dispatchers.Main) {
+            val vibrateArrayPattern = longArrayOf(1100L, 60, 120, 60, 120, 60, 120, 60, 120, 60)
+            vibrationManager.vibratePattern(vibrateArrayPattern)
+        }
         fakeList.add(Triple("苹果", 200, 100))
         fakeList.add(Triple("可乐", 100, 200))
         fakeList.add(Triple("汉堡", 20, 300))
@@ -113,104 +121,103 @@ fun SharedTransitionScope.CalorieCalculatePage(
         fakeList.add(Triple("面包5", 100, 400))
     }
 
-    Column {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(1f).padding(bottom = 20.dp)
-        ) {
-            // 返回图标
-            Image(
-                painter = painterResource(Res.drawable.arrow_left),
-                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
-                contentDescription = "back",
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .size(28.dp)
-                    .clickable { onBackpressed() }
-            )
-            CenterText(
-                text = funcInfo.first,
-                style = titleSecondText,
-                modifier = Modifier.sharedElement(
-                    sharedContentState = rememberSharedContentState(
-                        key = funcInfo.first
-                    ),
-                    animatedVisibilityScope = animatedVisibilityScope
+    LazyColumn {
+        item {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.fillMaxWidth(1f).padding(bottom = 20.dp)
+            ) {
+                // 返回图标
+                Image(
+                    painter = painterResource(Res.drawable.arrow_left),
+                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                    contentDescription = "back",
+                    modifier = Modifier
+                        .padding(horizontal = 10.dp)
+                        .size(28.dp)
+                        .clickable { onBackpressed() }
                 )
-            )
-        }
-
-        Image(
-            painter = rememberLottiePainter(
-                composition = composition,
-                progress = { progress },
-            ),
-            contentScale = ContentScale.Inside,
-            contentDescription = null,
-            modifier = Modifier.sharedElement(
-                sharedContentState = rememberSharedContentState(
-                    key = funcInfo.second.toString()
-                ),
-                animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(if (isSystemInDarkTheme()) darkCalorieColor else lightCalorieColor)
-        )
-
-        Box(
-            modifier = Modifier.animateContentSize().padding(10.dp).fillMaxWidth(1f)
-                .heightIn(min = 200.dp, max = 300.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.surface).clickable {
-                    when (galleryPermissionState.value) {
-                        PermissionState.Granted -> {
-                            println("Gallery permission granted!")
-                            scope.launch {
-                                launcher.launch()
-                            }
-                        }
-
-                        PermissionState.DeniedAlways -> {
-                            println("Permission was permanently declined.")
-                            viewModel.openPermissionSettings()
-                        }
-
-                        else -> {
-                            viewModel.provideOrRequestGalleryPermission()
-                            println("Request permission")
-                        }
-                    }
-                }.padding(10.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            CenterText(
-                text = "点击上传照片",
-            )
-            imageFile.value?.let {
-                AsyncImage(
-                    model = it,
-                    contentDescription = "user choosed image",
-                    modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
-                    contentScale = ContentScale.Crop,
+                CenterText(
+                    text = funcInfo.first,
+                    style = titleSecondText,
+                    modifier = Modifier.sharedElement(
+                        sharedContentState = rememberSharedContentState(
+                            key = funcInfo.first
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    )
                 )
             }
-        }
 
-        Column(
-            modifier = Modifier
-                .animateContentSize()
-                .padding(horizontal = 10.dp)
-                .weight(1f)
-                .fillMaxWidth(1f)
-                .clip(RoundedCornerShape(10.dp))
-                .background(MaterialTheme.colorScheme.surface)
-        ) {
-            CenterText(
-                text = "食物列表", modifier = Modifier.padding(10.dp),
-                style = titleSecondText
+            Image(
+                painter = rememberLottiePainter(
+                    composition = composition,
+                    progress = { progress },
+                ),
+                contentScale = ContentScale.Inside,
+                contentDescription = null,
+                modifier = Modifier.sharedElement(
+                    sharedContentState = rememberSharedContentState(
+                        key = funcInfo.second.toString()
+                    ),
+                    animatedVisibilityScope = animatedVisibilityScope
+                ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(if (isSystemInDarkTheme()) darkCalorieColor else lightCalorieColor)
             )
-            LazyColumn {
-                items(fakeList, key = { it.first }) {
+
+            Box(
+                modifier = Modifier.animateContentSize().padding(10.dp).fillMaxWidth(1f)
+                    .heightIn(min = 200.dp, max = 300.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.surface).clickable {
+                        when (galleryPermissionState.value) {
+                            PermissionState.Granted -> {
+                                println("Gallery permission granted!")
+                                scope.launch {
+                                    launcher.launch()
+                                }
+                            }
+
+                            PermissionState.DeniedAlways -> {
+                                println("Permission was permanently declined.")
+                                viewModel.openPermissionSettings()
+                            }
+
+                            else -> {
+                                viewModel.provideOrRequestGalleryPermission()
+                                println("Request permission")
+                            }
+                        }
+                    }.padding(10.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CenterText(
+                    text = "点击上传照片",
+                )
+                imageFile.value?.let {
+                    AsyncImage(
+                        model = it,
+                        contentDescription = "user choosed image",
+                        modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+            }
+
+            Column(
+                modifier = Modifier
+                    .animateContentSize()
+                    .padding(horizontal = 10.dp)
+                    .fillMaxWidth(1f)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+            ) {
+                CenterText(
+                    text = "食物列表", modifier = Modifier.padding(10.dp),
+                    style = titleSecondText
+                )
+                fakeList.forEach {
                     FoodListItem(it.first, it.second, it.third)
                 }
             }
