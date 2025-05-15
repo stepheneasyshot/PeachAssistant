@@ -23,4 +23,10 @@
   <img src="/screenshots/pic_android_calorie.png" alt="Image 2" style="width: 45%;">
 </div>
 
-
+TODO:
+1. 集成语音转文字，完善英语聊天功能
+2. 相机页面加入存储功能
+3. 相机权限问题，授权后获取的仍然为未授权
+4. 相机拍照后的数据传输，显示到界面，传输给AI
+5. 相机页面导航，不要使用AnimateVisibility来展示，使用navigateTo，拍完照返回上一页
+6. 相机页面Ui完善，拍完照显示当前图片
