@@ -24,6 +24,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -68,7 +69,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     onBackPressed: () -> Unit = {}
 ) {
     // 食物和卡路里的对应关系
-    val fakeList = remember { mutableStateListOf<Triple<String, Int, Int>>() }
+    val foodList = viewModel.foodListStateFlow.collectAsState()
 
     // lottie测试
     val composition by rememberLottieComposition {
@@ -87,14 +88,15 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
     val scope = rememberCoroutineScope()
 
-    val imageFile: MutableState<PlatformFile?> = remember { mutableStateOf(null) }
+    val imageFileState: MutableState<PlatformFile?> = remember { mutableStateOf(null) }
 
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Image,
-    ) { image ->
-        Napier.d("Chose imageFile: ${image?.path}")
-        image?.let {
-            imageFile.value = it
+    ) { imageFile ->
+        Napier.d("Chose imageFile: ${imageFile?.path}")
+        imageFile?.let {
+            imageFileState.value = it
+            viewModel.calCalorieByAI(imageFile)
         }
     }
 
@@ -105,19 +107,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
             val vibrateArrayPattern = longArrayOf(1100L, 60, 120, 60, 120, 60, 120, 60, 120, 60)
             vibrationManager.vibratePattern(vibrateArrayPattern)
         }
-        fakeList.add(Triple("苹果", 200, 100))
-        fakeList.add(Triple("可乐", 100, 200))
-        fakeList.add(Triple("汉堡", 20, 300))
-        fakeList.add(Triple("薯条", 20, 400))
-        fakeList.add(Triple("炸鸡", 22, 400))
-        fakeList.add(Triple("玉米", 100, 100))
-        fakeList.add(Triple("白菜", 200, 100))
-        fakeList.add(Triple("鸡蛋", 30, 200))
-        fakeList.add(Triple("面包", 100, 400))
-        fakeList.add(Triple("面包2", 100, 400))
-        fakeList.add(Triple("面包34", 100, 400))
-        fakeList.add(Triple("面包4", 100, 400))
-        fakeList.add(Triple("面包5", 100, 400))
     }
 
     LazyColumn {
@@ -194,7 +183,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 CenterText(
                     text = "点击上传照片",
                 )
-                imageFile.value?.let {
+                imageFileState.value?.let {
                     AsyncImage(
                         model = it,
                         contentDescription = "user chose image",
@@ -216,8 +205,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     text = "食物列表", modifier = Modifier.padding(10.dp),
                     style = titleSecondText
                 )
-                fakeList.forEach {
-                    FoodListItem(it.first, it.second, it.third)
+                foodList.value.forEach {
+                    FoodListItem(it.name, it.weight, it.calorie)
                 }
             }
         }

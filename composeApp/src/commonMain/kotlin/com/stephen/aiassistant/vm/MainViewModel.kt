@@ -3,10 +3,13 @@ package com.stephen.aiassistant.vm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stephen.aiassistant.data.ChatRole
+import com.stephen.aiassistant.data.bean.Food
+import com.stephen.aiassistant.data.bean.FoodContent
 import com.stephen.aiassistant.data.uistate.EnglishChatState
 import com.stephen.aiassistant.data.uistate.ChatItem
 import com.stephen.aiassistant.data.uistate.ResultState
-import com.stephen.aiassistant.network.NetworkRepository
+import com.stephen.aiassistant.network.DeepseekChatRepository
+import com.stephen.aiassistant.network.DoubaoVisionRepository
 import com.stephen.aiassistant.platform.copyTextToClipBoard
 import com.stephen.aiassistant.platform.permissions.GALLERY
 import com.stephen.aiassistant.platform.permissions.RECORD_AUDIO
@@ -17,6 +20,10 @@ import com.stephen.permissions.PermissionState
 import com.stephen.permissions.PermissionsController
 import com.stephen.permissions.RequestCanceledException
 import io.github.aakira.napier.Napier
+import io.github.vinceglb.filekit.PlatformFile
+import io.github.vinceglb.filekit.name
+import io.github.vinceglb.filekit.readBytes
+import io.ktor.util.encodeBase64
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
@@ -24,9 +31,11 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.serialization.json.Json
 
 class MainViewModel(
-    private val networkRepository: NetworkRepository,
+    private val deepseekChatRepository: DeepseekChatRepository,
+    private val doubaoVisionRepository: DoubaoVisionRepository,
 ) : ViewModel() {
 
     init {
@@ -48,6 +57,9 @@ class MainViewModel(
     // ai模型对话
     private val _aiModelChatListState = MutableStateFlow(EnglishChatState())
     val aiModelChatListStateFlow = _aiModelChatListState.asStateFlow()
+
+    private val _foodListState = MutableStateFlow(mutableListOf<Food>())
+    val foodListStateFlow = _foodListState.asStateFlow()
 
     private lateinit var permissionsController: PermissionsController
     fun setPermissionController(controller: PermissionsController) {
@@ -192,7 +204,7 @@ class MainViewModel(
             runCatching {
                 val request =
                     "帮我生成一段社交软件使用的文案，主题是：$theme，风格是：$style，字数在100字左右"
-                val result = networkRepository.generateCopyWritingByAI(request)
+                val result = deepseekChatRepository.generateCopyWritingByAI(request)
                 Napier.d("chatWithAI -> result = $result")
                 _copyWritingStateFlow.update {
                     it.copy(isLoading = false, result = result.choices.first().message.content)
@@ -218,7 +230,7 @@ class MainViewModel(
         viewModelScope.launch {
             val request =
                 "帮我生成一段社交软件使用的文案，主题是：$theme，风格是：$style，字数在100字左右"
-            networkRepository.generateCopyWritingByAIWithStream(request).collect { result ->
+            deepseekChatRepository.generateCopyWritingByAIWithStream(request).collect { result ->
                 _copyWritingStateFlow.update {
                     it.copy(isLoading = false)
                 }
@@ -243,7 +255,31 @@ class MainViewModel(
     @Suppress("unused")
     fun testChat() {
         viewModelScope.launch {
-            networkRepository.testChat()
+            deepseekChatRepository.testChat()
+        }
+    }
+
+    /**
+     * 卡路里图片发送
+     */
+    fun calCalorieByAI(file: PlatformFile) {
+        Napier.i("calCalorieByAI -> fileName: ${file.name}")
+        _foodListState.update {
+            it.clear()
+            it
+        }
+        viewModelScope.launch {
+            runCatching {
+                val imagefileType = file.name.substringAfterLast(".")
+                val imageFilebase64 = file.readBytes().encodeBase64()
+                val result = doubaoVisionRepository.calCalorieByAI(
+                    imagefileType,
+                    imageFilebase64
+                ).choices.first().message.content
+                val foodList = Json.decodeFromString<FoodContent>(result)
+                Napier.i("calCalorieByAI -> result = $result")
+                _foodListState.value = foodList.foods.toMutableList()
+            }
         }
     }
 }

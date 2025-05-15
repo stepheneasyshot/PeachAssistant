@@ -1,8 +1,10 @@
 package com.stephen.aiassistant.di
 
-import com.stephen.aiassistant.network.NetworkRepository
+import com.stephen.aiassistant.network.DeepseekChatRepository
+import com.stephen.aiassistant.network.DoubaoVisionRepository
 import org.koin.dsl.module
 
 val repositoryModule = module {
-    single<NetworkRepository> { NetworkRepository(get()) }
+    single<DeepseekChatRepository> { DeepseekChatRepository(get()) }
+    single<DoubaoVisionRepository> { DoubaoVisionRepository(get()) }
 }

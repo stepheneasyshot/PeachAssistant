@@ -22,7 +22,7 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 
-class NetworkRepository(private val ktorClient: KtorClient) {
+class DeepseekChatRepository(private val ktorClient: KtorClient) {
 
     companion object {
         const val BASE_URL =
