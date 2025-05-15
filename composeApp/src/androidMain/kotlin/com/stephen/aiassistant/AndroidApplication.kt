@@ -1,6 +1,7 @@
 package com.stephen.aiassistant
 
 import android.app.Application
+import android.content.Context
 import io.github.aakira.napier.DebugAntilog
 import io.github.aakira.napier.Napier
 
@@ -21,4 +22,4 @@ class AndroidApplication : Application() {
     }
 }
 
-val appContext = AndroidApplication.instance.applicationContext
+val appContext: Context = AndroidApplication.instance.applicationContext

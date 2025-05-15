@@ -8,15 +8,13 @@ object SpeechUtils {
 
     private lateinit var textToSpeech: TextToSpeech
 
-    private const val TAG = "SpeechUtils"
-
     private const val TEST_IDENTIFIER = "test"
 
-    private const val TEST_HELLO = "Hi, How are you? I'm fine. Thank you. And you?"
+    private const val TEST_HELLO = "Hi, this is a test."
 
     private var isConnected = false
 
-    val ttsConnectedListener = TextToSpeech.OnInitListener { status ->
+    private val ttsConnectedListener = TextToSpeech.OnInitListener { status ->
         Napier.d("OnInitListener status: $status")
         isConnected = status == TextToSpeech.SUCCESS
     }
