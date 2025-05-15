@@ -17,10 +17,10 @@
   <img src="/screenshots/pic_ios_copy_writing.png" alt="Image 2" style="width: 45%;">
 </div>
 
-### 英语对话
+### 卡路里识别
 <div style="display: flex; justify-content: center;">
-  <img src="/screenshots/pic_ios_englishchat.png" alt="Image 1" style="width: 45%; margin-right: 5%;">
-  <img src="/screenshots/pic_ios_englishchat_light.png" alt="Image 2" style="width: 45%;">
+  <img src="/screenshots/pic_ios_calorie.png" alt="Image 1" style="width: 45%; margin-right: 5%;">
+  <img src="/screenshots/pic_android_calorie.png" alt="Image 2" style="width: 45%;">
 </div>
 
 
