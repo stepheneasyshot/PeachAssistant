@@ -2,6 +2,7 @@ package com.stephen.aiassistant.ui.pages
 
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.arrow_left
+import aiassistant.composeapp.generated.resources.ic_close_small
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -10,6 +11,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -26,7 +28,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -39,6 +40,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.stephen.aiassistant.platform.hardware.rememberVibrationManager
 import com.stephen.aiassistant.ui.component.CenterText
+import com.stephen.aiassistant.ui.component.CommonButton
+import com.stephen.aiassistant.ui.component.DashedRoundedRectangle
 import com.stephen.aiassistant.ui.theme.darkCalorieColor
 import com.stephen.aiassistant.ui.theme.lightCalorieColor
 import com.stephen.aiassistant.ui.theme.titleSecondText
@@ -96,7 +99,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
         Napier.d("Chose imageFile: ${imageFile?.path}")
         imageFile?.let {
             imageFileState.value = it
-            viewModel.calCalorieByAI(imageFile)
+//            viewModel.calCalorieByAI(imageFile)
         }
     }
 
@@ -156,9 +159,10 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
             Box(
                 modifier = Modifier.animateContentSize().padding(10.dp).fillMaxWidth(1f)
-                    .heightIn(min = 200.dp, max = 300.dp)
+                    .heightIn(min = 200.dp, max = 250.dp)
                     .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.surface).clickable {
+                    .background(MaterialTheme.colorScheme.surface)
+                    .clickable {
                         when (galleryPermissionState.value) {
                             PermissionState.Granted -> {
                                 println("Gallery permission granted!")
@@ -180,6 +184,10 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     }.padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
+                DashedRoundedRectangle(
+                    modifier = Modifier.size(1000.dp).padding(10.dp),
+                    color = MaterialTheme.colorScheme.onSecondary,
+                )
                 CenterText(
                     text = "点击上传照片",
                 )
@@ -189,6 +197,32 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         contentDescription = "user chose image",
                         modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
                         contentScale = ContentScale.Crop,
+                    )
+                    Image(
+                        painter = painterResource(Res.drawable.ic_close_small),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                        contentDescription = "unselect file",
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.background)
+                            .align(Alignment.TopEnd)
+                            .clickable {
+                                imageFileState.value = null
+                            }
+                    )
+                    CommonButton(
+                        text = "上传",
+                        modifier = Modifier
+                            .fillMaxWidth(0.3f)
+                            .align(Alignment.BottomCenter)
+                            .clip(RoundedCornerShape(10.dp)),
+                        onClick = {
+                            // 非空，上传照片，开始分析卡路里
+                            imageFileState.value?.let { file ->
+                                viewModel.calCalorieByAI(file)
+                            }
+                        }
                     )
                 }
             }
@@ -201,12 +235,16 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                CenterText(
-                    text = "食物列表", modifier = Modifier.padding(10.dp),
-                    style = titleSecondText
-                )
-                foodList.value.forEach {
-                    FoodListItem(it.name, it.weight, it.calorie)
+                foodList.value.apply {
+                    if (isNotEmpty()) {
+                        CenterText(
+                            text = "食物列表", modifier = Modifier.padding(10.dp),
+                            style = titleSecondText
+                        )
+                        forEach {
+                            FoodListItem(it.name, it.weight, it.calorie)
+                        }
+                    }
                 }
             }
         }
