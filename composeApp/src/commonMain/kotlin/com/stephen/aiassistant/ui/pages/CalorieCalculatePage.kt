@@ -19,7 +19,6 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
@@ -66,7 +65,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     viewModel: MainViewModel = getKoin().get(),
     funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onBackpressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {}
 ) {
     // 食物和卡路里的对应关系
     val fakeList = remember { mutableStateListOf<Triple<String, Int, Int>>() }
@@ -93,7 +92,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Image,
     ) { image ->
-        Napier.d("Image File Choosed imagefile: ${image?.path}")
+        Napier.d("Chose imageFile: ${image?.path}")
         image?.let {
             imageFile.value = it
         }
@@ -135,7 +134,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     modifier = Modifier
                         .padding(horizontal = 10.dp)
                         .size(28.dp)
-                        .clickable { onBackpressed() }
+                        .clickable { onBackPressed() }
                 )
                 CenterText(
                     text = funcInfo.first,
@@ -198,7 +197,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 imageFile.value?.let {
                     AsyncImage(
                         model = it,
-                        contentDescription = "user choosed image",
+                        contentDescription = "user chose image",
                         modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
                         contentScale = ContentScale.Crop,
                     )

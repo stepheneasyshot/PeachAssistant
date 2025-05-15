@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -65,7 +64,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
     viewModel: MainViewModel = getKoin().get(),
     funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onBackpressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {}
 ) {
     val toastState = rememberToastState()
 
@@ -112,7 +111,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
                     .size(28.dp)
-                    .clickable { onBackpressed() }
+                    .clickable { onBackPressed() }
             )
             CenterText(
                 text = funcInfo.first,

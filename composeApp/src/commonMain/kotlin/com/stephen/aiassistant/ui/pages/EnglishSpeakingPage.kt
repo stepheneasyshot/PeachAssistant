@@ -64,7 +64,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
     viewModel: MainViewModel = getKoin().get(),
     funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onBackpressed: () -> Unit = {}
+    onBackPressed: () -> Unit = {}
 ) {
     val microPermissionState = viewModel.microphonePermissionState
 
@@ -112,7 +112,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
                     .size(28.dp)
-                    .clickable { onBackpressed() }
+                    .clickable { onBackPressed() }
             )
             CenterText(
                 text = funcInfo.first,
