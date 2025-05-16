@@ -1,9 +1,10 @@
 package com.stephen.aiassistant.platform
 
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
 import platform.Foundation.NSDate
-import platform.Foundation.NSDateFormatter
 import platform.Foundation.timeIntervalSince1970
 import platform.UIKit.UIDevice
 import platform.UIKit.UIPasteboard
@@ -36,3 +37,26 @@ actual fun stopSpeaking() {
 }
 
 actual fun getSystemCurrentMills(): Long = (NSDate().timeIntervalSince1970 * 1000).toLong()
+
+@Composable
+actual fun rememberSpeechToTextLauncher(): SpeechToTextLauncher = remember {
+    IOSSpeechToTextLauncher()
+}
+
+class IOSSpeechToTextLauncher : SpeechToTextLauncher {
+    override fun launch() {
+    }
+
+    override fun waitForResult(onResult: (String) -> Unit) {
+        onResult("How are you?")
+    }
+
+    override fun stopRecognizing() {
+
+    }
+}
+
+@Composable
+actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
+
+}

@@ -293,14 +293,15 @@ class MainViewModel(
         // 在线call，等待AI模型生成回复
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
-                val result = "I'm fine. Thank you. And you?"
-                Napier.i(result)
+                val aiResult = deepseekChatRepository.englishExerciseChat(chat = text)
+                    .choices.first().message.content
+                Napier.i("englishSpeakingExercise -> aiResult = $aiResult")
                 // 回复的内容
                 _aiModelChatListState.update {
                     it.copy(
                         chatList = it.chatList + listOf(
                             ChatItem(
-                                content = result,
+                                content = aiResult,
                                 role = ChatRole.ASSISTANT
                             )
                         ),
@@ -315,7 +316,7 @@ class MainViewModel(
                     it.copy(
                         chatList = it.chatList + listOf(
                             ChatItem(
-                                content = "通信过程中出现异常",
+                                content = "Server error, please try again later.",
                                 role = ChatRole.ASSISTANT
                             )
                         ),

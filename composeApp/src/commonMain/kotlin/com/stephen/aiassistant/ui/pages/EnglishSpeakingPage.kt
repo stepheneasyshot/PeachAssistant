@@ -31,8 +31,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +39,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.ChatRole
 import com.stephen.aiassistant.data.navBarHeight
+import com.stephen.aiassistant.platform.BindActivitylauncher
+import com.stephen.aiassistant.platform.rememberSpeechToTextLauncher
 import com.stephen.aiassistant.platform.stopSpeaking
 import com.stephen.aiassistant.platform.textToSpeech
 import com.stephen.aiassistant.ui.component.CenterText
@@ -69,11 +69,19 @@ fun SharedTransitionScope.EnglishSpeakingPage(
 ) {
     val microPermissionState = viewModel.microphonePermissionState
 
-    val speechToText = remember { mutableStateOf("") }
-
     val listState = rememberLazyListState()
 
     val chatListState = viewModel.aiModelChatListStateFlow.collectAsState()
+
+    val speechToTextLauncher = rememberSpeechToTextLauncher().apply {
+        waitForResult { result ->
+            Napier.i("SpeechToText result: $result")
+            // 发送识别的文字到 AI
+            viewModel.englishSpeakingExercise(result)
+        }
+    }
+
+    BindActivitylauncher(speechToTextLauncher)
 
     LaunchedEffect(Unit) {
         delay(500L)
@@ -168,7 +176,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
                                 PermissionState.Granted -> {
                                     Napier.i("Microphone permission granted!")
                                     // 开始语音转文字
-                                    viewModel.startToProcessSpeechToText()
+                                    speechToTextLauncher.launch()
                                 }
 
                                 PermissionState.DeniedAlways -> {
@@ -184,9 +192,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
                         },
                         onUp = {
                             if (microPermissionState.value == PermissionState.Granted) {
-                                // 发送识别的文字到 AI
-                                speechToText.value = "How are you"
-                                viewModel.englishSpeakingExercise(speechToText.value)
+                                speechToTextLauncher.stopRecognizing()
                             }
                         })
                     .clip(RoundedCornerShape(10.dp))

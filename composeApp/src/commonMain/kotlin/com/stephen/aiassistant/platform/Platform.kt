@@ -1,5 +1,6 @@
 package com.stephen.aiassistant.platform
 
+import androidx.compose.runtime.Composable
 import io.ktor.client.engine.HttpClientEngineFactory
 
 interface Platform {
@@ -17,3 +18,15 @@ expect fun textToSpeech(text: String)
 expect fun stopSpeaking()
 
 expect fun getSystemCurrentMills(): Long
+
+interface SpeechToTextLauncher {
+    fun launch()
+    fun waitForResult(onResult: (String) -> Unit)
+    fun stopRecognizing()
+}
+
+@Composable
+expect fun rememberSpeechToTextLauncher(): SpeechToTextLauncher
+
+@Composable
+expect fun BindActivitylauncher(launcher: SpeechToTextLauncher)

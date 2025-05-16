@@ -4,6 +4,11 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
+import androidx.activity.ComponentActivity
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import com.stephen.aiassistant.SpeechUtils
 import com.stephen.aiassistant.appContext
 import io.ktor.client.engine.HttpClientEngineFactory
@@ -36,4 +41,18 @@ actual fun stopSpeaking() {
     SpeechUtils.stop()
 }
 
-actual fun getSystemCurrentMills():Long= System.currentTimeMillis()
+actual fun getSystemCurrentMills(): Long = System.currentTimeMillis()
+
+@Composable
+actual fun rememberSpeechToTextLauncher(): SpeechToTextLauncher =remember {
+    AndroidSpeechToTextLauncher()
+}
+
+@Composable
+actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
+    val context = LocalContext.current
+    LaunchedEffect(context) {
+        // 绑定到activity
+        (launcher as AndroidSpeechToTextLauncher).bind(context as ComponentActivity)
+    }
+}
