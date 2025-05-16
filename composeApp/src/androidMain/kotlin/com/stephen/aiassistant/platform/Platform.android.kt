@@ -35,3 +35,5 @@ actual fun textToSpeech(text: String) {
 actual fun stopSpeaking() {
     SpeechUtils.stop()
 }
+
+actual fun getSystemCurrentMills():Long= System.currentTimeMillis()

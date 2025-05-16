@@ -30,6 +30,9 @@ import com.kashif.cameraK.enums.FlashMode
 import com.kashif.cameraK.enums.ImageFormat
 import com.kashif.cameraK.result.ImageCaptureResult
 import com.kashif.cameraK.ui.CameraPreview
+import com.kashif.imagesaverplugin.ImageSaverConfig
+import com.kashif.imagesaverplugin.rememberImageSaverPlugin
+import com.stephen.aiassistant.platform.getSystemCurrentMills
 import com.stephen.aiassistant.ui.component.bounceClick
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
@@ -43,6 +46,16 @@ fun CameraPreviewPage(
 
     val cameraController = remember { mutableStateOf<CameraController?>(null) }
 
+    // Configure plugins if needed
+    val imageSaverPlugin = rememberImageSaverPlugin(
+        config = ImageSaverConfig(
+            isAutoSave = false,
+            prefix = "PeachAssistant_",
+            directory = Directory.PICTURES,
+            customFolderName = "PeachAssistant"  // Android only
+        )
+    )
+
     val scope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize(1f)) {
@@ -53,6 +66,7 @@ fun CameraPreviewPage(
                 setFlashMode(FlashMode.OFF)
                 setImageFormat(ImageFormat.JPEG)
                 setDirectory(Directory.PICTURES)
+                addPlugin(imageSaverPlugin)
             },
             onCameraControllerReady = {
                 cameraController.value = it
@@ -100,6 +114,13 @@ fun CameraPreviewPage(
                             when (val result = cameraController.value?.takePicture()) {
                                 is ImageCaptureResult.Success -> {
                                     Napier.i("Image Capture Success!")
+                                    // Manually save the image if auto-save is disabled
+                                    if (!imageSaverPlugin.config.isAutoSave) {
+                                        imageSaverPlugin.saveImage(
+                                            byteArray = result.byteArray,
+                                            imageName = "PeachAssistant_${getSystemCurrentMills()}"
+                                        )
+                                    }
                                     // Handle the captured image
                                     onShotImageBytesBack(result.byteArray)
                                 }

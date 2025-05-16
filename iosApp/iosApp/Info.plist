@@ -2,14 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string>应用需要将图片保存到您的相册</string>
     <key>NSMicrophoneUsageDescription</key>
-    <string>Microphone permission is required to record audio.</string>
+    <string>应用需要获取麦克风权限，实现语音输入</string>
     <key>NSUserNotificationUsageDescription</key>
-    <string>Notification permission is required to send you important updates.</string>
+    <string>需要通知权限以便让您及时接收最新动态</string>
     <key>NSCameraUsageDescription</key>
-    <string>Camera permission is required to take pictures</string>
+    <string>拍照识别功能需要获取相机权限</string>
     <key>NSPhotoLibraryUsageDescription</key>
-    <string>Gallery permission is required to pick images</string>
+    <string>图片上传功能需要获取相册浏览权限</string>
     <key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>

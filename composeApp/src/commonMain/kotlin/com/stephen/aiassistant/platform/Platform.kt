@@ -16,3 +16,4 @@ expect fun textToSpeech(text: String)
 
 expect fun stopSpeaking()
 
+expect fun getSystemCurrentMills(): Long

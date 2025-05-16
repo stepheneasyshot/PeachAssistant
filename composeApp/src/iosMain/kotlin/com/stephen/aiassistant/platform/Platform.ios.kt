@@ -2,6 +2,9 @@ package com.stephen.aiassistant.platform
 
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
+import platform.Foundation.NSDate
+import platform.Foundation.NSDateFormatter
+import platform.Foundation.timeIntervalSince1970
 import platform.UIKit.UIDevice
 import platform.UIKit.UIPasteboard
 
@@ -31,3 +34,5 @@ actual fun textToSpeech(text: String) {  // gives runtime error: [cataNapier] Un
 actual fun stopSpeaking() {
     textToSpeechManager.stopSpeaking()
 }
+
+actual fun getSystemCurrentMills(): Long = (NSDate().timeIntervalSince1970 * 1000).toLong()
