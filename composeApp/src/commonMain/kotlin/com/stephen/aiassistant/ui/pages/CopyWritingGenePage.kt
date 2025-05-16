@@ -141,7 +141,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
         Column(
             Modifier
                 .animateContentSize()
-                .padding(bottom = 10.dp)
+                .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
                 .fillMaxWidth(1f)
                 .clip(RoundedCornerShape(10.dp))
                 .background(MaterialTheme.colorScheme.surface)
@@ -206,6 +206,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
         Column(
             Modifier
                 .animateContentSize()
+                .padding(horizontal = 10.dp)
                 .weight(1f)
                 .fillMaxWidth(1f)
                 .clip(RoundedCornerShape(10.dp))

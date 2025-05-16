@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -80,6 +81,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     viewModel: MainViewModel = getKoin().get(),
     funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
+    onOpenCameraPreview: () -> Unit = {},
     onBackPressed: () -> Unit = {}
 ) {
     // 食物和卡路里的对应关系
@@ -103,7 +105,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val storagePermissionState = viewModel.storagePermissionState
     val writeStoragePermissionState = viewModel.writeStoragePermissionState
     val expandPicturaAddState = remember { mutableStateOf(false) }
-    val cameraPreviewState = remember { mutableStateOf(false) }
 
     val scope = rememberCoroutineScope()
 
@@ -270,7 +271,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
         enter = enterTransition, exit = exitTransition,
         modifier = Modifier.fillMaxSize(1f)
     ) {
-        CameraOrGallery(
+        CameraGallerySelectView(
             onCameraClick = {
                 expandPicturaAddState.value = false
                 // 三权合一，才可以进行下一步操作，拍照、存储、写入存储
@@ -278,7 +279,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     && storagePermissionState.value == PermissionState.Granted
                     && writeStoragePermissionState.value == PermissionState.Granted
                 ) {
-                    cameraPreviewState.value = true
+                    onOpenCameraPreview()
                 }
                 when (cameraPermissionState.value) {
                     PermissionState.Granted -> {
@@ -352,15 +353,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
             }
         )
     }
-
-    AnimatedVisibility(
-        visible = cameraPreviewState.value,
-        modifier = Modifier.fillMaxSize(1f)
-    ) {
-        CameraPreviewPage { bytes ->
-            Napier.i("Capture success!")
-        }
-    }
 }
 
 @Composable
@@ -405,57 +397,65 @@ fun FoodListItem(
  * 选择是打开图库还是拍照
  */
 @Composable
-fun CameraOrGallery(
+fun CameraGallerySelectView(
     onCameraClick: () -> Unit,
     onGalleryClick: () -> Unit,
     onDismissRequest: () -> Unit
 ) {
-    Row(
+    Box(
         modifier = Modifier.fillMaxSize(1f).clickable(
             interactionSource = remember { MutableInteractionSource() },
             indication = null,
         ) {
             onDismissRequest()
         },
-        verticalAlignment = Alignment.Bottom
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(1f)
-                .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
-                .background(MaterialTheme.colorScheme.surface)
-                .padding(vertical = 48.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Column(
-                modifier = Modifier.clickable {
-                    onCameraClick()
-                }.padding(end = 78.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+        Box(modifier = Modifier.fillMaxWidth(1f).align(Alignment.BottomCenter)) {
+            Row(
+                modifier = Modifier.align(Alignment.Center)
+                    .fillMaxWidth(1f)
+                    .clip(RoundedCornerShape(topStart = 20.dp, topEnd = 20.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(vertical = 56.dp),
+                horizontalArrangement = Arrangement.Center
             ) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_camera),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = "camera"
-                )
-                CenterText(text = "拍照")
-            }
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.clickable {
-                    onGalleryClick()
+                Column(
+                    modifier = Modifier.clickable {
+                        onCameraClick()
+                    }.padding(end = 78.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_camera),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                        modifier = Modifier.size(32.dp),
+                        contentDescription = "camera"
+                    )
+                    CenterText(text = "拍照")
                 }
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.ic_picture_album),
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
-                    modifier = Modifier.size(32.dp),
-                    contentDescription = "gallery"
-                )
-                CenterText(text = "相册")
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.clickable {
+                        onGalleryClick()
+                    }
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_picture_album),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                        modifier = Modifier.size(32.dp),
+                        contentDescription = "gallery"
+                    )
+                    CenterText(text = "相册")
+                }
             }
+            Spacer(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 10.dp)
+                    .fillMaxWidth(0.1f).height(5.dp)
+                    .clip(RoundedCornerShape(50))
+                    .background(MaterialTheme.colorScheme.onSecondary)
+            )
         }
     }
 }

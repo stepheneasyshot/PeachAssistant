@@ -1,11 +1,12 @@
 package com.stephen.aiassistant.ui.pages
 
+import aiassistant.composeapp.generated.resources.Res
+import aiassistant.composeapp.generated.resources.ic_close_small
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,6 +21,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.unit.dp
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.CameraLens
@@ -31,10 +33,12 @@ import com.kashif.cameraK.ui.CameraPreview
 import com.stephen.aiassistant.ui.component.bounceClick
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CameraPreviewPage(
-    onShotImageBytesBack: (ByteArray) -> Unit
+    onShotImageBytesBack: (ByteArray) -> Unit,
+    onCloseCameraPage: () -> Unit,
 ) {
 
     val cameraController = remember { mutableStateOf<CameraController?>(null) }
@@ -53,6 +57,22 @@ fun CameraPreviewPage(
             onCameraControllerReady = {
                 cameraController.value = it
             }
+        )
+
+        // 关闭按钮
+        Image(
+            painter = painterResource(Res.drawable.ic_close_small),
+            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background),
+            contentDescription = "exit camera page",
+            modifier = Modifier
+                .padding(10.dp)
+                .size(40.dp)
+                .clip(RoundedCornerShape(50))
+                .background(MaterialTheme.colorScheme.onPrimary)
+                .align(Alignment.TopStart)
+                .clickable {
+                    onCloseCameraPage()
+                }
         )
 
         Box(

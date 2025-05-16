@@ -23,6 +23,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.stephen.aiassistant.data.statusBarHeight
 import com.stephen.aiassistant.ui.pages.CalorieCalculatePage
+import com.stephen.aiassistant.ui.pages.CameraPreviewPage
 import com.stephen.aiassistant.ui.pages.CopyWritingGenePage
 import com.stephen.aiassistant.ui.pages.EnglishSpeakingPage
 import com.stephen.aiassistant.ui.pages.MainCardPage
@@ -76,10 +77,24 @@ fun ContentView(
                                 PageNavKey.CALORIE_CALCULATOR,
                                 functionMap[PageNavKey.CALORIE_CALCULATOR]!!
                             ),
-                            animatedVisibilityScope = this@composable
+                            animatedVisibilityScope = this@composable,
+                            onOpenCameraPreview = {
+                                navController.navigate(PageNavKey.CAMERA_PREVIEW)
+                            }
                         ) {
                             navController.navigate(PageNavKey.MAIN_PAGE)
                         }
+                    }
+                    composable(route = PageNavKey.CAMERA_PREVIEW) {
+                        CameraPreviewPage(
+                            onShotImageBytesBack = {
+                                // 拍照后返回
+                                navController.navigate(PageNavKey.CALORIE_CALCULATOR)
+                            },
+                            onCloseCameraPage = {
+                                navController.navigate(PageNavKey.CALORIE_CALCULATOR)
+                            }
+                        )
                     }
                     composable(route = PageNavKey.SPEAKING_TRAINING) {
                         EnglishSpeakingPage(
@@ -110,4 +125,6 @@ object PageNavKey {
 
     // 英语口语训练
     const val SPEAKING_TRAINING = "英语口语训练"
+
+    const val CAMERA_PREVIEW = "拍照预览"
 }
