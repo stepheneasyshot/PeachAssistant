@@ -1,13 +1,16 @@
 package com.stephen.aiassistant.ui.pages
 
 import aiassistant.composeapp.generated.resources.Res
+import aiassistant.composeapp.generated.resources.ic_check
 import aiassistant.composeapp.generated.resources.ic_close_small
+import aiassistant.composeapp.generated.resources.ic_redo
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -15,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -22,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.kashif.cameraK.controller.CameraController
 import com.kashif.cameraK.enums.CameraLens
 import com.kashif.cameraK.enums.Directory
@@ -40,7 +46,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CameraPreviewPage(
-    onShotImageBytesBack: (ByteArray) -> Unit,
+    onShotImageBytes: (ByteArray) -> Unit,
     onCloseCameraPage: () -> Unit,
 ) {
 
@@ -54,6 +60,13 @@ fun CameraPreviewPage(
             directory = Directory.PICTURES,
             customFolderName = "PeachAssistant"  // Android only
         )
+    )
+
+    val imageCaptureResult = remember { mutableStateOf<ImageCaptureResult?>(null) }
+
+    val buttonPaddinAnim by animateDpAsState(
+        if (imageCaptureResult.value != null) 200.dp else 0.dp,
+        label = "button padding anim"
     )
 
     val scope = rememberCoroutineScope()
@@ -72,6 +85,17 @@ fun CameraPreviewPage(
                 cameraController.value = it
             }
         )
+
+        if (imageCaptureResult.value != null) {
+            AsyncImage(
+                model = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
+                contentScale = ContentScale.FillWidth,
+                contentDescription = "temp photo preview",
+                modifier = Modifier
+                    .fillMaxSize(1f)
+                    .background(MaterialTheme.colorScheme.background)
+            )
+        }
 
         // 关闭按钮
         Image(
@@ -94,39 +118,58 @@ fun CameraPreviewPage(
                 .fillMaxWidth(1f)
                 .background(MaterialTheme.colorScheme.surface)
                 .padding(vertical = 30.dp),
-            contentAlignment = Alignment.Center
         ) {
             // 为 Spacer 设置圆形边框背景
-            Spacer(
-                modifier = Modifier.size(88.dp)
-                    .clip(RoundedCornerShape(50))
+            Box(
+                modifier = Modifier.align(Alignment.Center)
+                    .padding(end = buttonPaddinAnim)
+                    .size(88.dp).clip(RoundedCornerShape(50))
                     .background(MaterialTheme.colorScheme.surface)
                     .border(
                         2.dp,
                         MaterialTheme.colorScheme.onPrimary,
                         RoundedCornerShape(50)
+                    ),
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedVisibility(visible = (imageCaptureResult.value != null)) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_redo),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                        contentDescription = "retry take pic",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(50))
+                            .clickable {
+                                imageCaptureResult.value = null
+                            }
                     )
-            )
-            Spacer(
-                modifier = Modifier.size(78.dp)
+                }
+            }
+            Box(
+                modifier = Modifier.align(Alignment.Center)
+                    .padding(start = buttonPaddinAnim)
+                    .size(78.dp)
                     .bounceClick(onUp = {
                         scope.launch {
-                            when (val result = cameraController.value?.takePicture()) {
+                            imageCaptureResult.value = cameraController.value?.takePicture()
+
+                            when (imageCaptureResult.value) {
                                 is ImageCaptureResult.Success -> {
                                     Napier.i("Image Capture Success!")
                                     // Manually save the image if auto-save is disabled
                                     if (!imageSaverPlugin.config.isAutoSave) {
                                         imageSaverPlugin.saveImage(
-                                            byteArray = result.byteArray,
+                                            byteArray = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
                                             imageName = "PeachAssistant_${getSystemCurrentMills()}"
                                         )
                                     }
                                     // Handle the captured image
-                                    onShotImageBytesBack(result.byteArray)
+//                                    onShotImageBytes((imageCaptureResult.value as ImageCaptureResult.Success).byteArray)
                                 }
 
                                 is ImageCaptureResult.Error -> {
-                                    Napier.i("Image Capture Error: ${result.exception.message}")
+                                    Napier.i("Image Capture Error: ${(imageCaptureResult.value as ImageCaptureResult.Error).exception.message}")
                                 }
 
                                 null -> {
@@ -136,8 +179,23 @@ fun CameraPreviewPage(
                         }
                     })
                     .clip(RoundedCornerShape(50))
-                    .background(MaterialTheme.colorScheme.onPrimary)
-            )
+                    .background(MaterialTheme.colorScheme.onPrimary),
+                contentAlignment = Alignment.Center
+            ) {
+                AnimatedVisibility(visible = (imageCaptureResult.value != null)) {
+                    Image(
+                        painter = painterResource(Res.drawable.ic_check),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background),
+                        contentDescription = "check pic",
+                        modifier = Modifier
+                            .size(48.dp)
+                            .clip(RoundedCornerShape(50))
+                            .clickable {
+                                onShotImageBytes((imageCaptureResult.value as ImageCaptureResult.Success).byteArray)
+                            }
+                    )
+                }
+            }
         }
     }
 }
