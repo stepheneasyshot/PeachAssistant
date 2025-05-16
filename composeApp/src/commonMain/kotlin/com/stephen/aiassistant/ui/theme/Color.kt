@@ -15,19 +15,19 @@ val darkCalorieColor = Color(0xff2c4839)
 
 val DarkColorScheme = darkColorScheme(
     // 使用最多的按钮色
-    primary = Color(0xff404040),
+    primary = Color(0xff484848),
     //大背景
-    background = Color(0xFF1a1a1a),
+    background = Color(0xFF010101),
     // 功能组背景
-    surface = Color(0xff282828),
+    surface = Color(0xff303030),
     // 文字颜色
-    onPrimary = Color(0xffebebeb),
+    onPrimary = Color(0xffffffff),
     // 路径框，输入框
     secondary = Color(0xFF1a1a1a),
     // 特殊按钮颜色二
     tertiary = Color(0xff3d77c2),
     // 置灰文字，提示文字颜色
-    onSecondary = Color(0xff999999),
+    onSecondary = Color(0x4dffffff),
     // 警告按钮或错误提示
     error = Color(0xffe53c3c),
     // 背景之上的其余元素的颜色，目前只有分割线
@@ -38,12 +38,12 @@ val DarkColorScheme = darkColorScheme(
 
 val LightColorScheme = lightColorScheme(
     primary = Color(0xfffefeff),
-    background = Color(0xffe2e9f8),
-    surface = Color(0xffeff2fd),
-    onPrimary = Color(0xff2b2f35),
+    background = Color(0xfff0f0f0),
+    surface = Color(0xffffffff),
+    onPrimary = Color(0xff050505),
     secondary = Color(0xffe2e9f8),
     tertiary =Color(0xff62bffc) ,
-    onSecondary = Color(0xff9197a1),
+    onSecondary = Color(0x4d050505),
     error = Color(0xffe8563d),
     onBackground = Color(0xffe2e5f0),
     onSurface = Color(0xffd6deec),
