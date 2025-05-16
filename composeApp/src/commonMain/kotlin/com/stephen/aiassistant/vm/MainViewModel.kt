@@ -76,6 +76,9 @@ class MainViewModel(
             _microphonePermissionStateFlow.update {
                 permissionsController.getPermissionState(Permission.RECORD_AUDIO)
             }
+            _cameraPermissionStateFlow.update {
+                permissionsController.getPermissionState(Permission.CAMERA)
+            }
         }
     }
 

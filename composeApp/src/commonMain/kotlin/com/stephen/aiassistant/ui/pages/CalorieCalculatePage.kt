@@ -123,6 +123,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
             val vibrateArrayPattern = longArrayOf(1100L, 60, 120, 60, 120, 60, 120, 60, 120, 60)
             vibrationManager.vibratePattern(vibrateArrayPattern)
         }
+        Napier.d("permissionState-> galleryPermissionState: ${galleryPermissionState.value}")
+        Napier.d("permissionState-> cameraPermissionState: ${cameraPermissionState.value}")
     }
 
     LazyColumn(modifier = Modifier.padding(bottom = navBarHeight)) {
@@ -279,8 +281,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     }
 
                     else -> {
-                        viewModel.provideOrRequestCameraPermission()
                         Napier.i("Request permission")
+                        viewModel.provideOrRequestCameraPermission()
                     }
                 }
             },
