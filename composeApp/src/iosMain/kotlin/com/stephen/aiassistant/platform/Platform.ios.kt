@@ -43,19 +43,6 @@ actual fun rememberSpeechToTextLauncher(): SpeechToTextLauncher = remember {
     IOSSpeechToTextLauncher()
 }
 
-class IOSSpeechToTextLauncher : SpeechToTextLauncher {
-    override fun launch() {
-    }
-
-    override fun waitForResult(onResult: (String) -> Unit) {
-        onResult("How are you?")
-    }
-
-    override fun stopRecognizing() {
-
-    }
-}
-
 @Composable
 actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
 
