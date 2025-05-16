@@ -65,6 +65,7 @@ kotlin {
             implementation(libs.coil.compose)
             // camera
             implementation(libs.camerak)
+            implementation(libs.camerak.imagesave.plugin)
         }
 
         iosMain.dependencies {

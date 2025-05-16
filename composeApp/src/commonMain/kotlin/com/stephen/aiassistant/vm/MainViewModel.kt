@@ -14,6 +14,8 @@ import com.stephen.aiassistant.platform.copyTextToClipBoard
 import com.stephen.aiassistant.platform.permissions.CAMERA
 import com.stephen.aiassistant.platform.permissions.GALLERY
 import com.stephen.aiassistant.platform.permissions.RECORD_AUDIO
+import com.stephen.aiassistant.platform.permissions.STORAGE
+import com.stephen.aiassistant.platform.permissions.WRITE_STORAGE
 import com.stephen.permissions.DeniedAlwaysException
 import com.stephen.permissions.DeniedException
 import com.stephen.permissions.Permission
@@ -58,6 +60,11 @@ class MainViewModel(
     private val _cameraPermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
     val cameraPermissionState = _cameraPermissionStateFlow.asStateFlow()
 
+    private val _storagePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
+    val storagePermissionState = _storagePermissionStateFlow.asStateFlow()
+    private val _writeStoragePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
+    val writeStoragePermissionState = _writeStoragePermissionStateFlow.asStateFlow()
+
     // ai模型对话
     private val _aiModelChatListState = MutableStateFlow(EnglishChatState())
     val aiModelChatListStateFlow = _aiModelChatListState.asStateFlow()
@@ -78,6 +85,12 @@ class MainViewModel(
             }
             _cameraPermissionStateFlow.update {
                 permissionsController.getPermissionState(Permission.CAMERA)
+            }
+            _storagePermissionStateFlow.update {
+                permissionsController.getPermissionState(Permission.STORAGE)
+            }
+            _writeStoragePermissionStateFlow.update {
+                permissionsController.getPermissionState(Permission.WRITE_STORAGE)
             }
         }
     }
@@ -150,6 +163,54 @@ class MainViewModel(
                 }
             } catch (e: DeniedException) {
                 _cameraPermissionStateFlow.update {
+                    PermissionState.Denied
+                }
+            } catch (e: RequestCanceledException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * 存储权限
+     */
+    fun provideOrRequestStoragePermission() {
+        viewModelScope.launch {
+            try {
+                permissionsController.providePermission(Permission.STORAGE)
+                _storagePermissionStateFlow.update {
+                    PermissionState.Granted
+                }
+            } catch (e: DeniedAlwaysException) {
+                _storagePermissionStateFlow.update {
+                    PermissionState.DeniedAlways
+                }
+            } catch (e: DeniedException) {
+                _storagePermissionStateFlow.update {
+                    PermissionState.Denied
+                }
+            } catch (e: RequestCanceledException) {
+                e.printStackTrace()
+            }
+        }
+    }
+
+    /**
+     * 写入
+     */
+    fun provideOrRequestWriteStoragePermission() {
+        viewModelScope.launch {
+            try {
+                permissionsController.providePermission(Permission.WRITE_STORAGE)
+                _writeStoragePermissionStateFlow.update {
+                    PermissionState.Granted
+                }
+            } catch (e: DeniedAlwaysException) {
+                _writeStoragePermissionStateFlow.update {
+                    PermissionState.DeniedAlways
+                }
+            } catch (e: DeniedException) {
+                _writeStoragePermissionStateFlow.update {
                     PermissionState.Denied
                 }
             } catch (e: RequestCanceledException) {

@@ -100,6 +100,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
     val galleryPermissionState = viewModel.galleryPermissionState
     val cameraPermissionState = viewModel.cameraPermissionState
+    val storagePermissionState = viewModel.storagePermissionState
+    val writeStoragePermissionState = viewModel.writeStoragePermissionState
     val expandPicturaAddState = remember { mutableStateOf(false) }
     val cameraPreviewState = remember { mutableStateOf(false) }
 
@@ -125,6 +127,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
         }
         Napier.d("permissionState-> galleryPermissionState: ${galleryPermissionState.value}")
         Napier.d("permissionState-> cameraPermissionState: ${cameraPermissionState.value}")
+        Napier.d("permissionState-> storagePermissionState: ${storagePermissionState.value}")
+        Napier.d("permissionState-> writeStoragePermissionState: ${writeStoragePermissionState.value}")
     }
 
     LazyColumn(modifier = Modifier.padding(bottom = navBarHeight)) {
@@ -269,10 +273,16 @@ fun SharedTransitionScope.CalorieCalculatePage(
         CameraOrGallery(
             onCameraClick = {
                 expandPicturaAddState.value = false
+                // 三权合一，才可以进行下一步操作，拍照、存储、写入存储
+                if (cameraPermissionState.value == PermissionState.Granted
+                    && storagePermissionState.value == PermissionState.Granted
+                    && writeStoragePermissionState.value == PermissionState.Granted
+                ) {
+                    cameraPreviewState.value = true
+                }
                 when (cameraPermissionState.value) {
                     PermissionState.Granted -> {
                         Napier.i("Camera permission granted!")
-                        cameraPreviewState.value = true
                     }
 
                     PermissionState.DeniedAlways -> {
@@ -283,6 +293,36 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     else -> {
                         Napier.i("Request permission")
                         viewModel.provideOrRequestCameraPermission()
+                    }
+                }
+                when (storagePermissionState.value) {
+                    PermissionState.Granted -> {
+                        Napier.i("Storage permission granted!")
+                    }
+
+                    PermissionState.DeniedAlways -> {
+                        Napier.i("Permission was permanently declined.")
+                        viewModel.openPermissionSettings()
+                    }
+
+                    else -> {
+                        Napier.i("Request permission")
+                        viewModel.provideOrRequestStoragePermission()
+                    }
+                }
+                when (writeStoragePermissionState.value) {
+                    PermissionState.Granted -> {
+                        Napier.i("WriteStorage permission granted!")
+                    }
+
+                    PermissionState.DeniedAlways -> {
+                        Napier.i("Permission was permanently declined.")
+                        viewModel.openPermissionSettings()
+                    }
+
+                    else -> {
+                        Napier.i("Request permission")
+                        viewModel.provideOrRequestWriteStoragePermission()
                     }
                 }
             },
