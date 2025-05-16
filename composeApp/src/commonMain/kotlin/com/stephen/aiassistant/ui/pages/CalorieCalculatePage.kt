@@ -68,6 +68,7 @@ import io.github.alexzhirkevich.compottie.rememberLottiePainter
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.dialogs.FileKitType
 import io.github.vinceglb.filekit.dialogs.compose.rememberFilePickerLauncher
+import io.github.vinceglb.filekit.name
 import io.github.vinceglb.filekit.path
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -113,7 +114,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val launcher = rememberFilePickerLauncher(
         type = FileKitType.Image,
     ) { imageFile ->
-        Napier.d("Chose imageFile: ${imageFile?.path}")
+        Napier.i("Chose imageFile: name: ${imageFile?.name}, path:${imageFile?.path}")
         imageFile?.let {
             imageFileState.value = it
         }
@@ -126,10 +127,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
             val vibrateArrayPattern = longArrayOf(1100L, 60, 120, 60, 120, 60, 120, 60, 120, 60)
             vibrationManager.vibratePattern(vibrateArrayPattern)
         }
-        Napier.d("permissionState-> galleryPermissionState: ${galleryPermissionState.value}")
-        Napier.d("permissionState-> cameraPermissionState: ${cameraPermissionState.value}")
-        Napier.d("permissionState-> storagePermissionState: ${storagePermissionState.value}")
-        Napier.d("permissionState-> writeStoragePermissionState: ${writeStoragePermissionState.value}")
     }
 
     LazyColumn(modifier = Modifier.padding(bottom = navBarHeight)) {
@@ -206,12 +203,12 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     )
                     Image(
                         painter = painterResource(Res.drawable.ic_close_small),
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background),
                         contentDescription = "unselect file",
                         modifier = Modifier
                             .size(30.dp)
                             .clip(RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.background)
+                            .background(MaterialTheme.colorScheme.onPrimary)
                             .align(Alignment.TopEnd)
                             .clickable {
                                 imageFileState.value = null

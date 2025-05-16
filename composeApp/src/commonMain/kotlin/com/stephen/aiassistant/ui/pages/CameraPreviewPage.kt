@@ -46,7 +46,7 @@ import org.jetbrains.compose.resources.painterResource
 
 @Composable
 fun CameraPreviewPage(
-    onShotImageBytes: (ByteArray) -> Unit,
+    onConfirmCameraShot: () -> Unit,
     onCloseCameraPage: () -> Unit,
 ) {
 
@@ -117,16 +117,16 @@ fun CameraPreviewPage(
             modifier = Modifier.align(Alignment.BottomCenter)
                 .fillMaxWidth(1f)
                 .background(MaterialTheme.colorScheme.surface)
-                .padding(vertical = 30.dp),
+                .padding(vertical = 32.dp),
         ) {
             // 为 Spacer 设置圆形边框背景
             Box(
                 modifier = Modifier.align(Alignment.Center)
                     .padding(end = buttonPaddinAnim)
-                    .size(88.dp).clip(RoundedCornerShape(50))
+                    .size(84.dp).clip(RoundedCornerShape(50))
                     .background(MaterialTheme.colorScheme.surface)
                     .border(
-                        2.dp,
+                        4.dp,
                         MaterialTheme.colorScheme.onPrimary,
                         RoundedCornerShape(50)
                     ),
@@ -149,32 +149,32 @@ fun CameraPreviewPage(
             Box(
                 modifier = Modifier.align(Alignment.Center)
                     .padding(start = buttonPaddinAnim)
-                    .size(78.dp)
+                    .size(72.dp)
                     .bounceClick(onUp = {
                         scope.launch {
-                            imageCaptureResult.value = cameraController.value?.takePicture()
-
-                            when (imageCaptureResult.value) {
-                                is ImageCaptureResult.Success -> {
-                                    Napier.i("Image Capture Success!")
-                                    // Manually save the image if auto-save is disabled
-                                    if (!imageSaverPlugin.config.isAutoSave) {
-                                        imageSaverPlugin.saveImage(
-                                            byteArray = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
-                                            imageName = "PeachAssistant_${getSystemCurrentMills()}"
-                                        )
+                            imageCaptureResult.value?.let {
+                                when (imageCaptureResult.value) {
+                                    is ImageCaptureResult.Success -> {
+                                        Napier.i("Image Capture Success!")
+                                        if (!imageSaverPlugin.config.isAutoSave) {
+                                            imageSaverPlugin.saveImage(
+                                                byteArray = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
+                                                imageName = "PeachAssistant_${getSystemCurrentMills()}"
+                                            )
+                                        }
                                     }
-                                    // Handle the captured image
-//                                    onShotImageBytes((imageCaptureResult.value as ImageCaptureResult.Success).byteArray)
-                                }
 
-                                is ImageCaptureResult.Error -> {
-                                    Napier.i("Image Capture Error: ${(imageCaptureResult.value as ImageCaptureResult.Error).exception.message}")
-                                }
+                                    is ImageCaptureResult.Error -> {
+                                        Napier.i("Image Capture Error: ${(imageCaptureResult.value as ImageCaptureResult.Error).exception.message}")
+                                    }
 
-                                null -> {
-                                    Napier.e("CameraController is null")
+                                    null -> {
+                                        Napier.e("CameraController is null")
+                                    }
                                 }
+                                onConfirmCameraShot()
+                            } ?: run {
+                                imageCaptureResult.value = cameraController.value?.takePicture()
                             }
                         }
                     })
@@ -190,9 +190,6 @@ fun CameraPreviewPage(
                         modifier = Modifier
                             .size(48.dp)
                             .clip(RoundedCornerShape(50))
-                            .clickable {
-                                onShotImageBytes((imageCaptureResult.value as ImageCaptureResult.Success).byteArray)
-                            }
                     )
                 }
             }

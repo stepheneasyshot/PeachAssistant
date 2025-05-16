@@ -87,7 +87,7 @@ fun ContentView(
                     }
                     composable(route = PageNavKey.CAMERA_PREVIEW) {
                         CameraPreviewPage(
-                            onShotImageBytes = {
+                            onConfirmCameraShot = {
                                 // 拍照后返回
                                 navController.navigate(PageNavKey.CALORIE_CALCULATOR)
                             },
