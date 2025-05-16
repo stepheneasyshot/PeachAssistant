@@ -58,6 +58,7 @@ fun SharedTransitionScope.MainCardPage(
 
     LaunchedEffect(Unit) {
         viewModel.setPermissionController(controller)
+        viewModel.triggerRandomNetworkRequest()
     }
 
     Column(modifier = Modifier.padding(bottom = navBarHeight)) {

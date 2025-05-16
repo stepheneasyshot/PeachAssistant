@@ -95,10 +95,7 @@ class DeepseekChatRepository(private val ktorClient: KtorClient) {
             Napier.e("generateCopyWritingByAIWithStream -> error = $it")
         }
 
-    suspend fun testChat() {
-        generateCopyWritingByAIWithStream("铁观音是红茶还是绿茶").collect { result ->
-            // 处理流式结果
-            println(result)
-        }
+    suspend fun testNetwork() {
+        ktorClient.client.post("https://www.baidu.com").body<String>()
     }
 }

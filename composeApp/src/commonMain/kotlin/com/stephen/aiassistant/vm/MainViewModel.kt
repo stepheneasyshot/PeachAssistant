@@ -196,7 +196,7 @@ class MainViewModel(
     }
 
     /**
-     * 写入
+     * 写入存储权限
      */
     fun provideOrRequestWriteStoragePermission() {
         viewModelScope.launch {
@@ -215,6 +215,43 @@ class MainViewModel(
                 }
             } catch (e: RequestCanceledException) {
                 e.printStackTrace()
+            }
+        }
+    }
+
+    private val _imageTempByteArray = MutableStateFlow<ByteArray?>(null)
+    val imageTempByteArrayState = _imageTempByteArray.asStateFlow()
+
+    /**
+     * 拍照缓存ByteArray
+     */
+    fun saveTempPicture(imageByteArray: ByteArray) {
+        Napier.i("updateTempPicture")
+        _imageTempByteArray.update {
+            imageByteArray
+        }
+    }
+
+    fun clearTempPicture() {
+        Napier.i("clearTempPicture")
+        _imageTempByteArray.update {
+            null
+        }
+    }
+
+    fun calCalorieUsingTemppicture() {
+        Napier.i("calCalorieUsingTemppicture")
+        viewModelScope.launch {
+            runCatching {
+                val imagefileType = "jpg"
+                val imageFilebase64 = _imageTempByteArray.value!!.encodeBase64()
+                val result = doubaoVisionRepository.calCalorieByAI(
+                    imagefileType,
+                    imageFilebase64
+                ).choices.first().message.content
+                val foodList = Json.decodeFromString<FoodContent>(result)
+                Napier.i("calCalorieByAI -> result = $result")
+                _foodListState.value = foodList.foods.toMutableList()
             }
         }
     }
@@ -353,7 +390,7 @@ class MainViewModel(
     @Suppress("unused")
     fun testChat() {
         viewModelScope.launch {
-            deepseekChatRepository.testChat()
+            deepseekChatRepository.testNetwork()
         }
     }
 
@@ -377,6 +414,17 @@ class MainViewModel(
                 val foodList = Json.decodeFromString<FoodContent>(result)
                 Napier.i("calCalorieByAI -> result = $result")
                 _foodListState.value = foodList.foods.toMutableList()
+            }
+        }
+    }
+
+    fun triggerRandomNetworkRequest() {
+        Napier.i("triggerRandomNetworkRequest")
+        viewModelScope.launch {
+            runCatching {
+                deepseekChatRepository.testNetwork()
+            }.onFailure { e ->
+                Napier.e(e.message.toString())
             }
         }
     }

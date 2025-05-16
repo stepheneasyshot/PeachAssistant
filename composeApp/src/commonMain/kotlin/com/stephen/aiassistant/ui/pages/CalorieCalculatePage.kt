@@ -107,6 +107,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val writeStoragePermissionState = viewModel.writeStoragePermissionState
     val expandPicturaAddState = remember { mutableStateOf(false) }
 
+    val imageTempByteArrayState = viewModel.imageTempByteArrayState.collectAsState()
+
     val scope = rememberCoroutineScope()
 
     val imageFileState: MutableState<PlatformFile?> = remember { mutableStateOf(null) }
@@ -194,6 +196,37 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 CenterText(
                     text = "点击添加图片",
                 )
+                imageTempByteArrayState.value?.let {
+                    AsyncImage(
+                        model = it,
+                        contentDescription = "user chose image",
+                        modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
+                        contentScale = ContentScale.Crop,
+                    )
+                    Image(
+                        painter = painterResource(Res.drawable.ic_close_small),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background),
+                        contentDescription = "unselect file",
+                        modifier = Modifier
+                            .size(30.dp)
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.onPrimary)
+                            .align(Alignment.TopEnd)
+                            .clickable {
+                                viewModel.clearTempPicture()
+                            }
+                    )
+                    CommonButton(
+                        text = "上传",
+                        modifier = Modifier
+                            .fillMaxWidth(0.3f)
+                            .align(Alignment.BottomCenter)
+                            .clip(RoundedCornerShape(10.dp)),
+                        onClick = {
+                            viewModel.calCalorieUsingTemppicture()
+                        }
+                    )
+                }
                 imageFileState.value?.let {
                     AsyncImage(
                         model = it,

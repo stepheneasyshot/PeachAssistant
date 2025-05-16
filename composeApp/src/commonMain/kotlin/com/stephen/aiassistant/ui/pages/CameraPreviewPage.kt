@@ -40,12 +40,15 @@ import com.kashif.imagesaverplugin.ImageSaverConfig
 import com.kashif.imagesaverplugin.rememberImageSaverPlugin
 import com.stephen.aiassistant.platform.getSystemCurrentMills
 import com.stephen.aiassistant.ui.component.bounceClick
+import com.stephen.aiassistant.vm.MainViewModel
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.getKoin
 
 @Composable
 fun CameraPreviewPage(
+    viewModel: MainViewModel = getKoin().get(),
     onConfirmCameraShot: () -> Unit,
     onCloseCameraPage: () -> Unit,
 ) {
@@ -156,6 +159,7 @@ fun CameraPreviewPage(
                                 when (imageCaptureResult.value) {
                                     is ImageCaptureResult.Success -> {
                                         Napier.i("Image Capture Success!")
+                                        viewModel.saveTempPicture((imageCaptureResult.value as ImageCaptureResult.Success).byteArray)
                                         if (!imageSaverPlugin.config.isAutoSave) {
                                             imageSaverPlugin.saveImage(
                                                 byteArray = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
