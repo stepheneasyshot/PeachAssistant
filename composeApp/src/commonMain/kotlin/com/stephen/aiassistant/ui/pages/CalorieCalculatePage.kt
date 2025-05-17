@@ -18,11 +18,14 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -54,6 +57,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
@@ -90,7 +94,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
     viewModel: MainViewModel = getKoin().get(),
     funcInfo: Pair<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
-    onOpenCameraPreview: () -> Unit = {},
     onBackPressed: () -> Unit = {}
 ) {
     // 食物和卡路里的对应关系
@@ -138,6 +141,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val storagePermissionState = viewModel.storagePermissionState
     val writeStoragePermissionState = viewModel.writeStoragePermissionState
     val expandPictureAddState = remember { mutableStateOf(false) }
+    val openCameraPreviewState = remember { mutableStateOf(false) }
 
     val imageTempByteArrayState = viewModel.imageTempByteArrayState.collectAsState()
 
@@ -371,7 +375,22 @@ fun SharedTransitionScope.CalorieCalculatePage(
         }
     }
 
-// 定义从底部滑入和滑出的动画
+    AnimatedVisibility(
+        visible = openCameraPreviewState.value,
+        enter = fadeIn(),
+        exit = ExitTransition.None,
+        modifier = Modifier.fillMaxSize(1f)
+    ) {
+        CameraPreviewPage(
+            onConfirmCameraShot = {
+                openCameraPreviewState.value = false
+            },
+            onCloseCameraPage = {
+                openCameraPreviewState.value = false
+            })
+    }
+
+    // 定义从底部滑入和滑出的动画
     val enterTransition: EnterTransition = slideInVertically(
         initialOffsetY = { it },
         animationSpec = tween(durationMillis = 300)
@@ -394,7 +413,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     && storagePermissionState.value == PermissionState.Granted
                     && writeStoragePermissionState.value == PermissionState.Granted
                 ) {
-                    onOpenCameraPreview()
+                    openCameraPreviewState.value = true
                 }
                 when (cameraPermissionState.value) {
                     PermissionState.Granted -> {
@@ -525,7 +544,15 @@ fun CameraGallerySelectView(
             onDismissRequest()
         },
     ) {
-        Box(modifier = Modifier.fillMaxWidth(1f).align(Alignment.BottomCenter)) {
+        Box(
+            modifier = Modifier.fillMaxWidth(1f).align(Alignment.BottomCenter)
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null,
+                ) {
+                    Napier.d("click empty area, do nothing")
+                },
+        ) {
             Row(
                 modifier = Modifier.align(Alignment.Center)
                     .fillMaxWidth(1f)
@@ -535,9 +562,13 @@ fun CameraGallerySelectView(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Column(
-                    modifier = Modifier.clickable {
-                        onCameraClick()
-                    }.padding(end = 78.dp),
+                    modifier = Modifier.padding(end = 60.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.onSurface)
+                        .clickable {
+                            onCameraClick()
+                        }
+                        .padding(vertical = 10.dp, horizontal = 20.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
@@ -550,9 +581,11 @@ fun CameraGallerySelectView(
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clickable {
-                        onGalleryClick()
-                    }
+                    modifier = Modifier.clip(RoundedCornerShape(10.dp))
+                        .background(MaterialTheme.colorScheme.onSurface)
+                        .clickable {
+                            onGalleryClick()
+                        }.padding(vertical = 10.dp, horizontal = 20.dp),
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_picture_album),
@@ -566,8 +599,16 @@ fun CameraGallerySelectView(
             Spacer(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
+                    .fillMaxWidth(0.1f).height(15.dp)
+                    // 监听下滑事件
+                    .pointerInput(Unit) {
+                       detectDragGestures { _, dragAmount ->
+                           if(dragAmount.y > 0){
+                               onDismissRequest()
+                           }
+                       }
+                    }
                     .padding(top = 10.dp)
-                    .fillMaxWidth(0.1f).height(5.dp)
                     .clip(RoundedCornerShape(50))
                     .background(MaterialTheme.colorScheme.onSecondary)
             )

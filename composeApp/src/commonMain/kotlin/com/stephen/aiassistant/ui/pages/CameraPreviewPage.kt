@@ -94,8 +94,7 @@ fun CameraPreviewPage(
                 model = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
                 contentScale = ContentScale.FillWidth,
                 contentDescription = "temp photo preview",
-                modifier = Modifier
-                    .fillMaxSize(1f)
+                modifier = Modifier.fillMaxSize(1f)
                     .background(MaterialTheme.colorScheme.background)
             )
         }
