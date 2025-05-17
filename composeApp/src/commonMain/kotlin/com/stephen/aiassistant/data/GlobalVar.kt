@@ -34,3 +34,31 @@ val luckySentence = listOf(
 
 val statusBarHeight = 58.dp
 val navBarHeight = 28.dp
+
+object CalorieTestData {
+    val emptyResult = """
+                    {
+                        "foods": [
+                      
+                        ]
+                    }   
+                """.trimIndent()
+
+
+    val result2 = """
+                    {
+                        "foods": [
+                            {
+                                "name": "apple",
+                                "calorie": 52,
+                                "weight": 200
+                            },
+                            {
+                                "name": "banana",
+                                "calorie": 89,
+                                "weight": 100
+                            }
+                        ]
+                    }   
+                """.trimIndent()
+}

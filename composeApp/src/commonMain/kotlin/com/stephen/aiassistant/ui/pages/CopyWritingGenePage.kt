@@ -188,7 +188,6 @@ fun SharedTransitionScope.CopyWritingGenePage(
             }
 
             CommonButton(
-                text = "生成文案",
                 onClick = {
                     focusManager.clearFocus()
                     if (copyWritingState.value.isLoading) {
@@ -200,7 +199,9 @@ fun SharedTransitionScope.CopyWritingGenePage(
                     } else {
                         viewModel.generateCopyWriting(themeString, styleString)
                     }
-                })
+                }) {
+                CenterText(text = "生成文案")
+            }
         }
 
         Column(
@@ -250,14 +251,15 @@ fun SharedTransitionScope.CopyWritingGenePage(
                             )
                             Box(modifier = Modifier.fillMaxWidth(1f)) {
                                 CommonButton(
-                                    text = "复制",
                                     onClick = {
                                         toastState.show("文案复制成功，可粘贴至其他app")
                                         viewModel.copyText(copyWritingState.value.result)
                                     },
                                     modifier = Modifier.padding(bottom = 10.dp)
                                         .align(Alignment.CenterEnd)
-                                )
+                                ) {
+                                    CenterText(text = "复制")
+                                }
                             }
                         }
                     }

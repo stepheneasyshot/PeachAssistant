@@ -3,10 +3,10 @@ package com.stephen.aiassistant.vm
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stephen.aiassistant.data.ChatRole
-import com.stephen.aiassistant.data.bean.Food
 import com.stephen.aiassistant.data.bean.FoodContent
-import com.stephen.aiassistant.data.uistate.EnglishChatState
+import com.stephen.aiassistant.data.uistate.CalorieCalState
 import com.stephen.aiassistant.data.uistate.ChatItem
+import com.stephen.aiassistant.data.uistate.EnglishChatState
 import com.stephen.aiassistant.data.uistate.ResultState
 import com.stephen.aiassistant.network.DeepseekChatRepository
 import com.stephen.aiassistant.network.DoubaoVisionRepository
@@ -30,6 +30,7 @@ import io.ktor.util.encodeBase64
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -37,8 +38,8 @@ import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 
 class MainViewModel(
-    private val deepseekChatRepository: DeepseekChatRepository,
-    private val doubaoVisionRepository: DoubaoVisionRepository,
+    private val deepSeekChatRepository: DeepseekChatRepository,
+    private val douBaoVisionRepository: DoubaoVisionRepository,
 ) : ViewModel() {
 
     init {
@@ -69,10 +70,14 @@ class MainViewModel(
     private val _aiModelChatListState = MutableStateFlow(EnglishChatState())
     val aiModelChatListStateFlow = _aiModelChatListState.asStateFlow()
 
-    private val _foodListState = MutableStateFlow(mutableListOf<Food>())
+    private val _foodListState = MutableStateFlow(CalorieCalState())
     val foodListStateFlow = _foodListState.asStateFlow()
 
+    // 卡路里识别的网络请求任务，任务中断使用
+    private var calorieUploadJob: Job? = null
+
     private lateinit var permissionsController: PermissionsController
+
     fun setPermissionController(controller: PermissionsController) {
         Napier.i("setPermissionController")
         this.permissionsController = controller
@@ -239,19 +244,74 @@ class MainViewModel(
         }
     }
 
-    fun calCalorieUsingTemppicture() {
-        Napier.i("calCalorieUsingTemppicture")
-        viewModelScope.launch {
+    /**
+     * 重选图片，取消上一个上传任务，立即重置加载状态
+     */
+    fun onReselectPicture() {
+        calorieUploadJob?.cancel()
+        _foodListState.update {
+            it.copy(
+                foodList = null,
+                loading = false,
+            )
+        }
+    }
+
+    /**
+     * 卡路里图片发送
+     */
+    fun calculateCalorieByAI(
+        galleryImageFile: PlatformFile? = null,
+        isUsingCameraTemp: Boolean? = null
+    ) {
+        Napier.i("calCalorieByAI -> galleryImageFile: ${galleryImageFile?.name}, isUsingCameraTempImage: $isUsingCameraTemp")
+        _foodListState.update {
+            it.copy(
+                foodList = null,
+                loading = true,
+                errorMessage = ""
+            )
+        }
+        _foodListState.value = _foodListState.value.toUiState()
+        calorieUploadJob = viewModelScope.launch {
             runCatching {
-                val imagefileType = "jpg"
-                val imageFilebase64 = _imageTempByteArray.value!!.encodeBase64()
-                val result = doubaoVisionRepository.calCalorieByAI(
-                    imagefileType,
-                    imageFilebase64
-                ).choices.first().message.content
-                val foodList = Json.decodeFromString<FoodContent>(result)
-                Napier.i("calCalorieByAI -> result = $result")
-                _foodListState.value = foodList.foods.toMutableList()
+                var imageFileType: String
+                var imageFileBase64: String
+                var calorieResult = ""
+                galleryImageFile?.let {
+                    imageFileType = galleryImageFile.name.substringAfterLast(".")
+                    imageFileBase64 = galleryImageFile.readBytes().encodeBase64()
+                    calorieResult = douBaoVisionRepository.calCalorieByAI(
+                        imageFileType,
+                        imageFileBase64
+                    ).choices.first().message.content
+                }
+                isUsingCameraTemp?.let {
+                    imageFileType = "jpg"
+                    imageFileBase64 = imageTempByteArrayState.value!!.encodeBase64()
+                    calorieResult = douBaoVisionRepository.calCalorieByAI(
+                        imageFileType,
+                        imageFileBase64
+                    ).choices.first().message.content
+                }
+                val foodList = Json.decodeFromString<FoodContent>(calorieResult)
+                Napier.i("calCalorieByAI -> result = $calorieResult")
+                _foodListState.update {
+                    it.copy(
+                        foodList = foodList.foods,
+                        loading = false,
+                    )
+                }
+                _foodListState.value = _foodListState.value.toUiState()
+            }.onFailure { e ->
+                Napier.e(e.message.toString())
+                _foodListState.update {
+                    it.copy(
+                        foodList = null,
+                        loading = false,
+                        errorMessage = e.message.toString()
+                    )
+                }
             }
         }
     }
@@ -293,7 +353,7 @@ class MainViewModel(
         // 在线call，等待AI模型生成回复
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
-                val aiResult = deepseekChatRepository.englishExerciseChat(chat = text)
+                val aiResult = deepSeekChatRepository.englishExerciseChat(chat = text)
                     .choices.first().message.content
                 Napier.i("englishSpeakingExercise -> aiResult = $aiResult")
                 // 回复的内容
@@ -340,7 +400,7 @@ class MainViewModel(
             runCatching {
                 val request =
                     "帮我生成一段社交软件使用的文案，主题是：$theme，风格是：$style，字数在100字左右"
-                val result = deepseekChatRepository.generateCopyWritingByAI(request)
+                val result = deepSeekChatRepository.generateCopyWritingByAI(request)
                 Napier.d("chatWithAI -> result = $result")
                 _copyWritingStateFlow.update {
                     it.copy(isLoading = false, result = result.choices.first().message.content)
@@ -366,7 +426,7 @@ class MainViewModel(
         viewModelScope.launch {
             val request =
                 "帮我生成一段社交软件使用的文案，主题是：$theme，风格是：$style，字数在100字左右"
-            deepseekChatRepository.generateCopyWritingByAIWithStream(request).collect { result ->
+            deepSeekChatRepository.generateCopyWritingByAIWithStream(request).collect { result ->
                 _copyWritingStateFlow.update {
                     it.copy(isLoading = false)
                 }
@@ -391,31 +451,7 @@ class MainViewModel(
     @Suppress("unused")
     fun testChat() {
         viewModelScope.launch {
-            deepseekChatRepository.testNetwork()
-        }
-    }
-
-    /**
-     * 卡路里图片发送
-     */
-    fun calCalorieByAI(file: PlatformFile) {
-        Napier.i("calCalorieByAI -> fileName: ${file.name}")
-        _foodListState.update {
-            it.clear()
-            it
-        }
-        viewModelScope.launch {
-            runCatching {
-                val imagefileType = file.name.substringAfterLast(".")
-                val imageFilebase64 = file.readBytes().encodeBase64()
-                val result = doubaoVisionRepository.calCalorieByAI(
-                    imagefileType,
-                    imageFilebase64
-                ).choices.first().message.content
-                val foodList = Json.decodeFromString<FoodContent>(result)
-                Napier.i("calCalorieByAI -> result = $result")
-                _foodListState.value = foodList.foods.toMutableList()
-            }
+            deepSeekChatRepository.testNetwork()
         }
     }
 
@@ -423,7 +459,7 @@ class MainViewModel(
         Napier.i("triggerRandomNetworkRequest")
         viewModelScope.launch {
             runCatching {
-                deepseekChatRepository.testNetwork()
+                deepSeekChatRepository.testNetwork()
             }.onFailure { e ->
                 Napier.e(e.message.toString())
             }

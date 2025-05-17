@@ -7,23 +7,24 @@ import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.composed
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
-import com.stephen.aiassistant.ui.theme.defaultText
 
 @Composable
 fun CommonButton(
-    text: String,
     modifier: Modifier = Modifier,
     btnColor: Color = MaterialTheme.colorScheme.primary,
-    textModifier: Modifier = Modifier,
     onClick: () -> Unit,
+    content: @Composable () -> Unit,
 ) {
     Button(
         onClick = { onClick() },
@@ -33,13 +34,7 @@ fun CommonButton(
             contentColor = btnColor
         )
     ) {
-        // 禁止换行
-        Text(
-            text = text,
-            color = MaterialTheme.colorScheme.onPrimary,
-            style = defaultText,
-            modifier = textModifier,
-        )
+       content()
     }
 }
 

@@ -4,7 +4,9 @@ import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.arrow_left
 import aiassistant.composeapp.generated.resources.ic_camera
 import aiassistant.composeapp.generated.resources.ic_close_small
+import aiassistant.composeapp.generated.resources.ic_close_with_circle
 import aiassistant.composeapp.generated.resources.ic_picture_album
+import aiassistant.composeapp.generated.resources.ic_upload
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.EnterTransition
@@ -33,6 +35,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -105,7 +108,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val cameraPermissionState = viewModel.cameraPermissionState
     val storagePermissionState = viewModel.storagePermissionState
     val writeStoragePermissionState = viewModel.writeStoragePermissionState
-    val expandPicturaAddState = remember { mutableStateOf(false) }
+    val expandPictureAddState = remember { mutableStateOf(false) }
 
     val imageTempByteArrayState = viewModel.imageTempByteArrayState.collectAsState()
 
@@ -185,7 +188,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) {
-                        expandPicturaAddState.value = true
+                        expandPictureAddState.value = true
                     }.padding(10.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -196,13 +199,16 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 CenterText(
                     text = "点击添加图片",
                 )
-                imageTempByteArrayState.value?.let {
+
+                // 二者只要有一个非空，就显示上传和重选的控件
+                if (imageTempByteArrayState.value != null || imageFileState.value != null) {
                     AsyncImage(
-                        model = it,
+                        model = imageTempByteArrayState.value ?: imageFileState.value,
                         contentDescription = "user chose image",
                         modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
                         contentScale = ContentScale.Crop,
                     )
+                    // 叉号，清空重选
                     Image(
                         painter = painterResource(Res.drawable.ic_close_small),
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background),
@@ -213,53 +219,44 @@ fun SharedTransitionScope.CalorieCalculatePage(
                             .background(MaterialTheme.colorScheme.onPrimary)
                             .align(Alignment.TopEnd)
                             .clickable {
+                                // 相机拍照清除
                                 viewModel.clearTempPicture()
-                            }
-                    )
-                    CommonButton(
-                        text = "上传",
-                        modifier = Modifier
-                            .fillMaxWidth(0.3f)
-                            .align(Alignment.BottomCenter)
-                            .clip(RoundedCornerShape(10.dp)),
-                        onClick = {
-                            viewModel.calCalorieUsingTemppicture()
-                        }
-                    )
-                }
-                imageFileState.value?.let {
-                    AsyncImage(
-                        model = it,
-                        contentDescription = "user chose image",
-                        modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
-                        contentScale = ContentScale.Crop,
-                    )
-                    Image(
-                        painter = painterResource(Res.drawable.ic_close_small),
-                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.background),
-                        contentDescription = "unselect file",
-                        modifier = Modifier
-                            .size(30.dp)
-                            .clip(RoundedCornerShape(50))
-                            .background(MaterialTheme.colorScheme.onPrimary)
-                            .align(Alignment.TopEnd)
-                            .clickable {
+                                // 相册选取的清除
                                 imageFileState.value = null
+                                // 重置加载状态
+                                viewModel.onReselectPicture()
                             }
                     )
                     CommonButton(
-                        text = "上传",
                         modifier = Modifier
                             .fillMaxWidth(0.3f)
                             .align(Alignment.BottomCenter)
                             .clip(RoundedCornerShape(10.dp)),
                         onClick = {
+                            // 相机拍照临时图上传分析
+                            imageTempByteArrayState.value?.let {
+                                viewModel.calculateCalorieByAI(isUsingCameraTemp = true)
+                            }
+
                             // 非空，上传照片，开始分析卡路里
                             imageFileState.value?.let { file ->
-                                viewModel.calCalorieByAI(file)
+                                viewModel.calculateCalorieByAI(galleryImageFile = file)
                             }
                         }
-                    )
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(Res.drawable.ic_upload),
+                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                                contentDescription = "upload image",
+                                modifier = Modifier.size(20.dp)
+                            )
+                            CenterText(
+                                text = "上传",
+                                modifier = Modifier.padding(horizontal = 5.dp)
+                            )
+                        }
+                    }
                 }
             }
 
@@ -271,14 +268,51 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     .clip(RoundedCornerShape(10.dp))
                     .background(MaterialTheme.colorScheme.surface)
             ) {
-                foodList.value.apply {
-                    if (isNotEmpty()) {
-                        CenterText(
-                            text = "食物列表", modifier = Modifier.padding(10.dp),
-                            style = titleSecondText
+                // error
+                if (foodList.value.errorMessage.isNotEmpty()) {
+                    CenterText(
+                        text = foodList.value.errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        modifier = Modifier.fillMaxWidth(1f).padding(10.dp),
+                    )
+                } else if (foodList.value.loading) {
+                    // loading
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxWidth(1f).padding(10.dp)
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.padding(end = 10.dp).size(24.dp)
                         )
-                        forEach {
-                            FoodListItem(it.name, it.weight, it.calorie)
+                        CenterText(text = "正在识别食物...")
+                    }
+                } else {
+                    foodList.value.foodList?.apply {
+                        // 有结果
+                        if (isNotEmpty()) {
+                            CenterText(
+                                text = "食物列表", modifier = Modifier.padding(10.dp),
+                                style = titleSecondText
+                            )
+                            forEach {
+                                FoodListItem(it.name, it.weight, it.calorie)
+                            }
+                        } else {
+                            // 没有结果，未识别到食物
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxWidth(1f).padding(10.dp)
+                            ) {
+                                Image(
+                                    painter = painterResource(Res.drawable.ic_close_with_circle),
+                                    contentDescription = "no food",
+                                    modifier = Modifier.padding(end = 10.dp).size(24.dp),
+                                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.error)
+                                )
+                                CenterText(text = "图中未识别到食物")
+                            }
                         }
                     }
                 }
@@ -297,13 +331,13 @@ fun SharedTransitionScope.CalorieCalculatePage(
     )
 
     AnimatedVisibility(
-        visible = expandPicturaAddState.value,
+        visible = expandPictureAddState.value,
         enter = enterTransition, exit = exitTransition,
         modifier = Modifier.fillMaxSize(1f)
     ) {
         CameraGallerySelectView(
             onCameraClick = {
-                expandPicturaAddState.value = false
+                expandPictureAddState.value = false
                 // 三权合一，才可以进行下一步操作，拍照、存储、写入存储
                 if (cameraPermissionState.value == PermissionState.Granted
                     && storagePermissionState.value == PermissionState.Granted
@@ -358,7 +392,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 }
             },
             onGalleryClick = {
-                expandPicturaAddState.value = false
+                expandPictureAddState.value = false
                 when (galleryPermissionState.value) {
                     PermissionState.Granted -> {
                         Napier.i("Gallery permission granted!")
@@ -379,7 +413,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 }
             },
             onDismissRequest = {
-                expandPicturaAddState.value = false
+                expandPictureAddState.value = false
             }
         )
     }
