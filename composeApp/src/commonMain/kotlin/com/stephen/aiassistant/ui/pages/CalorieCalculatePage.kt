@@ -2,6 +2,7 @@ package com.stephen.aiassistant.ui.pages
 
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.arrow_left
+import aiassistant.composeapp.generated.resources.bg_calorie_cal
 import aiassistant.composeapp.generated.resources.ic_camera
 import aiassistant.composeapp.generated.resources.ic_close_small
 import aiassistant.composeapp.generated.resources.ic_close_with_circle
@@ -13,7 +14,9 @@ import androidx.compose.animation.EnterTransition
 import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
@@ -37,6 +40,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -48,6 +52,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
@@ -57,6 +62,7 @@ import com.stephen.aiassistant.platform.hardware.rememberVibrationManager
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.DashedRoundedRectangle
+import com.stephen.aiassistant.ui.theme.CooperFontFamily
 import com.stephen.aiassistant.ui.theme.darkCalorieColor
 import com.stephen.aiassistant.ui.theme.lightCalorieColor
 import com.stephen.aiassistant.ui.theme.titleSecondText
@@ -100,9 +106,33 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
     val progress by animateLottieCompositionAsState(
         composition,
-        iterations = Compottie.IterateForever,
+        iterations = 1,
         speed = 0.7f
     )
+
+    val startTransitionAnim = remember { mutableStateOf(false) }
+    val dishJsonBgColorAlphaAnim =
+        animateColorAsState(
+            targetValue = if (startTransitionAnim.value) {
+                if (isSystemInDarkTheme()) darkCalorieColor else lightCalorieColor
+            } else Color.Transparent,
+            animationSpec = tween(2000)
+        )
+    val dishJsonPaddingAnim =
+        animateDpAsState(
+            targetValue = if (startTransitionAnim.value) 160.dp else 0.dp,
+            animationSpec = tween(2000)
+        )
+
+    val vibrationManager = rememberVibrationManager()
+
+    LaunchedEffect(Unit) {
+        startTransitionAnim.value = true
+        launch(Dispatchers.Main) {
+            val vibrateArrayPattern = longArrayOf(1100L, 60, 120, 60, 120, 60, 120, 60, 120, 60)
+            vibrationManager.vibratePattern(vibrateArrayPattern)
+        }
+    }
 
     val galleryPermissionState = viewModel.galleryPermissionState
     val cameraPermissionState = viewModel.cameraPermissionState
@@ -122,15 +152,6 @@ fun SharedTransitionScope.CalorieCalculatePage(
         Napier.i("Chose imageFile: name: ${imageFile?.name}, path:${imageFile?.path}")
         imageFile?.let {
             imageFileState.value = it
-        }
-    }
-
-    val vibrationManager = rememberVibrationManager()
-
-    LaunchedEffect(Unit) {
-        launch(Dispatchers.Main) {
-            val vibrateArrayPattern = longArrayOf(1100L, 60, 120, 60, 120, 60, 120, 60, 120, 60)
-            vibrationManager.vibratePattern(vibrateArrayPattern)
         }
     }
 
@@ -162,22 +183,53 @@ fun SharedTransitionScope.CalorieCalculatePage(
                 )
             }
 
-            Image(
-                painter = rememberLottiePainter(
-                    composition = composition,
-                    progress = { progress },
-                ),
-                contentScale = ContentScale.Inside,
-                contentDescription = null,
-                modifier = Modifier.sharedElement(
-                    sharedContentState = rememberSharedContentState(
-                        key = funcInfo.second.toString()
-                    ),
-                    animatedVisibilityScope = animatedVisibilityScope
-                ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(if (isSystemInDarkTheme()) darkCalorieColor else lightCalorieColor)
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth(1f).height(140.dp)
+                    .padding(10.dp).clip(RoundedCornerShape(10.dp)),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.bg_calorie_cal),
+                    contentScale = ContentScale.FillWidth,
+                    contentDescription = null,
+                    modifier = Modifier.sharedElement(
+                        sharedContentState = rememberSharedContentState(
+                            key = funcInfo.second.toString()
+                        ),
+                        animatedVisibilityScope = animatedVisibilityScope
+                    ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                )
+                Box(
+                    modifier = Modifier.fillParentMaxSize(1f)
+                        .background(dishJsonBgColorAlphaAnim.value),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = rememberLottiePainter(
+                            composition = composition,
+                            progress = { progress },
+                        ),
+                        contentScale = ContentScale.Fit,
+                        contentDescription = "json animation",
+                        modifier = Modifier
+                            .padding(end = dishJsonPaddingAnim.value)
+                            .size(120.dp)
+                    )
+
+                    AnimatedVisibility(
+                        visible = startTransitionAnim.value
+                    ) {
+                        Text(
+                            text = "Calorie\nCalculator",
+                            style = titleSecondText,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontFamily = CooperFontFamily(),
+                            modifier = Modifier.padding(start = dishJsonPaddingAnim.value)
+                        )
+                    }
+                }
+            }
 
             Box(
                 modifier = Modifier.animateContentSize().padding(10.dp).fillMaxWidth(1f)
@@ -320,7 +372,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
         }
     }
 
-    // 定义从底部滑入和滑出的动画
+// 定义从底部滑入和滑出的动画
     val enterTransition: EnterTransition = slideInVertically(
         initialOffsetY = { it },
         animationSpec = tween(durationMillis = 300)

@@ -2,7 +2,6 @@ package com.stephen.aiassistant.ui.pages
 
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.ic_peach
-import aiassistant.composeapp.generated.resources.ic_voice_message
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
