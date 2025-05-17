@@ -69,7 +69,6 @@ import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
 import com.stephen.permissions.PermissionState
 import io.github.aakira.napier.Napier
-import io.github.alexzhirkevich.compottie.Compottie
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
 import io.github.alexzhirkevich.compottie.animateLottieCompositionAsState
 import io.github.alexzhirkevich.compottie.rememberLottieComposition
@@ -184,8 +183,8 @@ fun SharedTransitionScope.CalorieCalculatePage(
             }
 
             Box(
-                modifier = Modifier.fillMaxWidth(1f).height(140.dp)
-                    .padding(10.dp).clip(RoundedCornerShape(10.dp)),
+                modifier = Modifier.padding(10.dp).fillMaxWidth(1f).height(140.dp)
+                    .clip(RoundedCornerShape(10.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -197,7 +196,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                             key = funcInfo.second.toString()
                         ),
                         animatedVisibilityScope = animatedVisibilityScope
-                    ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp)
+                    ).fillMaxWidth(1f).heightIn(max = 140.dp)
                         .clip(RoundedCornerShape(10.dp))
                 )
                 Box(
