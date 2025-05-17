@@ -25,7 +25,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
-import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
@@ -63,9 +62,11 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.stephen.aiassistant.data.navBarHeight
 import com.stephen.aiassistant.platform.hardware.rememberVibrationManager
+import com.stephen.aiassistant.ui.component.BlueAreaScanEffect
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.DashedRoundedRectangle
+import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.CooperFontFamily
 import com.stephen.aiassistant.ui.theme.darkCalorieColor
 import com.stephen.aiassistant.ui.theme.lightCalorieColor
@@ -96,8 +97,11 @@ fun SharedTransitionScope.CalorieCalculatePage(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBackPressed: () -> Unit = {}
 ) {
+
+    val toastState = rememberToastState()
+
     // 食物和卡路里的对应关系
-    val foodList = viewModel.foodListStateFlow.collectAsState()
+    val foodListState = viewModel.foodListStateFlow.collectAsState()
 
     // lottie测试
     val composition by rememberLottieComposition {
@@ -263,6 +267,9 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
                         contentScale = ContentScale.Crop,
                     )
+                    if (foodListState.value.loading) {
+                        BlueAreaScanEffect(modifier = Modifier.fillParentMaxSize(1f))
+                    }
                     // 叉号，清空重选
                     Image(
                         painter = painterResource(Res.drawable.ic_close_small),
@@ -284,18 +291,22 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     )
                     CommonButton(
                         modifier = Modifier
-                            .fillMaxWidth(0.3f)
-                            .align(Alignment.BottomCenter)
-                            .clip(RoundedCornerShape(10.dp)),
+                            .align(Alignment.Center)
+                            .clip(RoundedCornerShape(10.dp))
+                            .padding(horizontal = 10.dp),
                         onClick = {
-                            // 相机拍照临时图上传分析
-                            imageTempByteArrayState.value?.let {
-                                viewModel.calculateCalorieByAI(isUsingCameraTemp = true)
-                            }
+                            if (foodListState.value.loading) {
+                                toastState.show("正在识别食物，请稍后再试...")
+                            } else {
+                                // 相机拍照临时图上传分析
+                                imageTempByteArrayState.value?.let {
+                                    viewModel.calculateCalorieByAI(isUsingCameraTemp = true)
+                                }
 
-                            // 非空，上传照片，开始分析卡路里
-                            imageFileState.value?.let { file ->
-                                viewModel.calculateCalorieByAI(galleryImageFile = file)
+                                // 非空，上传照片，开始分析卡路里
+                                imageFileState.value?.let { file ->
+                                    viewModel.calculateCalorieByAI(galleryImageFile = file)
+                                }
                             }
                         }
                     ) {
@@ -324,13 +335,13 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     .background(MaterialTheme.colorScheme.surface)
             ) {
                 // error
-                if (foodList.value.errorMessage.isNotEmpty()) {
+                if (foodListState.value.errorMessage.isNotEmpty()) {
                     CenterText(
-                        text = foodList.value.errorMessage,
+                        text = foodListState.value.errorMessage,
                         color = MaterialTheme.colorScheme.error,
                         modifier = Modifier.fillMaxWidth(1f).padding(10.dp),
                     )
-                } else if (foodList.value.loading) {
+                } else if (foodListState.value.loading) {
                     // loading
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
@@ -343,7 +354,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         CenterText(text = "正在识别食物...")
                     }
                 } else {
-                    foodList.value.foodList?.apply {
+                    foodListState.value.foodList?.apply {
                         // 有结果
                         if (isNotEmpty()) {
                             CenterText(
@@ -602,11 +613,11 @@ fun CameraGallerySelectView(
                     .fillMaxWidth(0.1f).height(15.dp)
                     // 监听下滑事件
                     .pointerInput(Unit) {
-                       detectDragGestures { _, dragAmount ->
-                           if(dragAmount.y > 0){
-                               onDismissRequest()
-                           }
-                       }
+                        detectDragGestures { _, dragAmount ->
+                            if (dragAmount.y > 0) {
+                                onDismissRequest()
+                            }
+                        }
                     }
                     .padding(top = 10.dp)
                     .clip(RoundedCornerShape(50))

@@ -7,6 +7,8 @@ import androidx.compose.ui.graphics.Color
 // 网络链接颜色
 val networkTextColor = Color(0xff62bffc)
 
+val scanEffectColor = Color(0xff7abdf7)
+
 val peachIconColor = Color(0xffd7718d)
 
 val lightCalorieColor = Color(0xffb3b4af)
