@@ -91,14 +91,34 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+    signingConfigs {
+        val aaosSign = "stephen"
+        register("aaos") {
+            keyAlias = aaosSign
+            keyPassword = aaosSign
+            storeFile = file("./keystores/platform.jks")
+            storePassword = aaosSign
+        }
+    }
     buildTypes {
-        getByName("release") {
-            isMinifyEnabled = false
+        buildTypes {
+            getByName("release") {
+                signingConfig = signingConfigs.getByName("aaos")
+                isMinifyEnabled = false
+            }
         }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+    }
+    val appName = "PeachAssistant"
+    android.applicationVariants.configureEach {
+        outputs.all {
+            if (this is com.android.build.gradle.internal.api.ApkVariantOutputImpl) {
+                this.outputFileName = "${appName}_V${defaultConfig.versionName}.apk"
+            }
+        }
     }
 }
 

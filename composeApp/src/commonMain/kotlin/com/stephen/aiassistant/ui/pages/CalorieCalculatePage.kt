@@ -268,7 +268,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         contentScale = ContentScale.Crop,
                     )
                     if (foodListState.value.loading) {
-                        BlueAreaScanEffect(modifier = Modifier.fillParentMaxSize(1f))
+                        BlueAreaScanEffect(modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)))
                     }
                     // 叉号，清空重选
                     Image(

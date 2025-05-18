@@ -40,7 +40,7 @@ fun BlueAreaScanEffect(
         contentAlignment = Alignment.Center
     ) {
         Canvas(
-            modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(10.dp))
+            modifier = Modifier.fillMaxSize()
         ) {
             val canvasWidth = size.width
             val scanAreaWidth = canvasWidth * 0.2f // 扫描区域宽度为画布宽度的 30%
