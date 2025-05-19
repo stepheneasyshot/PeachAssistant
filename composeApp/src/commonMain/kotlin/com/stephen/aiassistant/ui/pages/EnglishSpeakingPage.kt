@@ -45,6 +45,7 @@ import com.stephen.aiassistant.platform.stopSpeaking
 import com.stephen.aiassistant.platform.textToSpeech
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.bounceClick
+import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.defaultText
 import com.stephen.aiassistant.ui.theme.infoText
 import com.stephen.aiassistant.ui.theme.titleSecondText
@@ -68,6 +69,8 @@ fun SharedTransitionScope.EnglishSpeakingPage(
     onBackPressed: () -> Unit = {}
 ) {
     val microPermissionState = viewModel.microphonePermissionState
+
+    val toastState = rememberToastState()
 
     val listState = rememberLazyListState()
 
@@ -176,7 +179,11 @@ fun SharedTransitionScope.EnglishSpeakingPage(
                                 PermissionState.Granted -> {
                                     Napier.i("Microphone permission granted!")
                                     // 开始语音转文字
-                                    speechToTextLauncher.launch()
+                                    runCatching {
+                                        speechToTextLauncher.launch()
+                                    }.onFailure {
+                                        toastState.show("当前设备不支持原生语音识别")
+                                    }
                                 }
 
                                 PermissionState.DeniedAlways -> {

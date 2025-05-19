@@ -1,24 +1,43 @@
 package com.stephen.aiassistant.ui.component
 
-import androidx.compose.animation.*
+import aiassistant.composeapp.generated.resources.Res
+import aiassistant.composeapp.generated.resources.ic_app
+import aiassistant.composeapp.generated.resources.ic_peach
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Text
-import androidx.compose.runtime.*
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntRect
+import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.LayoutDirection
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
+import com.stephen.aiassistant.ui.theme.peachIconColor
 import kotlinx.coroutines.delay
+import org.jetbrains.compose.resources.painterResource
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
@@ -64,8 +83,8 @@ fun WeToast(
             ): IntOffset {
                 // 计算 x 坐标，使提示框水平居中
                 val x = windowSize.width / 2 - popupContentSize.width / 2
-                // 计算 y 坐标，使提示框位于屏幕底部
-                val y = windowSize.height - popupContentSize.height
+                // 顶部上半屏显示
+                val y = windowSize.height / 8
                 return IntOffset(x, y)
             }
         }
@@ -73,7 +92,7 @@ fun WeToast(
     if (visible || localVisible) {
         Popup(popupPositionProvider = positionProvider) {
             Box(
-                modifier = Modifier.width(400.dp).heightIn(44.dp).clip(RoundedCornerShape(50)),
+                modifier = Modifier.clip(RoundedCornerShape(50)),
                 contentAlignment = Alignment.TopCenter
             ) {
                 AnimatedVisibility(
@@ -82,17 +101,23 @@ fun WeToast(
                     exit = fadeOut() + scaleOut(tween(100), targetScale = 0.8f)
                 ) {
                     Box(
-                        modifier = Modifier.width(400.dp).heightIn(44.dp).clip(RoundedCornerShape(50))
-                            .background(Color(0xCC4C4C4C)),
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(50))
+                            .background(MaterialTheme.colorScheme.onSurface)
+                            .padding(horizontal = 12.dp, vertical = 6.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text(
-                            text = title,
-                            color = Color.White,
-                            fontSize = 16.sp,
-                            modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp),
-                            textAlign = TextAlign.Center
-                        )
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Image(
+                                painter = painterResource(Res.drawable.ic_peach),
+                                colorFilter = ColorFilter.tint(peachIconColor),
+                                contentDescription = "toast icon",
+                                modifier = Modifier
+                                   .size(20.dp)
+                                   .padding(end = 4.dp)
+                            )
+                            CenterText(text = title)
+                        }
                     }
                 }
             }
