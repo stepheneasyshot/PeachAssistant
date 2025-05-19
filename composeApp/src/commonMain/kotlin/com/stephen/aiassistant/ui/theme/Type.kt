@@ -28,6 +28,12 @@ val titleSecondText = TextStyle(
     textAlign = TextAlign.Left,
 )
 
+val titleThirdText = TextStyle(
+    fontSize = 18.sp,
+    fontWeight = FontWeight.Normal,
+    textAlign = TextAlign.Left,
+)
+
 val infoText = TextStyle(
     fontSize = 14.sp,
     fontWeight = FontWeight.Normal,

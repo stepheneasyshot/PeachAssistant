@@ -13,6 +13,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -29,6 +30,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.stephen.aiassistant.data.ThemeState
 import com.stephen.aiassistant.data.statusBarHeight
 import com.stephen.aiassistant.platform.permissions.BindEffect
 import com.stephen.aiassistant.platform.permissions.rememberPermissionsControllerFactory
@@ -38,6 +40,8 @@ import com.stephen.aiassistant.ui.pages.EnglishSpeakingPage
 import com.stephen.aiassistant.ui.pages.MainCardPage
 import com.stephen.aiassistant.ui.pages.PersonalCenterPage
 import com.stephen.aiassistant.ui.pages.SideSettingsView
+import com.stephen.aiassistant.ui.theme.DarkColorScheme
+import com.stephen.aiassistant.ui.theme.LightColorScheme
 import com.stephen.aiassistant.vm.MainViewModel
 import io.github.aakira.napier.Napier
 import org.koin.compose.getKoin
@@ -65,107 +69,118 @@ fun ContentView(
     }
     BindEffect(controller)
 
+    val themeState = viewModel.themeState.collectAsState()
+
     LaunchedEffect(Unit) {
         viewModel.setPermissionController(controller)
         viewModel.triggerRandomNetworkRequest()
+        viewModel.updateLocalThemeState()
     }
 
-    Surface(Modifier.fillMaxSize(1f)) {
-        Column(
-            Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
-                .padding(top = statusBarHeight)
-        ) {
-            SharedTransitionLayout {
-                NavHost(
-                    navController, startDestination = PageNavKey.MAIN_PAGE,
-                    enterTransition = {
-                        fadeIn()
-                    },
-                    exitTransition = {
-                        fadeOut()
-                    }
-                ) {
-                    composable(route = PageNavKey.MAIN_PAGE) {
-                        MainCardPage(
-                            functionMap, animatedVisibilityScope = this@composable,
-                            onClickMenuButton = {
-                                viewModel.setSettingsViewOpenState(true)
-                            }) {
-                            navController.navigate(it)
+    MaterialTheme(
+        colorScheme = when (themeState.value) {
+            ThemeState.DARK -> DarkColorScheme
+            ThemeState.LIGHT -> LightColorScheme
+            else -> if (isSystemInDarkTheme()) DarkColorScheme else LightColorScheme
+        }
+    ) {
+        Surface(Modifier.fillMaxSize(1f)) {
+            Column(
+                Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.background)
+                    .padding(top = statusBarHeight)
+            ) {
+                SharedTransitionLayout {
+                    NavHost(
+                        navController, startDestination = PageNavKey.MAIN_PAGE,
+                        enterTransition = {
+                            fadeIn()
+                        },
+                        exitTransition = {
+                            fadeOut()
                         }
-                    }
-                    composable(route = PageNavKey.COPY_WRITING_GENE) {
-                        CopyWritingGenePage(
-                            funcInfo = Pair(
-                                PageNavKey.COPY_WRITING_GENE,
-                                functionMap[PageNavKey.COPY_WRITING_GENE]!!
-                            ),
-                            animatedVisibilityScope = this@composable
-                        ) {
-                            navController.navigate(PageNavKey.MAIN_PAGE)
+                    ) {
+                        composable(route = PageNavKey.MAIN_PAGE) {
+                            MainCardPage(
+                                functionMap, animatedVisibilityScope = this@composable,
+                                onClickMenuButton = {
+                                    viewModel.setSettingsViewOpenState(true)
+                                }) {
+                                navController.navigate(it)
+                            }
                         }
-                    }
-                    composable(route = PageNavKey.CALORIE_CALCULATOR) {
-                        CalorieCalculatePage(
-                            funcInfo = Pair(
-                                PageNavKey.CALORIE_CALCULATOR,
-                                functionMap[PageNavKey.CALORIE_CALCULATOR]!!
-                            ),
-                            animatedVisibilityScope = this@composable,
-                        ) {
-                            navController.navigate(PageNavKey.MAIN_PAGE)
-                        }
-                    }
-                    composable(route = PageNavKey.SPEAKING_TRAINING) {
-                        EnglishSpeakingPage(
-                            funcInfo = Pair(
-                                PageNavKey.SPEAKING_TRAINING,
-                                functionMap[PageNavKey.SPEAKING_TRAINING]!!
-                            ),
-                            animatedVisibilityScope = this@composable
-                        ) {
-                            navController.navigate(PageNavKey.MAIN_PAGE)
-                        }
-                    }
-                    composable(route = PageNavKey.PERSONAL_CENTER) {
-                        PersonalCenterPage(
-                            animatedVisibilityScope = this@composable,
-                            onBackPressed = {
+                        composable(route = PageNavKey.COPY_WRITING_GENE) {
+                            CopyWritingGenePage(
+                                funcInfo = Pair(
+                                    PageNavKey.COPY_WRITING_GENE,
+                                    functionMap[PageNavKey.COPY_WRITING_GENE]!!
+                                ),
+                                animatedVisibilityScope = this@composable
+                            ) {
                                 navController.navigate(PageNavKey.MAIN_PAGE)
                             }
-                        )
+                        }
+                        composable(route = PageNavKey.CALORIE_CALCULATOR) {
+                            CalorieCalculatePage(
+                                funcInfo = Pair(
+                                    PageNavKey.CALORIE_CALCULATOR,
+                                    functionMap[PageNavKey.CALORIE_CALCULATOR]!!
+                                ),
+                                animatedVisibilityScope = this@composable,
+                            ) {
+                                navController.navigate(PageNavKey.MAIN_PAGE)
+                            }
+                        }
+                        composable(route = PageNavKey.SPEAKING_TRAINING) {
+                            EnglishSpeakingPage(
+                                funcInfo = Pair(
+                                    PageNavKey.SPEAKING_TRAINING,
+                                    functionMap[PageNavKey.SPEAKING_TRAINING]!!
+                                ),
+                                animatedVisibilityScope = this@composable
+                            ) {
+                                navController.navigate(PageNavKey.MAIN_PAGE)
+                            }
+                        }
+                        composable(route = PageNavKey.PERSONAL_CENTER) {
+                            PersonalCenterPage(
+                                animatedVisibilityScope = this@composable,
+                                onBackPressed = {
+                                    navController.navigate(PageNavKey.MAIN_PAGE)
+                                }
+                            )
+                        }
                     }
                 }
             }
-        }
 
-        AnimatedVisibility(
-            visible = openSideSettingsViewState.value,
-            enter = fadeIn(
-                animationSpec = tween(500)
-            ),
-            exit = fadeOut(
-                animationSpec = tween(500)
-            ),
-        ) {
-            Spacer(
-                modifier = Modifier.fillMaxSize(1f)
-                    .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
-            )
-        }
-        AnimatedVisibility(
-            visible = openSideSettingsViewState.value,
-            enter = fadeIn() + slideInHorizontally(),
-            exit = fadeOut() + slideOutHorizontally(),
-        ) {
-            SideSettingsView(
-                modifier = Modifier.fillMaxSize(1f),
-                onClickPersonalSettings = {
+            AnimatedVisibility(
+                visible = openSideSettingsViewState.value,
+                enter = fadeIn(
+                    animationSpec = tween(500)
+                ),
+                exit = fadeOut(
+                    animationSpec = tween(500)
+                ),
+            ) {
+                Spacer(
+                    modifier = Modifier.fillMaxSize(1f)
+                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
+                )
+            }
+            AnimatedVisibility(
+                visible = openSideSettingsViewState.value,
+                enter = fadeIn() + slideInHorizontally(),
+                exit = fadeOut() + slideOutHorizontally(),
+            ) {
+                SideSettingsView(
+                    modifier = Modifier.fillMaxSize(1f),
+                    onClickPersonalSettings = {
+                        viewModel.setSettingsViewOpenState(false)
+                        navController.navigate(PageNavKey.PERSONAL_CENTER)
+                    }) {
+                    Napier.i("dismiss settings view")
                     viewModel.setSettingsViewOpenState(false)
-                    navController.navigate(PageNavKey.PERSONAL_CENTER)
-                }) {
-                Napier.i("dismiss settings view")
-                viewModel.setSettingsViewOpenState(false)
+                }
             }
         }
     }

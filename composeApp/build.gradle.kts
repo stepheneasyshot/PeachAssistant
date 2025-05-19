@@ -66,6 +66,8 @@ kotlin {
             // camera
             implementation(libs.camerak)
             implementation(libs.camerak.imagesave.plugin)
+            implementation(libs.datastore)
+            implementation(libs.datastore.preferences)
         }
 
         iosMain.dependencies {

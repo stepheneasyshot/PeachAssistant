@@ -11,9 +11,13 @@ val scanEffectColor = Color(0xff7abdf7)
 
 val peachIconColor = Color(0xffd7718d)
 
-val lightCalorieColor = Color(0xffb3b4af)
+val lightCalorieCardBgColor = Color(0xffb3b4af)
 
-val darkCalorieColor = Color(0xff2c4839)
+val darkCalorieCardBgColor = Color(0xff2c4839)
+
+val greenColor = Color(0xff7ace6d)
+val blueColor = Color(0xff3866f6)
+val orangeColor = Color(0xffeb9a44)
 
 val DarkColorScheme = darkColorScheme(
     // 使用最多的按钮色
@@ -44,7 +48,7 @@ val LightColorScheme = lightColorScheme(
     surface = Color(0xffffffff),
     onPrimary = Color(0xff050505),
     secondary = Color(0xffe2e9f8),
-    tertiary =Color(0xff62bffc) ,
+    tertiary = Color(0xff62bffc),
     onSecondary = Color(0x4d050505),
     error = Color(0xffe8563d),
     onBackground = Color(0xffe2e5f0),

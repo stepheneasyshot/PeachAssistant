@@ -68,8 +68,8 @@ import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.DashedRoundedRectangle
 import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.CooperFontFamily
-import com.stephen.aiassistant.ui.theme.darkCalorieColor
-import com.stephen.aiassistant.ui.theme.lightCalorieColor
+import com.stephen.aiassistant.ui.theme.darkCalorieCardBgColor
+import com.stephen.aiassistant.ui.theme.lightCalorieCardBgColor
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
 import com.stephen.permissions.PermissionState
@@ -120,7 +120,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val dishJsonBgColorAlphaAnim =
         animateColorAsState(
             targetValue = if (startTransitionAnim.value) {
-                if (isSystemInDarkTheme()) darkCalorieColor else lightCalorieColor
+                if (isSystemInDarkTheme()) darkCalorieCardBgColor else lightCalorieCardBgColor
             } else Color.Transparent,
             animationSpec = tween(2000)
         )

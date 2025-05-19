@@ -8,6 +8,7 @@ import com.stephen.aiassistant.data.uistate.CalorieCalState
 import com.stephen.aiassistant.data.uistate.ChatItem
 import com.stephen.aiassistant.data.uistate.EnglishChatState
 import com.stephen.aiassistant.data.uistate.ResultState
+import com.stephen.aiassistant.helper.ThemeHelper
 import com.stephen.aiassistant.network.DeepseekChatRepository
 import com.stephen.aiassistant.network.DoubaoVisionRepository
 import com.stephen.aiassistant.platform.copyTextToClipBoard
@@ -40,6 +41,7 @@ import kotlinx.serialization.json.Json
 class MainViewModel(
     private val deepSeekChatRepository: DeepseekChatRepository,
     private val douBaoVisionRepository: DoubaoVisionRepository,
+    private val themeHelper: ThemeHelper
 ) : ViewModel() {
 
     init {
@@ -75,6 +77,8 @@ class MainViewModel(
 
     var settingsViewOpenState = MutableStateFlow(false)
         private set
+
+    val themeState = themeHelper.themeStateStateFlow
 
     // 卡路里识别的网络请求任务，任务中断使用
     private var calorieUploadJob: Job? = null
@@ -473,5 +477,13 @@ class MainViewModel(
         settingsViewOpenState.update {
             isOpen
         }
+    }
+
+    fun setLocalThemeState(theme: Int) {
+        themeHelper.setThemeState(theme)
+    }
+
+    fun updateLocalThemeState() {
+        themeHelper.updateThemeState()
     }
 }
