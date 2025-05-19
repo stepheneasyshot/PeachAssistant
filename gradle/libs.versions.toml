@@ -12,7 +12,6 @@ androidx-lifecycle = "2.8.4"
 androidx-material = "1.12.0"
 androidx-test-junit = "1.2.1"
 camerak = "0.0.12"
-camerak-save-plugin = "0.0.7"
 compose-multiplatform = "1.8.0"
 coil = "3.1.0"
 filekitCore = "0.10.0-beta04"
@@ -39,7 +38,6 @@ datastore = "1.1.1"
 
 [libraries]
 camerak = { module = "io.github.kashif-mehmood-km:camerak", version.ref = "camerak" }
-camerak-imagesave-plugin = { module = "io.github.kashif-mehmood-km:image_saver_plugin", version.ref = "camerak-save-plugin" }
 filekit-core = { module = "io.github.vinceglb:filekit-core", version.ref = "filekitCore" }
 filekit-dialogs = { module = "io.github.vinceglb:filekit-dialogs", version.ref = "filekitCore" }
 filekit-dialogs-compose = { module = "io.github.vinceglb:filekit-dialogs-compose", version.ref = "filekitCore" }

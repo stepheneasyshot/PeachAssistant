@@ -23,12 +23,16 @@ class ThemeHelper(private val dataStoreHelper: DataStoreHelper) {
      */
     fun setThemeState(themeState: Int) {
         CoroutineScope(Dispatchers.IO).launch {
-            dataStoreHelper.dataStore.edit {
-                it[themePreferencesKey] = themeState.toString()
+            runCatching {
+                dataStoreHelper.dataStore.edit {
+                    it[themePreferencesKey] = themeState.toString()
+                }
+                _themeState.update {
+                    themeState
+                }
+            }.onFailure {
+                Napier.e("setThemeState-> error:${it.message}")
             }
-        }
-        _themeState.update {
-            themeState
         }
     }
 

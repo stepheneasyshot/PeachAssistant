@@ -72,7 +72,7 @@ fun ContentView(
     val themeState = viewModel.themeState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.setPermissionController(controller)
+        viewModel.initPermissionController(controller)
         viewModel.triggerRandomNetworkRequest()
         viewModel.updateLocalThemeState()
     }

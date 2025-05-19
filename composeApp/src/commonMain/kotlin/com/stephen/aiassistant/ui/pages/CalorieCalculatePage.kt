@@ -26,7 +26,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -438,7 +437,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
                     else -> {
                         Napier.i("Request permission")
-                        viewModel.provideOrRequestCameraPermission()
+                        viewModel.checkCameraPermission()
                     }
                 }
                 when (storagePermissionState.value) {
@@ -453,7 +452,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
                     else -> {
                         Napier.i("Request permission")
-                        viewModel.provideOrRequestStoragePermission()
+                        viewModel.checkStoragePermission()
                     }
                 }
                 when (writeStoragePermissionState.value) {
@@ -468,7 +467,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
                     else -> {
                         Napier.i("Request permission")
-                        viewModel.provideOrRequestWriteStoragePermission()
+                        viewModel.checkWriteStoragePermission()
                     }
                 }
             },
@@ -488,7 +487,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     }
 
                     else -> {
-                        viewModel.provideOrRequestGalleryPermission()
+                        viewModel.checkGalleryPermission()
                         Napier.i("Request permission")
                     }
                 }

@@ -5,7 +5,6 @@ import aiassistant.composeapp.generated.resources.ic_check
 import aiassistant.composeapp.generated.resources.ic_close_small
 import aiassistant.composeapp.generated.resources.ic_redo
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,9 +39,6 @@ import com.kashif.cameraK.enums.FlashMode
 import com.kashif.cameraK.enums.ImageFormat
 import com.kashif.cameraK.result.ImageCaptureResult
 import com.kashif.cameraK.ui.CameraPreview
-import com.kashif.imagesaverplugin.ImageSaverConfig
-import com.kashif.imagesaverplugin.rememberImageSaverPlugin
-import com.stephen.aiassistant.platform.getSystemCurrentMills
 import com.stephen.aiassistant.ui.component.bounceClick
 import com.stephen.aiassistant.vm.MainViewModel
 import io.github.aakira.napier.Napier
@@ -60,16 +55,6 @@ fun CameraPreviewPage(
 ) {
 
     val cameraController = remember { mutableStateOf<CameraController?>(null) }
-
-    // Configure plugins if needed
-    val imageSaverPlugin = rememberImageSaverPlugin(
-        config = ImageSaverConfig(
-            isAutoSave = false,
-            prefix = "PeachAssistant_",
-            directory = Directory.PICTURES,
-            customFolderName = "PeachAssistant"  // Android only
-        )
-    )
 
     val imageCaptureResult = remember { mutableStateOf<ImageCaptureResult?>(null) }
 
@@ -96,7 +81,6 @@ fun CameraPreviewPage(
                 setFlashMode(FlashMode.OFF)
                 setImageFormat(ImageFormat.JPEG)
                 setDirectory(Directory.PICTURES)
-                addPlugin(imageSaverPlugin)
             },
             onCameraControllerReady = {
                 cameraController.value = it
@@ -178,12 +162,6 @@ fun CameraPreviewPage(
                                     is ImageCaptureResult.Success -> {
                                         Napier.i("Image Capture Success!")
                                         viewModel.saveTempPicture((imageCaptureResult.value as ImageCaptureResult.Success).byteArray)
-                                        if (!imageSaverPlugin.config.isAutoSave) {
-                                            imageSaverPlugin.saveImage(
-                                                byteArray = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
-                                                imageName = "PeachAssistant_${getSystemCurrentMills()}"
-                                            )
-                                        }
                                     }
 
                                     is ImageCaptureResult.Error -> {

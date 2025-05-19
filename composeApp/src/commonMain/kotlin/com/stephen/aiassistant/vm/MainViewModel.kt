@@ -11,21 +11,12 @@ import com.stephen.aiassistant.data.uistate.CalorieCalState
 import com.stephen.aiassistant.data.uistate.ChatItem
 import com.stephen.aiassistant.data.uistate.EnglishChatState
 import com.stephen.aiassistant.data.uistate.ResultState
+import com.stephen.aiassistant.helper.PermissionHelper
 import com.stephen.aiassistant.helper.ThemeHelper
 import com.stephen.aiassistant.network.DeepseekChatRepository
 import com.stephen.aiassistant.network.DoubaoVisionRepository
 import com.stephen.aiassistant.platform.copyTextToClipBoard
-import com.stephen.aiassistant.platform.permissions.CAMERA
-import com.stephen.aiassistant.platform.permissions.GALLERY
-import com.stephen.aiassistant.platform.permissions.RECORD_AUDIO
-import com.stephen.aiassistant.platform.permissions.STORAGE
-import com.stephen.aiassistant.platform.permissions.WRITE_STORAGE
-import com.stephen.permissions.DeniedAlwaysException
-import com.stephen.permissions.DeniedException
-import com.stephen.permissions.Permission
-import com.stephen.permissions.PermissionState
 import com.stephen.permissions.PermissionsController
-import com.stephen.permissions.RequestCanceledException
 import io.github.aakira.napier.Napier
 import io.github.vinceglb.filekit.PlatformFile
 import io.github.vinceglb.filekit.name
@@ -44,6 +35,7 @@ import kotlinx.serialization.json.Json
 class MainViewModel(
     private val deepSeekChatRepository: DeepseekChatRepository,
     private val douBaoVisionRepository: DoubaoVisionRepository,
+    private val permissionHelper: PermissionHelper,
     private val themeHelper: ThemeHelper
 ) : ViewModel() {
 
@@ -51,25 +43,21 @@ class MainViewModel(
         Napier.i("=====>MainViewModel init<=======")
     }
 
+    // 各权限状态
+    val galleryPermissionState = permissionHelper.galleryPermissionState
+    val microphonePermissionState = permissionHelper.microphonePermissionState
+    val cameraPermissionState = permissionHelper.cameraPermissionState
+    val storagePermissionState = permissionHelper.storagePermissionState
+    val writeStoragePermissionState = permissionHelper.writeStoragePermissionState
+
     private val _copyWritingStateFlow = MutableStateFlow(ResultState())
     val copyWritingStateFlow = _copyWritingStateFlow.asStateFlow()
 
     private val _streamingText = MutableStateFlow("")
     val streamingText = _streamingText.asStateFlow()
 
-    private val _galleryPermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
-    val galleryPermissionState = _galleryPermissionStateFlow.asStateFlow()
-
-    private val _microphonePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
-    val microphonePermissionState = _microphonePermissionStateFlow.asStateFlow()
-
-    private val _cameraPermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
-    val cameraPermissionState = _cameraPermissionStateFlow.asStateFlow()
-
-    private val _storagePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
-    val storagePermissionState = _storagePermissionStateFlow.asStateFlow()
-    private val _writeStoragePermissionStateFlow = MutableStateFlow(PermissionState.NotDetermined)
-    val writeStoragePermissionState = _writeStoragePermissionStateFlow.asStateFlow()
+    private val _imageTempByteArray = MutableStateFlow<ByteArray?>(null)
+    val imageTempByteArrayState = _imageTempByteArray.asStateFlow()
 
     // ai模型对话
     private val _aiModelChatListState = MutableStateFlow(EnglishChatState())
@@ -86,157 +74,6 @@ class MainViewModel(
     // 卡路里识别的网络请求任务，任务中断使用
     private var calorieUploadJob: Job? = null
 
-    private lateinit var permissionsController: PermissionsController
-
-    fun setPermissionController(controller: PermissionsController) {
-        Napier.i("setPermissionController")
-        this.permissionsController = controller
-        viewModelScope.launch {
-            _galleryPermissionStateFlow.update {
-                permissionsController.getPermissionState(Permission.GALLERY)
-            }
-            _microphonePermissionStateFlow.update {
-                permissionsController.getPermissionState(Permission.RECORD_AUDIO)
-            }
-            _cameraPermissionStateFlow.update {
-                permissionsController.getPermissionState(Permission.CAMERA)
-            }
-            _storagePermissionStateFlow.update {
-                permissionsController.getPermissionState(Permission.STORAGE)
-            }
-            _writeStoragePermissionStateFlow.update {
-                permissionsController.getPermissionState(Permission.WRITE_STORAGE)
-            }
-        }
-    }
-
-    fun openPermissionSettings() {
-        permissionsController.openAppSettings()
-    }
-
-    /**
-     * 相册浏览权限
-     */
-    fun provideOrRequestGalleryPermission() {
-        viewModelScope.launch {
-            try {
-                permissionsController.providePermission(Permission.GALLERY)
-                _galleryPermissionStateFlow.update {
-                    PermissionState.Granted
-                }
-            } catch (e: DeniedAlwaysException) {
-                _galleryPermissionStateFlow.update {
-                    PermissionState.DeniedAlways
-                }
-            } catch (e: DeniedException) {
-                _galleryPermissionStateFlow.update {
-                    PermissionState.Denied
-                }
-            } catch (e: RequestCanceledException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    /**
-     * 录音权限
-     */
-    fun provideOrRequestMicrophonePermission() {
-        viewModelScope.launch {
-            try {
-                permissionsController.providePermission(Permission.RECORD_AUDIO)
-                _microphonePermissionStateFlow.update {
-                    PermissionState.Granted
-                }
-            } catch (e: DeniedAlwaysException) {
-                _microphonePermissionStateFlow.update {
-                    PermissionState.DeniedAlways
-                }
-            } catch (e: DeniedException) {
-                _microphonePermissionStateFlow.update {
-                    PermissionState.Denied
-                }
-            } catch (e: RequestCanceledException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    /**
-     * 相机权限
-     */
-    fun provideOrRequestCameraPermission() {
-        viewModelScope.launch {
-            try {
-                permissionsController.providePermission(Permission.CAMERA)
-                _cameraPermissionStateFlow.update {
-                    PermissionState.Granted
-                }
-            } catch (e: DeniedAlwaysException) {
-                _cameraPermissionStateFlow.update {
-                    PermissionState.DeniedAlways
-                }
-            } catch (e: DeniedException) {
-                _cameraPermissionStateFlow.update {
-                    PermissionState.Denied
-                }
-            } catch (e: RequestCanceledException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    /**
-     * 存储权限
-     */
-    fun provideOrRequestStoragePermission() {
-        viewModelScope.launch {
-            try {
-                permissionsController.providePermission(Permission.STORAGE)
-                _storagePermissionStateFlow.update {
-                    PermissionState.Granted
-                }
-            } catch (e: DeniedAlwaysException) {
-                _storagePermissionStateFlow.update {
-                    PermissionState.DeniedAlways
-                }
-            } catch (e: DeniedException) {
-                _storagePermissionStateFlow.update {
-                    PermissionState.Denied
-                }
-            } catch (e: RequestCanceledException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    /**
-     * 写入存储权限
-     */
-    fun provideOrRequestWriteStoragePermission() {
-        viewModelScope.launch {
-            try {
-                permissionsController.providePermission(Permission.WRITE_STORAGE)
-                _writeStoragePermissionStateFlow.update {
-                    PermissionState.Granted
-                }
-            } catch (e: DeniedAlwaysException) {
-                _writeStoragePermissionStateFlow.update {
-                    PermissionState.DeniedAlways
-                }
-            } catch (e: DeniedException) {
-                _writeStoragePermissionStateFlow.update {
-                    PermissionState.Denied
-                }
-            } catch (e: RequestCanceledException) {
-                e.printStackTrace()
-            }
-        }
-    }
-
-    private val _imageTempByteArray = MutableStateFlow<ByteArray?>(null)
-    val imageTempByteArrayState = _imageTempByteArray.asStateFlow()
-
     /**
      * 拍照缓存ByteArray
      */
@@ -247,6 +84,9 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 清除相机拍摄临时图片
+     */
     fun clearTempPicture() {
         Napier.i("clearTempPicture")
         _imageTempByteArray.update {
@@ -268,7 +108,7 @@ class MainViewModel(
     }
 
     /**
-     * 卡路里图片发送
+     * 卡路里图片发送，兼容相册图片文件和临时ByteArray
      */
     fun calculateCalorieByAI(
         galleryImageFile: PlatformFile? = null,
@@ -323,27 +163,6 @@ class MainViewModel(
                     )
                 }
             }
-        }
-    }
-
-    /**
-     * 语音转文字
-     */
-    fun startToProcessSpeechToText() {
-        Napier.i("startToProcessSpeechToText")
-    }
-
-    fun doEnglishTeacherTest() {
-        _aiModelChatListState.update {
-            it.copy(
-                chatList = it.chatList + listOf(
-                    ChatItem(
-                        content = "Hi, I'm your personal English teacher. How can I help you today?",
-                        role = ChatRole.ASSISTANT
-                    )
-                ),
-                listSize = it.listSize + 1
-            )
         }
     }
 
@@ -455,16 +274,8 @@ class MainViewModel(
     }
 
     /**
-     * 测试接口
+     * IOS系统，首次进入APP提示下网络状态，防止正式请求无网络失败
      */
-    @Deprecated("测试接口")
-    @Suppress("unused")
-    fun testChat() {
-        viewModelScope.launch {
-            deepSeekChatRepository.testNetwork()
-        }
-    }
-
     fun triggerRandomNetworkRequest() {
         Napier.i("triggerRandomNetworkRequest")
         viewModelScope.launch {
@@ -476,16 +287,25 @@ class MainViewModel(
         }
     }
 
+    /**
+     * 更新设置页面的打开状态，维护防止重组后状态丢失
+     */
     fun setSettingsViewOpenState(isOpen: Boolean) {
         settingsViewOpenState.update {
             isOpen
         }
     }
 
+    /**
+     * 下发主题存储值
+     */
     fun setLocalThemeState(theme: Int) {
         themeHelper.setThemeState(theme)
     }
 
+    /**
+     * 更新主题状态
+     */
     fun updateLocalThemeState() {
         themeHelper.updateThemeState()
     }
@@ -496,5 +316,56 @@ class MainViewModel(
     @Composable
     fun isDarkTheme(): Boolean {
         return themeHelper.themeStateStateFlow.value == ThemeState.DARK || isSystemInDarkTheme()
+    }
+
+    /**
+     * 初始化权限管理器 PermissionsController
+     */
+    fun initPermissionController(controller: PermissionsController) {
+        Napier.i("setPermissionController")
+        permissionHelper.setPermissionController(controller)
+    }
+
+    /**
+     * 打开系统权限设置页面
+     */
+    fun openPermissionSettings() {
+        Napier.i("openPermissionSettings")
+        permissionHelper.openPermissionSettings()
+    }
+
+    /**
+     * 相册浏览权限
+     */
+    fun checkGalleryPermission() {
+        permissionHelper.provideOrRequestGalleryPermission()
+    }
+
+    /**
+     * 录音权限
+     */
+    fun checkMicrophonePermission() {
+        permissionHelper.provideOrRequestMicrophonePermission()
+    }
+
+    /**
+     * 相机权限
+     */
+    fun checkCameraPermission() {
+        permissionHelper.provideOrRequestCameraPermission()
+    }
+
+    /**
+     * 存储权限
+     */
+    fun checkStoragePermission() {
+        permissionHelper.provideOrRequestStoragePermission()
+    }
+
+    /**
+     * 写入存储权限
+     */
+    fun checkWriteStoragePermission() {
+        permissionHelper.provideOrRequestWriteStoragePermission()
     }
 }

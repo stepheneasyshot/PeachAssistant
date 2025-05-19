@@ -54,7 +54,6 @@ import com.stephen.permissions.PermissionState
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
@@ -85,11 +84,6 @@ fun SharedTransitionScope.EnglishSpeakingPage(
     }
 
     BindActivitylauncher(speechToTextLauncher)
-
-    LaunchedEffect(Unit) {
-        delay(500L)
-        viewModel.doEnglishTeacherTest()
-    }
 
     LaunchedEffect(chatListState.value.chatList.size) {
         // 每次列表更新，都滚动到最底部
@@ -193,7 +187,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
 
                                 else -> {
                                     Napier.i("Microphone permission Denied! Request permission again.")
-                                    viewModel.provideOrRequestMicrophonePermission()
+                                    viewModel.checkMicrophonePermission()
                                 }
                             }
                         },
