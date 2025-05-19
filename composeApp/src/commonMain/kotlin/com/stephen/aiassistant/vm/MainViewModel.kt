@@ -53,9 +53,6 @@ class MainViewModel(
     private val _copyWritingStateFlow = MutableStateFlow(ResultState())
     val copyWritingStateFlow = _copyWritingStateFlow.asStateFlow()
 
-    private val _streamingText = MutableStateFlow("")
-    val streamingText = _streamingText.asStateFlow()
-
     private val _imageTempByteArray = MutableStateFlow<ByteArray?>(null)
     val imageTempByteArrayState = _imageTempByteArray.asStateFlow()
 
@@ -244,27 +241,6 @@ class MainViewModel(
     }
 
     /**
-     * 社交圈文案生成 流式输出
-     */
-    @Suppress("unused")
-    fun generateCopyWritingStreamVersion(theme: String, style: String) {
-        Napier.i("generateCopyWritingStreamVersion -> theme = $theme, style = $style")
-        _copyWritingStateFlow.update {
-            it.copy(isLoading = true)
-        }
-        viewModelScope.launch {
-            val request =
-                "帮我生成一段社交软件使用的文案，主题是：$theme，风格是：$style，字数在100字左右"
-            deepSeekChatRepository.generateCopyWritingByAIWithStream(request).collect { result ->
-                _copyWritingStateFlow.update {
-                    it.copy(isLoading = false)
-                }
-                _streamingText.update { it + result }
-            }
-        }
-    }
-
-    /**
      * 将这段文字复制到剪切板
      */
     fun copyText(text: String) {
@@ -280,7 +256,7 @@ class MainViewModel(
         Napier.i("triggerRandomNetworkRequest")
         viewModelScope.launch {
             runCatching {
-                deepSeekChatRepository.testNetwork()
+                deepSeekChatRepository.triggerFirstRequest()
             }.onFailure { e ->
                 Napier.e(e.message.toString())
             }
