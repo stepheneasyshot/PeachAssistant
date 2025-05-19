@@ -5,14 +5,19 @@ import aiassistant.composeapp.generated.resources.ic_check
 import aiassistant.composeapp.generated.resources.ic_close_small
 import aiassistant.composeapp.generated.resources.ic_redo
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -42,6 +47,7 @@ import com.stephen.aiassistant.platform.getSystemCurrentMills
 import com.stephen.aiassistant.ui.component.bounceClick
 import com.stephen.aiassistant.vm.MainViewModel
 import io.github.aakira.napier.Napier
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
@@ -72,6 +78,14 @@ fun CameraPreviewPage(
         label = "button padding anim"
     )
 
+    val clickedConfirmState = remember { mutableStateOf(false) }
+
+    val previewPicSahreAnim by animateFloatAsState(
+        if (clickedConfirmState.value) 0.3f else 1f,
+        animationSpec = tween(500),
+        label = "preview pic share anim"
+    )
+
     val scope = rememberCoroutineScope()
 
     Box(modifier = Modifier.fillMaxSize(1f)) {
@@ -90,15 +104,20 @@ fun CameraPreviewPage(
         )
 
         if (imageCaptureResult.value != null) {
-            AsyncImage(
-                model = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
-                contentScale = ContentScale.FillWidth,
-                contentDescription = "temp photo preview",
+            Box(
                 modifier = Modifier.fillMaxSize(1f)
-                    .background(MaterialTheme.colorScheme.background)
-            )
+                    .background(MaterialTheme.colorScheme.background),
+                contentAlignment = Alignment.Center
+            ) {
+                AsyncImage(
+                    model = (imageCaptureResult.value as ImageCaptureResult.Success).byteArray,
+                    contentScale = ContentScale.FillWidth,
+                    contentDescription = "temp photo preview",
+                    modifier = Modifier.padding(bottom = 100.dp)
+                        .fillMaxWidth(1f).fillMaxHeight(previewPicSahreAnim)
+                )
+            }
         }
-
         // 关闭按钮
         Image(
             painter = painterResource(Res.drawable.ic_close_small),
@@ -175,7 +194,11 @@ fun CameraPreviewPage(
                                         Napier.e("CameraController is null")
                                     }
                                 }
-                                onConfirmCameraShot()
+                                scope.launch {
+                                    clickedConfirmState.value = true
+                                    delay(500L)
+                                    onConfirmCameraShot()
+                                }
                             } ?: run {
                                 imageCaptureResult.value = cameraController.value?.takePicture()
                             }
