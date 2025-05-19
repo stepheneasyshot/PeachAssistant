@@ -30,6 +30,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
@@ -132,7 +133,7 @@ fun SideSettingsView(
                             Image(
                                 painter = painterResource(Res.drawable.ic_theme),
                                 contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                                colorFilter = ColorFilter.tint(Color.White),
                                 modifier = Modifier.padding(end = 10.dp).size(38.dp)
                                     .clip(RoundedCornerShape(30))
                                     .background(greenColor).padding(5.dp)
