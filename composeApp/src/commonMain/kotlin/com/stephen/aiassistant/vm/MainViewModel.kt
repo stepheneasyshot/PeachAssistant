@@ -73,6 +73,9 @@ class MainViewModel(
     private val _foodListState = MutableStateFlow(CalorieCalState())
     val foodListStateFlow = _foodListState.asStateFlow()
 
+    var settingsViewOpenState = MutableStateFlow(false)
+        private set
+
     // 卡路里识别的网络请求任务，任务中断使用
     private var calorieUploadJob: Job? = null
 
@@ -463,6 +466,12 @@ class MainViewModel(
             }.onFailure { e ->
                 Napier.e(e.message.toString())
             }
+        }
+    }
+
+    fun setSettingsViewOpenState(isOpen: Boolean) {
+        settingsViewOpenState.update {
+            isOpen
         }
     }
 }

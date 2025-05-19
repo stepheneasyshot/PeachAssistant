@@ -25,10 +25,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -41,11 +43,14 @@ import com.stephen.aiassistant.ui.pages.EnglishSpeakingPage
 import com.stephen.aiassistant.ui.pages.MainCardPage
 import com.stephen.aiassistant.ui.pages.PersonalCenterPage
 import com.stephen.aiassistant.ui.pages.SideSettingsView
+import com.stephen.aiassistant.vm.MainViewModel
 import io.github.aakira.napier.Napier
+import org.koin.compose.getKoin
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun ContentView(
+    viewModel: MainViewModel = getKoin().get(),
     navController: NavHostController = rememberNavController(),
 ) {
 
@@ -55,7 +60,7 @@ fun ContentView(
         PageNavKey.SPEAKING_TRAINING to Res.drawable.bg_english_chat
     )
 
-    val openSideSettingsViewState = remember { mutableStateOf(false) }
+    val openSideSettingsViewState = viewModel.settingsViewOpenState.collectAsState()
 
     Surface(Modifier.fillMaxSize(1f)) {
         Column(
@@ -76,7 +81,7 @@ fun ContentView(
                         MainCardPage(
                             functionMap, animatedVisibilityScope = this@composable,
                             onClickMenuButton = {
-                                openSideSettingsViewState.value = true
+                                viewModel.setSettingsViewOpenState(true)
                             }) {
                             navController.navigate(it)
                         }
@@ -148,11 +153,11 @@ fun ContentView(
             SideSettingsView(
                 modifier = Modifier.fillMaxSize(1f),
                 onClickPersonalSettings = {
-                    openSideSettingsViewState.value = false
+                    viewModel.setSettingsViewOpenState(false)
                     navController.navigate(PageNavKey.PERSONAL_CENTER)
                 }) {
                 Napier.i("dismiss settings view")
-                openSideSettingsViewState.value = false
+                viewModel.setSettingsViewOpenState(false)
             }
         }
     }
