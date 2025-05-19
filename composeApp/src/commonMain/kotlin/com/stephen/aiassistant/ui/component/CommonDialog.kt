@@ -20,7 +20,7 @@ fun CommonDialog(title: String, onConfirm: () -> Unit, onCancel: () -> Unit, onD
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Column(
-            modifier = Modifier.width(240.dp).clip(RoundedCornerShape(10.dp))
+            modifier = Modifier.width(240.dp).clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surface)
         ) {
             Row(modifier = Modifier.padding(vertical = 10.dp),

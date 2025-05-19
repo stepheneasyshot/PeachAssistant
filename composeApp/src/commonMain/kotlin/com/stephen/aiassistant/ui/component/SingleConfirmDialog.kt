@@ -20,7 +20,7 @@ fun SingleConfirmDialog(title: String, onConfirm: () -> Unit, onDismiss: () -> U
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Column(
-            modifier = Modifier.width(320.dp).clip(RoundedCornerShape(10.dp))
+            modifier = Modifier.width(320.dp).clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.onSecondary)
         ) {
             Row(

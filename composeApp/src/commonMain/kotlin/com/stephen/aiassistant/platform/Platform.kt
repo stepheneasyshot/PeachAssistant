@@ -1,7 +1,11 @@
 package com.stephen.aiassistant.platform
 
 import androidx.compose.runtime.Composable
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
 import io.ktor.client.engine.HttpClientEngineFactory
+import okio.Path.Companion.toPath
 
 interface Platform {
     val name: String
@@ -30,3 +34,6 @@ expect fun rememberSpeechToTextLauncher(): SpeechToTextLauncher
 
 @Composable
 expect fun BindActivitylauncher(launcher: SpeechToTextLauncher)
+
+
+expect fun createDataStoreMultiplatform(): DataStore<Preferences>

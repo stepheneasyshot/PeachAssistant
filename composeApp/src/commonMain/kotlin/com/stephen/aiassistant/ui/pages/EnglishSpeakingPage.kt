@@ -147,14 +147,14 @@ fun SharedTransitionScope.EnglishSpeakingPage(
                     key = funcInfo.second.toString()
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).heightIn(max = 220.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+            ).fillMaxWidth(1f).heightIn(max = 220.dp).padding(10.dp).clip(RoundedCornerShape(20.dp))
         )
 
         Column(
             Modifier
                 .animateContentSize()
                 .fillMaxWidth(1f)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .padding(horizontal = 10.dp, vertical = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -202,7 +202,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
                                 speechToTextLauncher.stopRecognizing()
                             }
                         })
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(vertical = 10.dp),
                 verticalAlignment = Alignment.CenterVertically,
@@ -235,7 +235,7 @@ fun ChatItemView(
             when (role) {
                 ChatRole.USER -> {
                     SelectionContainer(
-                        modifier = Modifier.clip(RoundedCornerShape(10.dp))
+                        modifier = Modifier.clip(RoundedCornerShape(20.dp))
                             .background(MaterialTheme.colorScheme.surface)
                             .padding(10.dp)
                     ) {

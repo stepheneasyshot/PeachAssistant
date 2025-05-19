@@ -120,7 +120,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
     val dishJsonBgColorAlphaAnim =
         animateColorAsState(
             targetValue = if (startTransitionAnim.value) {
-                if (isSystemInDarkTheme()) darkCalorieCardBgColor else lightCalorieCardBgColor
+                if (viewModel.isDarkTheme()) darkCalorieCardBgColor else lightCalorieCardBgColor
             } else Color.Transparent,
             animationSpec = tween(2000)
         )
@@ -192,7 +192,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
 
             Box(
                 modifier = Modifier.padding(10.dp).fillMaxWidth(1f).height(140.dp)
-                    .clip(RoundedCornerShape(10.dp)),
+                    .clip(RoundedCornerShape(20.dp)),
                 contentAlignment = Alignment.Center
             ) {
                 Image(
@@ -205,7 +205,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         ),
                         animatedVisibilityScope = animatedVisibilityScope
                     ).fillMaxWidth(1f).heightIn(max = 140.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(20.dp))
                 )
                 Box(
                     modifier = Modifier.fillParentMaxSize(1f)
@@ -241,7 +241,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
             Box(
                 modifier = Modifier.animateContentSize().padding(10.dp).fillMaxWidth(1f)
                     .heightIn(min = 200.dp, max = 250.dp)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
                     .clickable(
                         interactionSource = remember { MutableInteractionSource() },
@@ -264,11 +264,11 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     AsyncImage(
                         model = imageTempByteArrayState.value ?: imageFileState.value,
                         contentDescription = "user chose image",
-                        modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)),
+                        modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(20.dp)),
                         contentScale = ContentScale.Crop,
                     )
                     if (foodListState.value.loading) {
-                        BlueAreaScanEffect(modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(10.dp)))
+                        BlueAreaScanEffect(modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(20.dp)))
                     }
                     // 叉号，清空重选
                     Image(
@@ -292,7 +292,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     CommonButton(
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .clip(RoundedCornerShape(10.dp))
+                            .clip(RoundedCornerShape(20.dp))
                             .padding(horizontal = 10.dp),
                         onClick = {
                             if (foodListState.value.loading) {
@@ -331,7 +331,7 @@ fun SharedTransitionScope.CalorieCalculatePage(
                     .animateContentSize()
                     .padding(horizontal = 10.dp)
                     .fillMaxWidth(1f)
-                    .clip(RoundedCornerShape(10.dp))
+                    .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
             ) {
                 // error
@@ -509,7 +509,7 @@ fun FoodListItem(
     Row(
         modifier = Modifier
             .padding(vertical = 5.dp, horizontal = 10.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.onSurface)
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -574,7 +574,7 @@ fun CameraGallerySelectView(
             ) {
                 Column(
                     modifier = Modifier.padding(end = 60.dp)
-                        .clip(RoundedCornerShape(10.dp))
+                        .clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.onSurface)
                         .clickable {
                             onCameraClick()
@@ -592,7 +592,7 @@ fun CameraGallerySelectView(
                 }
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clip(RoundedCornerShape(10.dp))
+                    modifier = Modifier.clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.onSurface)
                         .clickable {
                             onGalleryClick()

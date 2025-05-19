@@ -135,7 +135,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
                     key = funcInfo.second.toString()
                 ),
                 animatedVisibilityScope = animatedVisibilityScope
-            ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp).clip(RoundedCornerShape(10.dp))
+            ).fillMaxWidth(1f).heightIn(max = 140.dp).padding(10.dp).clip(RoundedCornerShape(20.dp))
         )
 
         Column(
@@ -143,7 +143,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
                 .animateContentSize()
                 .padding(bottom = 10.dp, start = 10.dp, end = 10.dp)
                 .fillMaxWidth(1f)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },
@@ -210,7 +210,7 @@ fun SharedTransitionScope.CopyWritingGenePage(
                 .padding(horizontal = 10.dp)
                 .weight(1f)
                 .fillMaxWidth(1f)
-                .clip(RoundedCornerShape(10.dp))
+                .clip(RoundedCornerShape(20.dp))
                 .background(MaterialTheme.colorScheme.surface)
                 .clickable(
                     interactionSource = remember { MutableInteractionSource() },

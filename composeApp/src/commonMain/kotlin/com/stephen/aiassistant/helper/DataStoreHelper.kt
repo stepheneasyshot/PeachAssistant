@@ -3,21 +3,18 @@ package com.stephen.aiassistant.helper
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
+import com.stephen.aiassistant.platform.createDataStoreMultiplatform
 import okio.Path.Companion.toPath
 
 class DataStoreHelper {
 
-    lateinit var dataStore: DataStore<Preferences>
+    var dataStore: DataStore<Preferences> = createDataStoreMultiplatform()
 
-    fun init(path: String) {
-        dataStore = createDataStore(path)
-    }
-
-    private fun createDataStore(path: String): DataStore<Preferences> {
-        return PreferenceDataStoreFactory.createWithPath(
-            corruptionHandler = null,
-            migrations = emptyList(),
-            produceFile = { path.toPath() }
-        )
-    }
 }
+
+const val DATASTORE_FILE_NAME = "ai_assistant_ds.preferences_pb"
+
+fun createDataStore(producePath: () -> String): DataStore<Preferences> =
+    PreferenceDataStoreFactory.createWithPath(
+        produceFile = { producePath().toPath() }
+    )

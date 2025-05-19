@@ -2,9 +2,20 @@ package com.stephen.aiassistant.platform
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import com.stephen.aiassistant.helper.DATASTORE_FILE_NAME
+import com.stephen.aiassistant.helper.createDataStore
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
+import kotlinx.cinterop.ExperimentalForeignApi
+import okio.Path.Companion.toPath
 import platform.Foundation.NSDate
+import platform.Foundation.NSDocumentDirectory
+import platform.Foundation.NSFileManager
+import platform.Foundation.NSURL
+import platform.Foundation.NSUserDomainMask
 import platform.Foundation.timeIntervalSince1970
 import platform.UIKit.UIDevice
 import platform.UIKit.UIPasteboard
@@ -47,3 +58,17 @@ actual fun rememberSpeechToTextLauncher(): SpeechToTextLauncher = remember {
 actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
 
 }
+
+@OptIn(ExperimentalForeignApi::class)
+actual fun createDataStoreMultiplatform(): DataStore<Preferences> = createDataStore(
+    producePath = {
+        val documentDirectory: NSURL? = NSFileManager.defaultManager.URLForDirectory(
+            directory = NSDocumentDirectory,
+            inDomain = NSUserDomainMask,
+            appropriateForURL = null,
+            create = false,
+            error = null,
+        )
+        requireNotNull(documentDirectory).path + "/$DATASTORE_FILE_NAME"
+    }
+)

@@ -1,8 +1,11 @@
 package com.stephen.aiassistant.vm
 
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.runtime.Composable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.stephen.aiassistant.data.ChatRole
+import com.stephen.aiassistant.data.ThemeState
 import com.stephen.aiassistant.data.bean.FoodContent
 import com.stephen.aiassistant.data.uistate.CalorieCalState
 import com.stephen.aiassistant.data.uistate.ChatItem
@@ -485,5 +488,13 @@ class MainViewModel(
 
     fun updateLocalThemeState() {
         themeHelper.updateThemeState()
+    }
+
+    /**
+     * 是否处于深色主题，明确设置为深色，或者系统自适应处于深色主题
+     */
+    @Composable
+    fun isDarkTheme(): Boolean {
+        return themeHelper.themeStateStateFlow.value == ThemeState.DARK || isSystemInDarkTheme()
     }
 }

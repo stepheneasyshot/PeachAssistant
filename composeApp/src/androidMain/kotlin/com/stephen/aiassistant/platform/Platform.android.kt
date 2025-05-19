@@ -9,8 +9,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
 import com.stephen.aiassistant.SpeechUtils
 import com.stephen.aiassistant.appContext
+import com.stephen.aiassistant.helper.DATASTORE_FILE_NAME
+import com.stephen.aiassistant.helper.createDataStore
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.cio.CIO
 
@@ -44,7 +48,7 @@ actual fun stopSpeaking() {
 actual fun getSystemCurrentMills(): Long = System.currentTimeMillis()
 
 @Composable
-actual fun rememberSpeechToTextLauncher(): SpeechToTextLauncher =remember {
+actual fun rememberSpeechToTextLauncher(): SpeechToTextLauncher = remember {
     AndroidSpeechToTextLauncher()
 }
 
@@ -56,3 +60,7 @@ actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
         (launcher as AndroidSpeechToTextLauncher).bind(context as ComponentActivity)
     }
 }
+
+actual fun createDataStoreMultiplatform(): DataStore<Preferences> = createDataStore(
+    producePath = { appContext.filesDir.resolve(DATASTORE_FILE_NAME).absolutePath }
+)

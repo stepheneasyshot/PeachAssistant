@@ -77,8 +77,8 @@ fun SideSettingsView(
 
             Row(
                 modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(1f)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.onSurface)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.surface)
                     .clickable {
                         onClickPersonalSettings()
                     },
@@ -110,8 +110,8 @@ fun SideSettingsView(
                             }
                         }
                     }
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.onSurface)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.surface)
                     .padding(10.dp)
             ) {
                 item {
@@ -134,7 +134,7 @@ fun SideSettingsView(
                                 contentDescription = null,
                                 colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
                                 modifier = Modifier.padding(end = 10.dp).size(38.dp)
-                                    .clip(RoundedCornerShape(10.dp))
+                                    .clip(RoundedCornerShape(30))
                                     .background(greenColor).padding(5.dp)
                             )
                             CenterText(

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ThemeHelper(val dataStoreHelper: DataStoreHelper) {
+class ThemeHelper(private val dataStoreHelper: DataStoreHelper) {
 
     private val _themeState = MutableStateFlow(ThemeState.SYSTEM)
     val themeStateStateFlow = _themeState.asStateFlow()

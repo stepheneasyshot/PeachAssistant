@@ -55,9 +55,9 @@ fun WrappedEditText(
         },
         modifier = modifier
             .widthIn(max = 200.dp, min = 100.dp)
-            .clip(RoundedCornerShape(10.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(MaterialTheme.colorScheme.background)
-            .border(2.dp, MaterialTheme.colorScheme.onSecondary, RoundedCornerShape(10.dp))
+            .border(2.dp, MaterialTheme.colorScheme.onSecondary, RoundedCornerShape(20.dp))
             .focusRequester(focusRequester)
             .onKeyEvent {
                 // 只有单独按下enter键才触发，其余组合键只换行
