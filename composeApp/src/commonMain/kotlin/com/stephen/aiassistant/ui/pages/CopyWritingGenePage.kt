@@ -73,7 +73,6 @@ fun SharedTransitionScope.CopyWritingGenePage(
     val focusManager = LocalFocusManager.current
 
     val copyWritingState = viewModel.copyWritingStateFlow.collectAsState()
-    val copyWritingStreamState = viewModel.streamingText.collectAsState()
 
     var themeString by remember { mutableStateOf("") }
     var styleString by remember { mutableStateOf("") }
@@ -263,12 +262,6 @@ fun SharedTransitionScope.CopyWritingGenePage(
                             }
                         }
                     }
-                } else if (copyWritingStreamState.value.isNotEmpty()) {
-                    CenterText(
-                        text = copyWritingStreamState.value,
-                        style = defaultText,
-                        modifier = Modifier.padding(bottom = 10.dp)
-                    )
                 }
             }
         }
