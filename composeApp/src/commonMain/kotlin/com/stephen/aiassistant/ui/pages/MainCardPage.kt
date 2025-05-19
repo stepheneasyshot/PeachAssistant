@@ -1,6 +1,7 @@
 package com.stephen.aiassistant.ui.pages
 
 import aiassistant.composeapp.generated.resources.Res
+import aiassistant.composeapp.generated.resources.ic_menu
 import aiassistant.composeapp.generated.resources.ic_peach
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -45,6 +47,7 @@ fun SharedTransitionScope.MainCardPage(
     functionMap: Map<String, DrawableResource>,
     animatedVisibilityScope: AnimatedVisibilityScope,
     viewModel: MainViewModel = getKoin().get(),
+    onClickMenuButton: () -> Unit,
     onItemChoosed: (String) -> Unit = {}
 ) {
     // 初始化权限管理器
@@ -59,23 +62,36 @@ fun SharedTransitionScope.MainCardPage(
         viewModel.triggerRandomNetworkRequest()
     }
 
+
     Column(modifier = Modifier.padding(bottom = navBarHeight)) {
 
-        Row(
-            modifier = Modifier.fillMaxWidth(1f),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
-        ) {
+        Box(modifier = Modifier.fillMaxWidth(1f)) {
             Image(
-                painter = painterResource(Res.drawable.ic_peach),
-                colorFilter = ColorFilter.tint(peachIconColor),
+                painter = painterResource(Res.drawable.ic_menu),
+                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
                 contentDescription = null,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.align(Alignment.CenterStart)
+                    .padding(start = 10.dp).size(30.dp)
+                    .clickable {
+                        onClickMenuButton()
+                    }
             )
-            CenterText(
-                text = "桃子助手", modifier = Modifier.padding(10.dp),
-                style = titleFirstText
-            )
+            Row(
+                modifier = Modifier.align(Alignment.Center),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Image(
+                    painter = painterResource(Res.drawable.ic_peach),
+                    colorFilter = ColorFilter.tint(peachIconColor),
+                    contentDescription = null,
+                    modifier = Modifier.size(28.dp)
+                )
+                CenterText(
+                    text = "桃子助手", modifier = Modifier.padding(10.dp),
+                    style = titleFirstText
+                )
+            }
         }
 
         LazyColumn {
