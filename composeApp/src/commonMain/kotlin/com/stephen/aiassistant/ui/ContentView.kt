@@ -13,31 +13,26 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.stephen.aiassistant.data.statusBarHeight
+import com.stephen.aiassistant.platform.permissions.BindEffect
+import com.stephen.aiassistant.platform.permissions.rememberPermissionsControllerFactory
 import com.stephen.aiassistant.ui.pages.CalorieCalculatePage
-import com.stephen.aiassistant.ui.pages.CameraPreviewPage
 import com.stephen.aiassistant.ui.pages.CopyWritingGenePage
 import com.stephen.aiassistant.ui.pages.EnglishSpeakingPage
 import com.stephen.aiassistant.ui.pages.MainCardPage
@@ -61,6 +56,19 @@ fun ContentView(
     )
 
     val openSideSettingsViewState = viewModel.settingsViewOpenState.collectAsState()
+
+    // 初始化权限管理器
+    val factory = rememberPermissionsControllerFactory()
+
+    val controller = remember(factory) {
+        factory.createPermissionsController()
+    }
+    BindEffect(controller)
+
+    LaunchedEffect(Unit) {
+        viewModel.setPermissionController(controller)
+        viewModel.triggerRandomNetworkRequest()
+    }
 
     Surface(Modifier.fillMaxSize(1f)) {
         Column(
