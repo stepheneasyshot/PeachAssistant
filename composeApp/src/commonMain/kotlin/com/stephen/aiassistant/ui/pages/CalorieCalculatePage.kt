@@ -68,6 +68,7 @@ import com.stephen.aiassistant.ui.component.DashedRoundedRectangle
 import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.CooperFontFamily
 import com.stephen.aiassistant.ui.theme.darkCalorieCardBgColor
+import com.stephen.aiassistant.ui.theme.infoText
 import com.stephen.aiassistant.ui.theme.lightCalorieCardBgColor
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
@@ -267,7 +268,9 @@ fun SharedTransitionScope.CalorieCalculatePage(
                         contentScale = ContentScale.Crop,
                     )
                     if (foodListState.value.loading) {
-                        BlueAreaScanEffect(modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(20.dp)))
+                        BlueAreaScanEffect(
+                            modifier = Modifier.fillMaxWidth(1f).clip(RoundedCornerShape(20.dp))
+                        )
                     }
                     // 叉号，清空重选
                     Image(
@@ -573,37 +576,40 @@ fun CameraGallerySelectView(
             ) {
                 Column(
                     modifier = Modifier.padding(end = 60.dp)
+                        .size(72.dp)
                         .clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.onSurface)
                         .clickable {
                             onCameraClick()
-                        }
-                        .padding(vertical = 10.dp, horizontal = 20.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_camera),
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(28.dp),
                         contentDescription = "camera"
                     )
-                    CenterText(text = "拍照")
+                    CenterText(text = "拍照", style = infoText)
                 }
                 Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.clip(RoundedCornerShape(20.dp))
+                    modifier = Modifier.size(72.dp)
+                        .clip(RoundedCornerShape(20.dp))
                         .background(MaterialTheme.colorScheme.onSurface)
                         .clickable {
                             onGalleryClick()
-                        }.padding(vertical = 10.dp, horizontal = 20.dp),
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
                     Image(
                         painter = painterResource(Res.drawable.ic_picture_album),
                         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
-                        modifier = Modifier.size(32.dp),
+                        modifier = Modifier.size(28.dp),
                         contentDescription = "gallery"
                     )
-                    CenterText(text = "相册")
+                    CenterText(text = "相册", style = infoText)
                 }
             }
             Spacer(
