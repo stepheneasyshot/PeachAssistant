@@ -8,6 +8,7 @@ import aiassistant.composeapp.generated.resources.ic_theme
 import aiassistant.composeapp.generated.resources.test_avatar
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -35,6 +36,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.input.pointer.pointerInput
@@ -64,6 +66,11 @@ fun SideSettingsView(
 
     val themePanelExpandState = remember { mutableStateOf(false) }
 
+    val themeArrowRotateAnim = animateFloatAsState(
+        if (themePanelExpandState.value) 90f else 0f,
+        label = "themeArrowRotateAnim"
+    )
+
     val themeState = viewModel.themeState.collectAsState()
 
     Row(modifier = modifier) {
@@ -87,7 +94,7 @@ fun SideSettingsView(
                     .background(MaterialTheme.colorScheme.surface)
             ) {
                 Row(
-                    modifier = Modifier.padding(bottom = 10.dp).clickable {
+                    modifier = Modifier.clickable {
                         onClickPersonalSettings()
                     }.padding(15.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -109,7 +116,7 @@ fun SideSettingsView(
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.fillMaxWidth(1f).clickable {
                         Napier.i("onClick user feedback")
-                    }.padding(15.dp)
+                    }.padding(horizontal = 15.dp, vertical = 10.dp)
                 ) {
                     Image(
                         contentDescription = "user feedback",
@@ -145,7 +152,7 @@ fun SideSettingsView(
                     }
                     .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .padding(15.dp)
+                    .padding(horizontal = 15.dp, vertical = 10.dp)
             ) {
                 // 主题模式选择column
                 Column(
@@ -170,10 +177,10 @@ fun SideSettingsView(
                         CenterText(
                             text = "主题模式",
                             style = titleSecondText,
-                            modifier = Modifier.padding(vertical = 10.dp)
+                            modifier = Modifier.padding(vertical = 5.dp)
                         )
                         Spacer(Modifier.weight(1f))
-                        MoreArrow()
+                        MoreArrow(modifier = Modifier.rotate(themeArrowRotateAnim.value))
                     }
                     AnimatedVisibility(
                         visible = themePanelExpandState.value,
@@ -206,29 +213,31 @@ fun SideSettingsView(
                     .fillMaxWidth(1f)
                     .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .padding(horizontal = 15.dp)
+                    .padding(15.dp)
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(1f).padding(15.dp)
+                    modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(1f)
                 ) {
                     CenterText(
                         text = "关于桃桃",
                         style = titleSecondText,
-                        modifier = Modifier.padding(vertical = 10.dp)
+                        modifier = Modifier.padding(start = 15.dp)
                     )
                     Spacer(Modifier.weight(1f))
                     MoreArrow()
                 }
-                DeviderLine(modifier = Modifier.fillMaxWidth(1f).height(1.dp))
+                DeviderLine(
+                    modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(1f).height(1.dp)
+                )
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth(1f).padding(15.dp)
+                    modifier = Modifier.fillMaxWidth(1f)
                 ) {
                     CenterText(
                         text = "检查更新",
                         style = titleSecondText,
-                        modifier = Modifier.padding(vertical = 10.dp)
+                        modifier = Modifier.padding(start = 15.dp)
                     )
                     Spacer(Modifier.weight(1f))
                     CenterText(
@@ -380,11 +389,11 @@ fun ThemeChooseView(
 }
 
 @Composable
-fun MoreArrow() {
+fun MoreArrow(modifier: Modifier = Modifier) {
     Image(
         painter = painterResource(Res.drawable.ic_menu_more),
         contentDescription = null,
         colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary),
-        modifier = Modifier.padding(10.dp).size(32.dp)
+        modifier = modifier.padding(10.dp).size(32.dp)
     )
 }

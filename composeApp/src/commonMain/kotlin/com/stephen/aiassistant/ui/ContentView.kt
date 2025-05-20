@@ -184,7 +184,6 @@ fun ContentView(
                         viewModel.setSettingsViewOpenState(false)
                         navController.navigate(PageNavKey.PERSONAL_CENTER)
                     }) {
-                    Napier.i("dismiss settings view")
                     viewModel.setSettingsViewOpenState(false)
                 }
             }
