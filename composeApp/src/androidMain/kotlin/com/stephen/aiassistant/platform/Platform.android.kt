@@ -64,3 +64,5 @@ actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
 actual fun createDataStoreMultiplatform(): DataStore<Preferences> = createDataStore(
     producePath = { appContext.filesDir.resolve(DATASTORE_FILE_NAME).absolutePath }
 )
+
+actual fun getPlatformConnectionManager(): ConnectionStateHolder = AndroidConnectionStateHolder()

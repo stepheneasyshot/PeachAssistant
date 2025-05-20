@@ -16,6 +16,7 @@ import com.stephen.aiassistant.helper.ThemeHelper
 import com.stephen.aiassistant.network.DeepseekChatRepository
 import com.stephen.aiassistant.network.DoubaoVisionRepository
 import com.stephen.aiassistant.platform.copyTextToClipBoard
+import com.stephen.aiassistant.platform.getPlatformConnectionManager
 import com.stephen.permissions.PermissionsController
 import io.github.aakira.napier.Napier
 import io.github.vinceglb.filekit.PlatformFile
@@ -39,9 +40,14 @@ class MainViewModel(
     private val themeHelper: ThemeHelper
 ) : ViewModel() {
 
+    private val networkStateManager = getPlatformConnectionManager()
+
     init {
         Napier.i("=====>MainViewModel init<=======")
+        networkStateManager.start()
     }
+
+    val networkConnectivityState = networkStateManager.isNetworkConnected.asStateFlow()
 
     // 各权限状态
     val galleryPermissionState = permissionHelper.galleryPermissionState
@@ -343,5 +349,11 @@ class MainViewModel(
      */
     fun checkWriteStoragePermission() {
         permissionHelper.provideOrRequestWriteStoragePermission()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        Napier.i("=====>MainViewModel onCleared<=======")
+        networkStateManager.stop()
     }
 }

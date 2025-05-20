@@ -3,10 +3,13 @@ package com.stephen.aiassistant.ui.pages
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.ic_menu
 import aiassistant.composeapp.generated.resources.ic_peach
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,9 +21,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -32,18 +37,27 @@ import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.theme.peachIconColor
 import com.stephen.aiassistant.ui.theme.titleFirstText
 import com.stephen.aiassistant.ui.theme.titleSecondText
+import com.stephen.aiassistant.vm.MainViewModel
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
+import org.koin.compose.getKoin
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 @Composable
 fun SharedTransitionScope.MainCardPage(
     functionMap: Map<String, DrawableResource>,
+    viewModel: MainViewModel = getKoin().get(),
     animatedVisibilityScope: AnimatedVisibilityScope,
     onClickMenuButton: () -> Unit,
     onItemChoosed: (String) -> Unit = {}
 ) {
-    Column(modifier = Modifier.padding(bottom = navBarHeight)) {
+
+    val networkConnectionState = viewModel.networkConnectivityState.collectAsState()
+
+    Column(
+        modifier = Modifier.padding(bottom = navBarHeight),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
 
         Box(modifier = Modifier.fillMaxWidth(1f)) {
             Image(
@@ -72,6 +86,20 @@ fun SharedTransitionScope.MainCardPage(
                     style = titleFirstText
                 )
             }
+        }
+
+        AnimatedVisibility(
+            visible = !networkConnectionState.value,
+        ) {
+            CenterText(
+                text = "网络连接异常",
+                modifier = Modifier.padding(bottom = 10.dp)
+                    .fillMaxWidth(0.6f)
+                    .clip(RoundedCornerShape(20))
+                    .background(MaterialTheme.colorScheme.errorContainer)
+                    .border(1.dp, MaterialTheme.colorScheme.error, shape = RoundedCornerShape(20))
+                    .padding(vertical = 5.dp),
+            )
         }
 
         LazyColumn {

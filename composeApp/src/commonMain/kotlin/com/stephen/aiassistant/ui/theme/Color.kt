@@ -35,7 +35,9 @@ val DarkColorScheme = darkColorScheme(
     // 置灰文字，提示文字颜色
     onSecondary = Color(0x99ffffff),
     // 警告按钮或错误提示
-    error = Color(0xffe53c3c),
+    error = Color(0x99e53c3c),
+    // 错误容器背景色
+    errorContainer = Color(0xcce53c3c),
     // 背景之上的其余元素的颜色，目前只有分割线
     onBackground = Color(0xff323232),
     // 功能组选中的颜色
@@ -52,6 +54,7 @@ val LightColorScheme = lightColorScheme(
     tertiary = Color(0xff62bffc),
     onSecondary = Color(0x99050505),
     error = Color(0xffe8563d),
+    errorContainer = Color(0x99e8563d),
     onBackground = Color(0xffe2e5f0),
     onSurface = Color(0xffd6deec),
 )

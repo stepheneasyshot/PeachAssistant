@@ -3,14 +3,12 @@ package com.stephen.aiassistant.platform
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.PreferenceDataStoreFactory
 import androidx.datastore.preferences.core.Preferences
 import com.stephen.aiassistant.helper.DATASTORE_FILE_NAME
 import com.stephen.aiassistant.helper.createDataStore
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.cinterop.ExperimentalForeignApi
-import okio.Path.Companion.toPath
 import platform.Foundation.NSDate
 import platform.Foundation.NSDocumentDirectory
 import platform.Foundation.NSFileManager
@@ -72,3 +70,5 @@ actual fun createDataStoreMultiplatform(): DataStore<Preferences> = createDataSt
         requireNotNull(documentDirectory).path + "/$DATASTORE_FILE_NAME"
     }
 )
+
+actual fun  getPlatformConnectionManager(): ConnectionStateHolder= IOSConnectionStateHolder()
