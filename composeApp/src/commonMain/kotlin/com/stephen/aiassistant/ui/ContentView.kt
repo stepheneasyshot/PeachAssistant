@@ -51,6 +51,7 @@ import org.koin.compose.getKoin
 fun ContentView(
     viewModel: MainViewModel = getKoin().get(),
     navController: NavHostController = rememberNavController(),
+    onThemeChange: (Int) -> Unit,
 ) {
 
     val functionMap = mapOf(
@@ -70,6 +71,10 @@ fun ContentView(
     BindEffect(controller)
 
     val themeState = viewModel.themeState.collectAsState()
+
+    LaunchedEffect(themeState.value) {
+        onThemeChange(themeState.value)
+    }
 
     LaunchedEffect(Unit) {
         viewModel.initPermissionController(controller)

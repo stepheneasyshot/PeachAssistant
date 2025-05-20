@@ -11,7 +11,7 @@ import org.koin.compose.KoinApplication
 
 @Composable
 @Preview
-fun App() {
+fun App(onThemeChange: (Int) -> Unit = {}) {
     // coil & filekit support
     setSingletonImageLoaderFactory { context ->
         ImageLoader.Builder(context)
@@ -22,6 +22,6 @@ fun App() {
     }
 
     KoinApplication(application = { modules(appModule) }) {
-        ContentView()
+        ContentView(onThemeChange = onThemeChange)
     }
 }

@@ -82,23 +82,18 @@ fun SideSettingsView(
                     .background(MaterialTheme.colorScheme.surface)
                     .clickable {
                         onClickPersonalSettings()
-                    },
+                    }.padding(15.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     painter = painterResource(Res.drawable.test_avatar),
                     contentDescription = "avatar",
-                    modifier = Modifier.padding(10.dp).size(48.dp)
+                    modifier = Modifier.padding(end = 10.dp).size(48.dp)
                         .clip(RoundedCornerShape(50))
                 )
                 CenterText(text = "Stephen", style = titleFirstText)
                 Spacer(Modifier.weight(1f))
-                Image(
-                    painter = painterResource(Res.drawable.ic_menu_more),
-                    contentDescription = null,
-                    colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary),
-                    modifier = Modifier.padding(10.dp).size(32.dp)
-                )
+                MoreArrow()
             }
 
             LazyColumn(
@@ -113,7 +108,7 @@ fun SideSettingsView(
                     }
                     .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .padding(10.dp)
+                    .padding(15.dp)
             ) {
                 item {
                     Column(
@@ -123,7 +118,7 @@ fun SideSettingsView(
                     ) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(bottom = 10.dp).clickable(
+                            modifier = Modifier.clickable(
                                 interactionSource = MutableInteractionSource(),
                                 indication = null
                             ) {
@@ -144,12 +139,7 @@ fun SideSettingsView(
                                 modifier = Modifier.padding(vertical = 10.dp)
                             )
                             Spacer(Modifier.weight(1f))
-                            Image(
-                                painter = painterResource(Res.drawable.ic_menu_more),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary),
-                                modifier = Modifier.size(32.dp)
-                            )
+                            MoreArrow()
                         }
                         if (themePanelExpandState.value) {
                             ThemeChooseView(
@@ -303,4 +293,14 @@ fun ThemeChooseView(
             }
         }
     }
+}
+
+@Composable
+fun MoreArrow() {
+    Image(
+        painter = painterResource(Res.drawable.ic_menu_more),
+        contentDescription = null,
+        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onSecondary),
+        modifier = Modifier.padding(10.dp).size(32.dp)
+    )
 }
