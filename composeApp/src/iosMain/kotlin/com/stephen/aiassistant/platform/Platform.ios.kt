@@ -6,6 +6,7 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.stephen.aiassistant.helper.DATASTORE_FILE_NAME
 import com.stephen.aiassistant.helper.createDataStore
+import com.stephen.aiassistant.platform.network.IOSConnectionStateHolder
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.darwin.Darwin
 import kotlinx.cinterop.ExperimentalForeignApi
@@ -70,5 +71,3 @@ actual fun createDataStoreMultiplatform(): DataStore<Preferences> = createDataSt
         requireNotNull(documentDirectory).path + "/$DATASTORE_FILE_NAME"
     }
 )
-
-actual fun  getPlatformConnectionManager(): ConnectionStateHolder= IOSConnectionStateHolder()

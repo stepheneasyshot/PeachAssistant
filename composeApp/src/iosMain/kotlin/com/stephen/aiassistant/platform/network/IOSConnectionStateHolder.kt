@@ -1,7 +1,8 @@
-package com.stephen.aiassistant.platform
+package com.stephen.aiassistant.platform.network
 
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 import platform.Network.nw_interface_type_wifi
 import platform.Network.nw_path_get_status
 import platform.Network.nw_path_is_constrained
@@ -17,8 +18,9 @@ import platform.darwin.DISPATCH_QUEUE_SERIAL_WITH_AUTORELEASE_POOL
 import platform.darwin.dispatch_queue_create
 
 class IOSConnectionStateHolder : ConnectionStateHolder {
-    // 网络连接状态 默认是true有网络
-    override val isNetworkConnected: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    // 网络连接状态 默认是true有网络，无付费
+    override val isNetworkConnected: MutableStateFlow<NetworkUiState> =
+        MutableStateFlow(NetworkUiState())
 
     private val monitor = nw_path_monitor_create()
 
@@ -36,11 +38,20 @@ class IOSConnectionStateHolder : ConnectionStateHolder {
                     val isConstrained = nw_path_is_constrained(path)
                     val isMetered = !isWifi && (isExpensive || isConstrained)
                     // 无网络状态，取反
-                    Napier.i("isMetered $isMetered")
-                    isNetworkConnected.value = !isMetered
+                    Napier.i("Network status -> isWifi: $isWifi, isExpensive: $isExpensive, isConstrained: $isConstrained, isMetered: $isMetered")
+                    isNetworkConnected.update {
+                        it.copy(
+                            isFreeToUse = !isMetered,
+                            isExpensive = isExpensive,
+                            isConstrained = isConstrained,
+                            isDisconnected = false
+                        )
+                    }
                 }
 
-                else -> isNetworkConnected.value = false
+                else -> isNetworkConnected.update {
+                    it.copy(isDisconnected = true)
+                }
             }
         }
         nw_path_monitor_set_queue(monitor, queue)
@@ -50,6 +61,4 @@ class IOSConnectionStateHolder : ConnectionStateHolder {
     override fun stop() {
         nw_path_monitor_cancel(monitor)
     }
-
-    override fun getStatus(): Boolean = isNetworkConnected.value
 }

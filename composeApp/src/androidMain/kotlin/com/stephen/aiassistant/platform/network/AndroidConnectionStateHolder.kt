@@ -1,4 +1,4 @@
-package com.stephen.aiassistant.platform
+package com.stephen.aiassistant.platform.network
 
 import android.content.Context
 import android.net.ConnectivityManager
@@ -7,6 +7,7 @@ import android.net.NetworkCapabilities
 import com.stephen.aiassistant.appContext
 import io.github.aakira.napier.Napier
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.update
 
 class AndroidConnectionStateHolder : ConnectionStateHolder {
 
@@ -14,18 +15,23 @@ class AndroidConnectionStateHolder : ConnectionStateHolder {
         private const val TAG = "AndroidConnectionStateHolder"
     }
 
-    override val isNetworkConnected: MutableStateFlow<Boolean> = MutableStateFlow(true)
+    override val isNetworkConnected: MutableStateFlow<NetworkUiState> =
+        MutableStateFlow(NetworkUiState())
 
     private var connectivityManager: ConnectivityManager? = null
     private val networkCallback = object : ConnectivityManager.NetworkCallback() {
         override fun onAvailable(network: Network) {
             Napier.d("Network available", tag = TAG)
-            isNetworkConnected.value = true
+            isNetworkConnected.update {
+                it.copy(isDisconnected = false)
+            }
         }
 
         override fun onLost(network: Network) {
             Napier.d("Network lost", tag = TAG)
-            isNetworkConnected.value = false
+            isNetworkConnected.update {
+                it.copy(isDisconnected = true)
+            }
         }
 
         override fun onCapabilitiesChanged(
@@ -48,16 +54,25 @@ class AndroidConnectionStateHolder : ConnectionStateHolder {
              * 上限后，网络连接可能会受到限制。
              */
             val isConnected =
-                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) &&
-                        networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED) &&
-                        networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+            val isRestricted =
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
+            val isValidated =
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+            val isMetered =
+                networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
             Napier.d(
-                "Network status: ${if (isConnected) "Connected" else "Disconnected"}",
+                "Network status -> isConnected: $isConnected, isRestricted: $isRestricted, isValidated: $isValidated, isMetered: $isMetered",
                 tag = TAG
             )
-
-            isNetworkConnected.value = isConnected
+            isNetworkConnected.update {
+                it.copy(
+                    isFreeToUse = isConnected && isRestricted && isValidated && isMetered,
+                    isConstrained = !isMetered,
+                    isExpensive = !isMetered,
+                    isDisconnected = !isConnected
+                )
+            }
         }
     }
 
@@ -73,7 +88,9 @@ class AndroidConnectionStateHolder : ConnectionStateHolder {
             val currentNetwork = connectivityManager?.activeNetwork
 
             if (currentNetwork == null) {
-                isNetworkConnected.value = false
+                isNetworkConnected.update {
+                    it.copy(isDisconnected = true)
+                }
                 Napier.d("Disconnected", tag = TAG)
             }
 
@@ -81,7 +98,9 @@ class AndroidConnectionStateHolder : ConnectionStateHolder {
         } catch (e: Exception) {
             Napier.d("Failed to start: ${e.message.toString()}", tag = TAG)
             e.printStackTrace()
-            isNetworkConnected.value = false
+            isNetworkConnected.update {
+                it.copy(isDisconnected = true)
+            }
         }
     }
 
@@ -89,6 +108,4 @@ class AndroidConnectionStateHolder : ConnectionStateHolder {
         connectivityManager?.unregisterNetworkCallback(networkCallback)
         Napier.d("Stopped", tag = TAG)
     }
-
-    override fun getStatus(): Boolean = isNetworkConnected.value
 }

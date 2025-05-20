@@ -21,10 +21,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CutCornerShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,12 +32,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
+import com.stephen.aiassistant.data.isNetworkMeteredTipShowed
 import com.stephen.aiassistant.data.navBarHeight
 import com.stephen.aiassistant.ui.component.CenterText
+import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.peachIconColor
 import com.stephen.aiassistant.ui.theme.titleFirstText
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
+import io.github.aakira.napier.Napier
 import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 import org.koin.compose.getKoin
@@ -53,6 +56,19 @@ fun SharedTransitionScope.MainCardPage(
 ) {
 
     val networkConnectionState = viewModel.networkConnectivityState.collectAsState()
+
+    val toastState = rememberToastState()
+
+    LaunchedEffect(networkConnectionState.value) {
+        if (networkConnectionState.value.isExpensive && !isNetworkMeteredTipShowed) {
+            isNetworkMeteredTipShowed = true
+            toastState.show("当前使用的是付费网络，请注意流量消耗")
+        } else if (networkConnectionState.value.isConstrained) {
+            Napier.i("当前网络受限制，部分服务可能不可用")
+        } else if (networkConnectionState.value.isDisconnected) {
+            Napier.e("当前网络已断开!")
+        }
+    }
 
     Column(
         modifier = Modifier.padding(bottom = navBarHeight),
@@ -89,7 +105,7 @@ fun SharedTransitionScope.MainCardPage(
         }
 
         AnimatedVisibility(
-            visible = !networkConnectionState.value,
+            visible = networkConnectionState.value.isDisconnected,
         ) {
             CenterText(
                 text = "网络连接异常",

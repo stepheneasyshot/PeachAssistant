@@ -15,6 +15,7 @@ import com.stephen.aiassistant.SpeechUtils
 import com.stephen.aiassistant.appContext
 import com.stephen.aiassistant.helper.DATASTORE_FILE_NAME
 import com.stephen.aiassistant.helper.createDataStore
+import com.stephen.aiassistant.platform.network.AndroidConnectionStateHolder
 import io.ktor.client.engine.HttpClientEngineFactory
 import io.ktor.client.engine.cio.CIO
 
@@ -64,5 +65,3 @@ actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
 actual fun createDataStoreMultiplatform(): DataStore<Preferences> = createDataStore(
     producePath = { appContext.filesDir.resolve(DATASTORE_FILE_NAME).absolutePath }
 )
-
-actual fun getPlatformConnectionManager(): ConnectionStateHolder = AndroidConnectionStateHolder()

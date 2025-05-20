@@ -2,6 +2,10 @@ package com.stephen.aiassistant.data
 
 import androidx.compose.ui.unit.dp
 
+// 是否提示过流量收费tip
+// 只提示一次
+var isNetworkMeteredTipShowed = false
+
 val luckySentence = listOf(
     "生活是一场旅行，每一步都是一个机会，要珍惜每一个机会。",
     "人生没有彩排，每一天都是现场直播。",

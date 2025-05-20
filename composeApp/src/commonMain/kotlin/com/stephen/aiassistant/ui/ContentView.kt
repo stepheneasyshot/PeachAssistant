@@ -44,7 +44,6 @@ import com.stephen.aiassistant.ui.pages.SideSettingsView
 import com.stephen.aiassistant.ui.theme.DarkColorScheme
 import com.stephen.aiassistant.ui.theme.LightColorScheme
 import com.stephen.aiassistant.vm.MainViewModel
-import io.github.aakira.napier.Napier
 import org.koin.compose.getKoin
 
 @OptIn(ExperimentalSharedTransitionApi::class)
@@ -79,7 +78,6 @@ fun ContentView(
 
     LaunchedEffect(Unit) {
         viewModel.initPermissionController(controller)
-        viewModel.triggerRandomNetworkRequest()
         viewModel.updateLocalThemeState()
     }
 

@@ -16,7 +16,7 @@ import com.stephen.aiassistant.helper.ThemeHelper
 import com.stephen.aiassistant.network.DeepseekChatRepository
 import com.stephen.aiassistant.network.DoubaoVisionRepository
 import com.stephen.aiassistant.platform.copyTextToClipBoard
-import com.stephen.aiassistant.platform.getPlatformConnectionManager
+import com.stephen.aiassistant.platform.network.getPlatformConnectionManager
 import com.stephen.permissions.PermissionsController
 import io.github.aakira.napier.Napier
 import io.github.vinceglb.filekit.PlatformFile
@@ -44,7 +44,10 @@ class MainViewModel(
 
     init {
         Napier.i("=====>MainViewModel init<=======")
-        networkStateManager.start()
+        viewModelScope.launch {
+            networkStateManager.start()
+            deepSeekChatRepository.triggerFirstRequest()
+        }
     }
 
     val networkConnectivityState = networkStateManager.isNetworkConnected.asStateFlow()
@@ -252,20 +255,6 @@ class MainViewModel(
     fun copyText(text: String) {
         viewModelScope.launch {
             copyTextToClipBoard(text)
-        }
-    }
-
-    /**
-     * IOS系统，首次进入APP提示下网络状态，防止正式请求无网络失败
-     */
-    fun triggerRandomNetworkRequest() {
-        Napier.i("triggerRandomNetworkRequest")
-        viewModelScope.launch {
-            runCatching {
-                deepSeekChatRepository.triggerFirstRequest()
-            }.onFailure { e ->
-                Napier.e(e.message.toString())
-            }
         }
     }
 
