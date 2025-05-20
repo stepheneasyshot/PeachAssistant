@@ -33,7 +33,7 @@ val DarkColorScheme = darkColorScheme(
     // 特殊按钮颜色二
     tertiary = Color(0xff3d77c2),
     // 置灰文字，提示文字颜色
-    onSecondary = Color(0x4dffffff),
+    onSecondary = Color(0x99ffffff),
     // 警告按钮或错误提示
     error = Color(0xffe53c3c),
     // 背景之上的其余元素的颜色，目前只有分割线
@@ -50,7 +50,7 @@ val LightColorScheme = lightColorScheme(
     onPrimary = Color(0xff050505),
     secondary = Color(0xffe2e9f8),
     tertiary = Color(0xff62bffc),
-    onSecondary = Color(0x4d050505),
+    onSecondary = Color(0x99050505),
     error = Color(0xffe8563d),
     onBackground = Color(0xffe2e5f0),
     onSurface = Color(0xffd6deec),

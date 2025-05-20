@@ -2,11 +2,13 @@ package com.stephen.aiassistant.ui.pages
 
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.ic_check
+import aiassistant.composeapp.generated.resources.ic_feedback
 import aiassistant.composeapp.generated.resources.ic_menu_more
 import aiassistant.composeapp.generated.resources.ic_theme
 import aiassistant.composeapp.generated.resources.test_avatar
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
@@ -79,28 +81,60 @@ fun SideSettingsView(
                 ).fillMaxWidth(1f)
             )
 
-            Row(
+            Column(
                 modifier = Modifier.padding(bottom = 10.dp).fillMaxWidth(1f)
                     .clip(RoundedCornerShape(20.dp))
                     .background(MaterialTheme.colorScheme.surface)
-                    .clickable {
+            ) {
+                Row(
+                    modifier = Modifier.padding(bottom = 10.dp).clickable {
                         onClickPersonalSettings()
                     }.padding(15.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(Res.drawable.test_avatar),
-                    contentDescription = "avatar",
-                    modifier = Modifier.padding(end = 10.dp).size(48.dp)
-                        .clip(RoundedCornerShape(50))
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(Res.drawable.test_avatar),
+                        contentDescription = "avatar",
+                        modifier = Modifier.padding(end = 10.dp).size(48.dp)
+                            .clip(RoundedCornerShape(50))
+                    )
+                    CenterText(text = "Stephen", style = titleFirstText)
+                }
+
+                DeviderLine(
+                    modifier = Modifier.fillMaxWidth(1f).height(1.dp)
+                        .padding(horizontal = 15.dp)
                 )
-                CenterText(text = "Stephen", style = titleFirstText)
-                Spacer(Modifier.weight(1f))
-                MoreArrow()
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(1f).clickable {
+                        Napier.i("onClick user feedback")
+                    }.padding(15.dp)
+                ) {
+                    Image(
+                        contentDescription = "user feedback",
+                        painter = painterResource(Res.drawable.ic_feedback),
+                        colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                        modifier = Modifier.padding(horizontal = 10.dp).size(24.dp)
+                    )
+                    CenterText(
+                        text = "用户反馈",
+                        style = titleSecondText,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
+                    Spacer(Modifier.weight(1f))
+                    MoreArrow()
+                }
             }
 
+            CenterText(
+                text = "通用设置",
+                style = infoText,
+                color = MaterialTheme.colorScheme.onSecondary,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
             Column(
-                modifier = Modifier.padding(bottom = navBarHeight)
+                modifier = Modifier.padding(bottom = 10.dp)
                     .weight(1f).fillMaxWidth(1f)
                     .pointerInput(Unit) {
                         detectDragGestures { _, dragAmount ->
@@ -131,7 +165,7 @@ fun SideSettingsView(
                             painter = painterResource(Res.drawable.ic_theme),
                             contentDescription = null,
                             colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
-                            modifier = Modifier.padding(horizontal = 10.dp).size(28.dp)
+                            modifier = Modifier.padding(horizontal = 10.dp).size(24.dp)
                         )
                         CenterText(
                             text = "主题模式",
@@ -143,9 +177,13 @@ fun SideSettingsView(
                     }
                     AnimatedVisibility(
                         visible = themePanelExpandState.value,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ){
+                        enter = fadeIn(
+                            animationSpec = tween(500)
+                        ),
+                        exit = fadeOut(
+                            animationSpec = tween(200)
+                        )
+                    ) {
                         ThemeChooseView(
                             theme = themeState.value,
                             modifier = Modifier.fillMaxWidth(1f)
@@ -155,18 +193,51 @@ fun SideSettingsView(
                         }
                     }
                 }
-                DeviderLine(
-                    modifier = Modifier.fillMaxWidth(1f).height(1.dp)
-                        .padding(horizontal = 10.dp)
-                )
-
-                Spacer(Modifier.weight(1f))
-                CenterText(
-                    text = "version 1.0.0",
-                    style = infoText,
-                    color = MaterialTheme.colorScheme.onSecondary,
-                    modifier = Modifier.padding(vertical = 10.dp).fillMaxWidth(1f)
-                )
+                DeviderLine(modifier = Modifier.fillMaxWidth(1f).height(1.dp))
+            }
+            CenterText(
+                text = "关于",
+                style = infoText,
+                color = MaterialTheme.colorScheme.onSecondary,
+                modifier = Modifier.padding(bottom = 10.dp)
+            )
+            Column(
+                modifier = Modifier.padding(bottom = navBarHeight)
+                    .fillMaxWidth(1f)
+                    .clip(RoundedCornerShape(20.dp))
+                    .background(MaterialTheme.colorScheme.surface)
+                    .padding(horizontal = 15.dp)
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(1f).padding(15.dp)
+                ) {
+                    CenterText(
+                        text = "关于桃桃",
+                        style = titleSecondText,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
+                    Spacer(Modifier.weight(1f))
+                    MoreArrow()
+                }
+                DeviderLine(modifier = Modifier.fillMaxWidth(1f).height(1.dp))
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth(1f).padding(15.dp)
+                ) {
+                    CenterText(
+                        text = "检查更新",
+                        style = titleSecondText,
+                        modifier = Modifier.padding(vertical = 10.dp)
+                    )
+                    Spacer(Modifier.weight(1f))
+                    CenterText(
+                        text = "v1.0.0",
+                        color = MaterialTheme.colorScheme.onSecondary,
+                        modifier = Modifier.padding(end = 10.dp)
+                    )
+                    MoreArrow()
+                }
             }
         }
 
