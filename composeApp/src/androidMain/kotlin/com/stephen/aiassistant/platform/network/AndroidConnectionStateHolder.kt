@@ -40,36 +40,23 @@ class AndroidConnectionStateHolder : ConnectionStateHolder {
         ) {
             super.onCapabilitiesChanged(network, networkCapabilities)
 
-            /**
-             * 在 Android 系统里，当设备建立网络连接后，系统会尝试访问特定
-             * 的验证服务器来检查网络是否能正常访问公共互联网。
-             * 如果验证成功，就会给这个网络连接标记 NET_CAPABILITY_VALIDATED 能力。
-             *
-             * 当网络连接具备 NET_CAPABILITY_NOT_RESTRICTED 能力时，意味着该网络连接
-             * 没有受到限制，设备可以正常通过这个网络访问资源。
-             * 反之，若网络连接不具备此能力，说明该网络连接受到了某种限制，可能无法正常访问网络资源。
-             * 常见限制场景 - 企业网络：在企业网络环境中，管理员可能会限制某些应用或者特定类型的网络
-             * 流量，此时网络连接可能就不具备 NET_CAPABILITY_NOT_RESTRICTED 能力。
-             * 公共 Wi-Fi：部分公共 Wi-Fi 网络会进行认证或者流量限制，在完成认证之前或者达到流量
-             * 上限后，网络连接可能会受到限制。
-             */
             val isConnected =
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-            val isRestricted =
+            val isNotRestricted =
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_RESTRICTED)
             val isValidated =
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
-            val isMetered =
+            val isNotMetered =
                 networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
             Napier.d(
-                "Network status -> isConnected: $isConnected, isRestricted: $isRestricted, isValidated: $isValidated, isMetered: $isMetered",
+                "Network status -> isConnected: $isConnected, isNotRestricted: $isNotRestricted, isValidated: $isValidated, isNotMetered: $isNotMetered ",
                 tag = TAG
             )
             isNetworkConnected.update {
                 it.copy(
-                    isFreeToUse = isConnected && isRestricted && isValidated && isMetered,
-                    isConstrained = !isMetered,
-                    isExpensive = !isMetered,
+                    isFreeToUse = isConnected && isNotRestricted && isValidated && isNotMetered,
+                    isConstrained = !isNotRestricted,
+                    isExpensive = !isNotMetered,
                     isDisconnected = !isConnected
                 )
             }

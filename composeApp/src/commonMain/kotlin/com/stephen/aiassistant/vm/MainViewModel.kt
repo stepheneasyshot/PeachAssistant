@@ -46,7 +46,11 @@ class MainViewModel(
         Napier.i("=====>MainViewModel init<=======")
         viewModelScope.launch {
             networkStateManager.start()
-            deepSeekChatRepository.triggerFirstRequest()
+            runCatching {
+                deepSeekChatRepository.triggerFirstRequest()
+            }.onFailure { e ->
+                Napier.e("network unreachable! message: ${e.message}")
+            }
         }
     }
 

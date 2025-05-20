@@ -1,7 +1,6 @@
 package com.stephen.aiassistant.ui.component
 
 import aiassistant.composeapp.generated.resources.Res
-import aiassistant.composeapp.generated.resources.ic_app
 import aiassistant.composeapp.generated.resources.ic_peach
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.tween
@@ -35,6 +34,7 @@ import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.window.PopupPositionProvider
+import com.stephen.aiassistant.ui.theme.infoText
 import com.stephen.aiassistant.ui.theme.peachIconColor
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.painterResource
@@ -83,18 +83,15 @@ fun WeToast(
             ): IntOffset {
                 // 计算 x 坐标，使提示框水平居中
                 val x = windowSize.width / 2 - popupContentSize.width / 2
-                // 顶部上半屏显示
-                val y = windowSize.height / 8
+                // 顶部底部展示toast
+                val y = windowSize.height - (windowSize.height / 8)
                 return IntOffset(x, y)
             }
         }
     }
     if (visible || localVisible) {
         Popup(popupPositionProvider = positionProvider) {
-            Box(
-                modifier = Modifier.clip(RoundedCornerShape(50)),
-                contentAlignment = Alignment.TopCenter
-            ) {
+            Box(contentAlignment = Alignment.TopCenter) {
                 AnimatedVisibility(
                     visible = visible && localVisible,
                     enter = fadeIn() + scaleIn(tween(100), initialScale = 0.8f),
@@ -102,22 +99,12 @@ fun WeToast(
                 ) {
                     Box(
                         modifier = Modifier
-                            .clip(RoundedCornerShape(50))
+                            .clip(RoundedCornerShape(20))
                             .background(MaterialTheme.colorScheme.onSurface)
-                            .padding(horizontal = 12.dp, vertical = 6.dp),
+                            .padding(horizontal = 15.dp, vertical = 12.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Image(
-                                painter = painterResource(Res.drawable.ic_peach),
-                                colorFilter = ColorFilter.tint(peachIconColor),
-                                contentDescription = "toast icon",
-                                modifier = Modifier
-                                   .size(20.dp)
-                                   .padding(end = 4.dp)
-                            )
-                            CenterText(text = title)
-                        }
+                        CenterText(text = title)
                     }
                 }
             }

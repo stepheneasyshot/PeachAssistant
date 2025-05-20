@@ -62,6 +62,7 @@ fun SharedTransitionScope.MainCardPage(
     LaunchedEffect(networkConnectionState.value) {
         if (networkConnectionState.value.isExpensive && !isNetworkMeteredTipShowed) {
             isNetworkMeteredTipShowed = true
+            Napier.i("当前使用的是付费网络")
             toastState.show("当前使用的是付费网络，请注意流量消耗")
         } else if (networkConnectionState.value.isConstrained) {
             Napier.i("当前网络受限制，部分服务可能不可用")
