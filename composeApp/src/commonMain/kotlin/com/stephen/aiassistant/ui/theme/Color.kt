@@ -15,9 +15,7 @@ val lightCalorieCardBgColor = Color(0xffb3b4af)
 
 val darkCalorieCardBgColor = Color(0xff2c4839)
 
-val greenColor = Color(0xff7ace6d)
-val blueColor = Color(0xff3866f6)
-val orangeColor = Color(0xffeb9a44)
+val checkedColor = Color(0xff7ace6d)
 
 val DarkColorScheme = darkColorScheme(
     // 使用最多的按钮色
@@ -26,6 +24,8 @@ val DarkColorScheme = darkColorScheme(
     background = Color(0xFF010101),
     // 功能组背景
     surface = Color(0xff303030),
+    // 组背景变体
+    surfaceVariant = Color(0xff1d1d1d),
     // 文字颜色
     onPrimary = Color(0xffffffff),
     // 路径框，输入框
@@ -46,6 +46,7 @@ val LightColorScheme = lightColorScheme(
     primary = Color(0xfffefeff),
     background = Color(0xfff0f0f0),
     surface = Color(0xffffffff),
+    surfaceVariant = Color(0xfff5f5f5),
     onPrimary = Color(0xff050505),
     secondary = Color(0xffe2e9f8),
     tertiary = Color(0xff62bffc),

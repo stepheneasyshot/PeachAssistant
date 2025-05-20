@@ -26,6 +26,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -169,7 +170,7 @@ fun ContentView(
             ) {
                 Spacer(
                     modifier = Modifier.fillMaxSize(1f)
-                        .background(MaterialTheme.colorScheme.background.copy(alpha = 0.6f))
+                        .background(Color.Black.copy(alpha = 0.4f))
                 )
             }
             AnimatedVisibility(

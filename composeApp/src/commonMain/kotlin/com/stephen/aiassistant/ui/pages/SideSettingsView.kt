@@ -5,7 +5,10 @@ import aiassistant.composeapp.generated.resources.ic_check
 import aiassistant.composeapp.generated.resources.ic_menu_more
 import aiassistant.composeapp.generated.resources.ic_theme
 import aiassistant.composeapp.generated.resources.test_avatar
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -39,7 +42,8 @@ import com.stephen.aiassistant.data.navBarHeight
 import com.stephen.aiassistant.data.statusBarHeight
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.DeviderLine
-import com.stephen.aiassistant.ui.theme.greenColor
+import com.stephen.aiassistant.ui.theme.checkedColor
+import com.stephen.aiassistant.ui.theme.infoText
 import com.stephen.aiassistant.ui.theme.titleFirstText
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.ui.theme.titleThirdText
@@ -63,10 +67,9 @@ fun SideSettingsView(
     Row(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxHeight(1f).weight(0.75f)
-                .background(MaterialTheme.colorScheme.background)
+                .background(MaterialTheme.colorScheme.surfaceVariant)
                 .padding(10.dp)
         ) {
-
             CenterText(
                 text = "设置",
                 style = titleFirstText,
@@ -96,7 +99,7 @@ fun SideSettingsView(
                 MoreArrow()
             }
 
-            LazyColumn(
+            Column(
                 modifier = Modifier.padding(bottom = navBarHeight)
                     .weight(1f).fillMaxWidth(1f)
                     .pointerInput(Unit) {
@@ -110,55 +113,64 @@ fun SideSettingsView(
                     .background(MaterialTheme.colorScheme.surface)
                     .padding(15.dp)
             ) {
-                item {
-                    Column(
-                        modifier = Modifier.padding(bottom = 10.dp)
-                            .animateContentSize()
-                            .fillMaxWidth(1f)
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.clickable(
-                                interactionSource = MutableInteractionSource(),
-                                indication = null
-                            ) {
-                                themePanelExpandState.value = !themePanelExpandState.value
-                            }
+                // 主题模式选择column
+                Column(
+                    modifier = Modifier.padding(bottom = 10.dp).animateContentSize()
+                        .fillMaxWidth(1f)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.clickable(
+                            interactionSource = MutableInteractionSource(),
+                            indication = null
                         ) {
-                            Image(
-                                painter = painterResource(Res.drawable.ic_theme),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(Color.White),
-                                modifier = Modifier.padding(end = 10.dp).size(38.dp)
-                                    .clip(RoundedCornerShape(30))
-                                    .background(greenColor).padding(5.dp)
-                            )
-                            CenterText(
-                                text = "主题模式",
-                                style = titleSecondText,
-                                modifier = Modifier.padding(vertical = 10.dp)
-                            )
-                            Spacer(Modifier.weight(1f))
-                            MoreArrow()
+                            themePanelExpandState.value = !themePanelExpandState.value
                         }
-                        if (themePanelExpandState.value) {
-                            ThemeChooseView(
-                                theme = themeState.value,
-                                modifier = Modifier.fillMaxWidth(1f)
-                            ) {
-                                Napier.i("choose theme: $it")
-                                viewModel.setLocalThemeState(it)
-                            }
+                    ) {
+                        Image(
+                            painter = painterResource(Res.drawable.ic_theme),
+                            contentDescription = null,
+                            colorFilter = ColorFilter.tint(MaterialTheme.colorScheme.onPrimary),
+                            modifier = Modifier.padding(horizontal = 10.dp).size(28.dp)
+                        )
+                        CenterText(
+                            text = "主题模式",
+                            style = titleSecondText,
+                            modifier = Modifier.padding(vertical = 10.dp)
+                        )
+                        Spacer(Modifier.weight(1f))
+                        MoreArrow()
+                    }
+                    AnimatedVisibility(
+                        visible = themePanelExpandState.value,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ){
+                        ThemeChooseView(
+                            theme = themeState.value,
+                            modifier = Modifier.fillMaxWidth(1f)
+                        ) {
+                            Napier.i("choose theme: $it")
+                            viewModel.setLocalThemeState(it)
                         }
                     }
-                    DeviderLine(
-                        modifier = Modifier.fillMaxWidth(1f).height(1.dp)
-                            .padding(horizontal = 10.dp)
-                    )
                 }
+                DeviderLine(
+                    modifier = Modifier.fillMaxWidth(1f).height(1.dp)
+                        .padding(horizontal = 10.dp)
+                )
+
+                Spacer(Modifier.weight(1f))
+                CenterText(
+                    text = "version 1.0.0",
+                    style = infoText,
+                    color = MaterialTheme.colorScheme.onSecondary,
+                    modifier = Modifier.padding(vertical = 10.dp).fillMaxWidth(1f)
+                )
             }
         }
 
+        // 右侧遮罩重合区域，做左滑手势监听
         Spacer(
             modifier = Modifier.fillMaxHeight(1f).weight(0.25f)
                 .pointerInput(Unit) {
@@ -173,7 +185,8 @@ fun SideSettingsView(
                     indication = null
                 ) {
                     onDismissSettingsView()
-                })
+                }
+        )
     }
 }
 
@@ -213,7 +226,7 @@ fun ThemeChooseView(
                 if (theme == ThemeState.DARK)
                     Image(
                         painter = painterResource(Res.drawable.ic_check),
-                        colorFilter = ColorFilter.tint(greenColor),
+                        colorFilter = ColorFilter.tint(checkedColor),
                         contentDescription = "checked dark theme",
                         modifier = Modifier
                             .size(26.dp)
@@ -249,7 +262,7 @@ fun ThemeChooseView(
                 if (theme == ThemeState.LIGHT)
                     Image(
                         painter = painterResource(Res.drawable.ic_check),
-                        colorFilter = ColorFilter.tint(greenColor),
+                        colorFilter = ColorFilter.tint(checkedColor),
                         contentDescription = "checked light theme",
                         modifier = Modifier
                             .size(26.dp)
@@ -285,7 +298,7 @@ fun ThemeChooseView(
                 if (theme == ThemeState.SYSTEM)
                     Image(
                         painter = painterResource(Res.drawable.ic_check),
-                        colorFilter = ColorFilter.tint(greenColor),
+                        colorFilter = ColorFilter.tint(checkedColor),
                         contentDescription = "checked system theme",
                         modifier = Modifier
                             .size(26.dp)
