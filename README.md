@@ -34,5 +34,4 @@
 </div>
 
 ## 运行动效演示
-
-<iframe src="https://player.vimeo.com/video/1087664740?h=814d7ea0ac&amp;badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479" width="576" height="1280" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media" title="animation"></iframe>
+https://player.vimeo.com/video/1087664740?h=814d7ea0ac&amp
