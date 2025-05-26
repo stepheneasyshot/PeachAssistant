@@ -19,7 +19,7 @@ class DeepseekChatRepository(private val ktorClient: KtorClient) {
             "https://api.deepseek.com"
         const val COMMON_SYSTEM_PROMT = "你是一个人工智能系统，可以根据用户的输入来返回生成式的回复"
         const val ENGLISH_SYSTEM_PROMT = "You are a English teacher, you can help me improve my English skills, please answer my questions in English."
-        const val API_KEY = "sk-5d1ebf9b757344e7939a2e4e5bdc0e21"
+        const val API_KEY = "xxxxxxxxxxxxxxxxx"
         const val MODEL_NAME = "deepseek-chat"
     }
 

@@ -30,7 +30,7 @@ class DoubaoVisionRepository(private val ktorClient: KtorClient) {
                     "    }\n" +
                     "  ]\n" +
                     "}"
-        const val API_KEY = "ef56e851-c31c-4d4a-aa3f-46e71c790eef"
+        const val API_KEY = "xxxxxxxxxxxx"
         const val MODEL_NAME = "doubao-1-5-vision-pro-32k-250115"
     }
 
