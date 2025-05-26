@@ -35,4 +35,4 @@
 
 ## 运行动效演示
 
-https://github.com/stepheneasyshot/CMP-AI-Assistant-Demo/blob/main/screenshots/animation.mp4
+https://github.com/user-attachments/assets/5ed73a91-1507-4d57-b3f6-292296c3bfc8
