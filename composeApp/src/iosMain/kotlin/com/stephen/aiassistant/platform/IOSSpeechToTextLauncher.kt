@@ -16,7 +16,6 @@ class IOSSpeechToTextLauncher : SpeechToTextLauncher {
     }
 
     override fun waitForResult(onResult: (String) -> Unit) {
-        onResult("TODO")
     }
 
     override fun stopRecognizing() {
