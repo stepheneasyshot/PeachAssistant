@@ -34,4 +34,5 @@
 </div>
 
 ## 运行动效演示
-https://player.vimeo.com/video/1087664740?h=814d7ea0ac&amp
+
+https://github.com/stepheneasyshot/CMP-AI-Assistant-Demo/blob/main/screenshots/animation.mp4
