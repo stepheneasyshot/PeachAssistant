@@ -36,3 +36,11 @@
 ## 运行动效演示
 
 https://github.com/user-attachments/assets/5ed73a91-1507-4d57-b3f6-292296c3bfc8
+
+## 优秀开源库引用
+* 权限管理 [Moko-permissions](https://github.com/icerockdev/moko-permissions)
+* 文件选取 [FileKit](https://github.com/vinceglb/FileKit)
+* 相机调用 [camerak](https://github.com/Kashif-E/CameraK)
+* 图片加载 [Coil](https://github.com/coil-kt/coil)
+* 网络请求 [Ktor](https://github.com/ktorio/ktor)
+* 依赖注入 [Koin](https://github.com/InsertKoinIO/koin)
