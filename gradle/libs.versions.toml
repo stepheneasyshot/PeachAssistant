@@ -23,7 +23,6 @@ koin_compose_jb = "1.1.0"
 ktor = "3.1.1"
 # pullrefresh
 navigationCompose = "2.9.0-alpha17"
-pullrefresh = "1.4.0-beta03"
 # log
 napier = "2.7.1"
 compottie="2.0.0-rc04"
@@ -70,7 +69,6 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 aakira_napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 # navigation
 navigation-compose = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
-pullrefresh = { module = "dev.materii.pullrefresh:pullrefresh", version.ref = "pullrefresh" }
 # lottie for compose
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }

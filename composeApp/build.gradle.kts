@@ -53,7 +53,6 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.ktor.client.content.negotiation)
             implementation(libs.aakira.napier)
-            implementation(libs.pullrefresh)
             implementation(libs.compottie)
             implementation(libs.lifecycle.viewmodel)
             implementation(libs.lifecycle.viewmodel.compose)
