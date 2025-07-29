@@ -9,7 +9,7 @@ import com.stephen.aiassistant.data.ThemeState
 import com.stephen.aiassistant.data.bean.FoodContent
 import com.stephen.aiassistant.data.uistate.CalorieCalState
 import com.stephen.aiassistant.data.uistate.ChatItem
-import com.stephen.aiassistant.data.uistate.EnglishChatState
+import com.stephen.aiassistant.data.uistate.AiChatUiState
 import com.stephen.aiassistant.data.uistate.ResultState
 import com.stephen.aiassistant.helper.PermissionHelper
 import com.stephen.aiassistant.helper.ThemeHelper
@@ -69,9 +69,13 @@ class MainViewModel(
     private val _imageTempByteArray = MutableStateFlow<ByteArray?>(null)
     val imageTempByteArrayState = _imageTempByteArray.asStateFlow()
 
-    // ai模型对话
-    private val _aiModelChatListState = MutableStateFlow(EnglishChatState())
-    val aiModelChatListStateFlow = _aiModelChatListState.asStateFlow()
+    // 英语口语ai模型对话
+    private val _englishChatListState = MutableStateFlow(AiChatUiState())
+    val englishChatListStateFlow = _englishChatListState.asStateFlow()
+
+    // 本地llm模型对话
+    private val _localChatListState = MutableStateFlow(AiChatUiState())
+    val localChatListStateFlow = _localChatListState.asStateFlow()
 
     private val _foodListState = MutableStateFlow(CalorieCalState())
     val foodListStateFlow = _foodListState.asStateFlow()
@@ -83,6 +87,19 @@ class MainViewModel(
 
     // 卡路里识别的网络请求任务，任务中断使用
     private var calorieUploadJob: Job? = null
+
+    init {
+        _englishChatListState.update {
+            it.copy(
+                listOf(
+                    ChatItem(
+                        content = "Hi, I'm your personal English teacher. How can I help you today?",
+                        role = ChatRole.ASSISTANT
+                    )
+                )
+            )
+        }
+    }
 
     /**
      * 拍照缓存ByteArray
@@ -180,15 +197,15 @@ class MainViewModel(
      * AI模型 英语口语对话
      */
     fun englishSpeakingExercise(text: String) {
-        Napier.i("chatWithAI -> text = $text")
+        Napier.i("englishSpeakingExercise -> text = $text")
         // 用户输入的内容
-        _aiModelChatListState.update {
+        _englishChatListState.update {
             it.copy(
                 chatList = it.chatList + listOf(ChatItem(content = text, role = ChatRole.USER)),
                 listSize = it.listSize + 1
             )
         }
-        _aiModelChatListState.value = _aiModelChatListState.value.toUiState()
+        _englishChatListState.value = _englishChatListState.value.toUiState()
         // 在线call，等待AI模型生成回复
         CoroutineScope(Dispatchers.IO).launch {
             runCatching {
@@ -196,7 +213,7 @@ class MainViewModel(
                     .choices.first().message.content
                 Napier.i("englishSpeakingExercise -> aiResult = $aiResult")
                 // 回复的内容
-                _aiModelChatListState.update {
+                _englishChatListState.update {
                     it.copy(
                         chatList = it.chatList + listOf(
                             ChatItem(
@@ -207,11 +224,11 @@ class MainViewModel(
                         listSize = it.listSize + 1
                     )
                 }
-                _aiModelChatListState.value = _aiModelChatListState.value.toUiState()
+                _englishChatListState.value = _englishChatListState.value.toUiState()
             }.onFailure { e ->
                 Napier.e(e.message.toString())
                 // 回复的内容
-                _aiModelChatListState.update {
+                _englishChatListState.update {
                     it.copy(
                         chatList = it.chatList + listOf(
                             ChatItem(
@@ -222,7 +239,58 @@ class MainViewModel(
                         listSize = it.listSize + 1
                     )
                 }
-                _aiModelChatListState.value = _aiModelChatListState.value.toUiState()
+                _englishChatListState.value = _englishChatListState.value.toUiState()
+            }
+        }
+    }
+
+    /**
+     * 本地部署AI模型对话测试
+     */
+    fun localLLMChatRequest(text: String) {
+        Napier.i("localLLMChatRequest -> text = $text")
+        // 用户输入的内容
+        _localChatListState.update {
+            it.copy(
+                chatList = it.chatList + listOf(ChatItem(content = text, role = ChatRole.USER)),
+                listSize = it.listSize + 1
+            )
+        }
+        _localChatListState.value = _localChatListState.value.toUiState()
+        // 在线call，等待AI模型生成回复
+        CoroutineScope(Dispatchers.IO).launch {
+            runCatching {
+                val aiResult = deepSeekChatRepository.localLLMChat(chat = text)
+                    .choices.first().message.content
+                Napier.i("localLLMChatRequest -> aiResult = $aiResult")
+                // 回复的内容
+                _localChatListState.update {
+                    it.copy(
+                        chatList = it.chatList + listOf(
+                            ChatItem(
+                                content = aiResult,
+                                role = ChatRole.ASSISTANT
+                            )
+                        ),
+                        listSize = it.listSize + 1
+                    )
+                }
+                _localChatListState.value = _localChatListState.value.toUiState()
+            }.onFailure { e ->
+                Napier.e(e.message.toString())
+                // 回复的内容
+                _localChatListState.update {
+                    it.copy(
+                        chatList = it.chatList + listOf(
+                            ChatItem(
+                                content = "Server error, please try again later.",
+                                role = ChatRole.ASSISTANT
+                            )
+                        ),
+                        listSize = it.listSize + 1
+                    )
+                }
+                _localChatListState.value = _localChatListState.value.toUiState()
             }
         }
     }

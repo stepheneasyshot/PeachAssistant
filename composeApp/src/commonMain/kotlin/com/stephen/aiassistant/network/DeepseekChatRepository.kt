@@ -67,6 +67,27 @@ class DeepseekChatRepository(private val ktorClient: KtorClient) {
         }.body<DeepSeekResult>()
     }
 
+    suspend fun localLLMChat(chat: String) = withContext(Dispatchers.IO) {
+        ktorClient.client.post("${BASE_URL}/chat/completions") {
+            // 配置请求头
+            headers {
+                append("Content-Type", "application/json")
+            }
+            setBody(
+                DeepSeekRequestBean(
+                    model = MODEL_NAME,
+                    max_tokens = 2048,
+                    temperature = 0.3f,
+                    stream = false,
+                    messages = listOf(
+                        RequestMessage(COMMON_SYSTEM_PROMT, ChatRole.SYSTEM.roleDescription),
+                        RequestMessage(chat, ChatRole.USER.roleDescription)
+                    )
+                )
+            )
+        }.body<DeepSeekResult>()
+    }
+
     suspend fun triggerFirstRequest() {
         ktorClient.client.post("https://www.baidu.com").body<String>()
     }

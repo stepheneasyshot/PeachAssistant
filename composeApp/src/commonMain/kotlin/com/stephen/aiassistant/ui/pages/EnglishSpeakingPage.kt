@@ -73,7 +73,7 @@ fun SharedTransitionScope.EnglishSpeakingPage(
 
     val listState = rememberLazyListState()
 
-    val chatListState = viewModel.aiModelChatListStateFlow.collectAsState()
+    val chatListState = viewModel.englishChatListStateFlow.collectAsState()
 
     val speechToTextLauncher = rememberSpeechToTextLauncher().apply {
         waitForResult { result ->

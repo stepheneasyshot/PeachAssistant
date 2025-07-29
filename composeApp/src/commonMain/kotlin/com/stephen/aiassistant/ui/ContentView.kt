@@ -3,6 +3,7 @@ package com.stephen.aiassistant.ui
 import aiassistant.composeapp.generated.resources.Res
 import aiassistant.composeapp.generated.resources.bg_calorie_cal
 import aiassistant.composeapp.generated.resources.bg_english_chat
+import aiassistant.composeapp.generated.resources.bg_local_llm
 import aiassistant.composeapp.generated.resources.bg_social_post_gene
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
@@ -38,6 +39,7 @@ import com.stephen.aiassistant.platform.permissions.rememberPermissionsControlle
 import com.stephen.aiassistant.ui.pages.CalorieCalculatePage
 import com.stephen.aiassistant.ui.pages.CopyWritingGenePage
 import com.stephen.aiassistant.ui.pages.EnglishSpeakingPage
+import com.stephen.aiassistant.ui.pages.LocalModelsPage
 import com.stephen.aiassistant.ui.pages.MainCardPage
 import com.stephen.aiassistant.ui.pages.PersonalCenterPage
 import com.stephen.aiassistant.ui.pages.SideSettingsView
@@ -57,7 +59,8 @@ fun ContentView(
     val functionMap = mapOf(
         PageNavKey.COPY_WRITING_GENE to Res.drawable.bg_social_post_gene,
         PageNavKey.CALORIE_CALCULATOR to Res.drawable.bg_calorie_cal,
-        PageNavKey.SPEAKING_TRAINING to Res.drawable.bg_english_chat
+        PageNavKey.SPEAKING_TRAINING to Res.drawable.bg_english_chat,
+        PageNavKey.LOCAL_MODELS to Res.drawable.bg_local_llm,
     )
 
     val openSideSettingsViewState = viewModel.settingsViewOpenState.collectAsState()
@@ -145,6 +148,17 @@ fun ContentView(
                                 navController.navigate(PageNavKey.MAIN_PAGE)
                             }
                         }
+                        composable(route = PageNavKey.LOCAL_MODELS) {
+                            LocalModelsPage(
+                                funcInfo = Pair(
+                                    PageNavKey.LOCAL_MODELS,
+                                    functionMap[PageNavKey.LOCAL_MODELS]!!
+                                ),
+                                animatedVisibilityScope = this@composable
+                            ) {
+                                navController.navigate(PageNavKey.MAIN_PAGE)
+                            }
+                        }
                         composable(route = PageNavKey.PERSONAL_CENTER) {
                             PersonalCenterPage(
                                 animatedVisibilityScope = this@composable,
@@ -201,6 +215,9 @@ object PageNavKey {
 
     // 英语口语训练
     const val SPEAKING_TRAINING = "英语口语训练"
+
+    // 本地llm部署
+    const val LOCAL_MODELS = "本地大模型对话"
 
     // 个人中心
     const val PERSONAL_CENTER = "个人中心"
