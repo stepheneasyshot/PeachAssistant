@@ -8,6 +8,7 @@ import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -118,7 +119,13 @@ fun SharedTransitionScope.LocalModelsPage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(1f).weight(1f).padding(vertical = 10.dp),
+                modifier = Modifier.fillMaxWidth(1f).weight(1f).padding(vertical = 10.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        focusManager.clearFocus()
+                    },
                 state = listState
             ) {
                 items(chatListState.value.chatList) { chatItem ->
@@ -150,14 +157,14 @@ fun SharedTransitionScope.LocalModelsPage(
                     onEnterPressed = {
                         if (chatEditText.value.isNotEmpty()) {
                             viewModel.localLLMChatRequest(chatEditText.value)
-                            focusManager.clearFocus()
+                            chatEditText.value = ""
                         }
                     })
 
                 CommonButton(onClick = {
                     if (chatEditText.value.isNotEmpty()) {
                         viewModel.localLLMChatRequest(chatEditText.value)
-                        focusManager.clearFocus()
+                        chatEditText.value = ""
                     }
                 }) {
                     CenterText(text = "发送")

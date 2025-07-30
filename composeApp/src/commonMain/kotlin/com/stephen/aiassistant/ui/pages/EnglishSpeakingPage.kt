@@ -228,10 +228,11 @@ fun ChatItemView(
         ) {
             when (role) {
                 ChatRole.USER -> {
-                    SelectionContainer(
-                        modifier = Modifier.clip(RoundedCornerShape(20.dp))
+                    Box(
+                        modifier = Modifier.clip(RoundedCornerShape(20))
                             .background(MaterialTheme.colorScheme.surface)
-                            .padding(10.dp)
+                            .padding(10.dp),
+                        contentAlignment = Alignment.Center
                     ) {
                         CenterText(
                             text = content,
