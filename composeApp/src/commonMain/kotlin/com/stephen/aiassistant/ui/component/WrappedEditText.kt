@@ -27,7 +27,7 @@ fun WrappedEditText(
     onValueChange: (String) -> Unit,
     tipText: String,
     modifier: Modifier = Modifier,
-    onEnterPressed: () -> Unit = {}
+    onEnterPressed: () -> Unit = {},
 ) {
     val focusRequester = remember { FocusRequester() }
 

@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.annotation.RequiresApi
+import androidx.core.view.WindowCompat
 import com.stephen.aiassistant.data.ThemeState
 import io.github.vinceglb.filekit.FileKit
 import io.github.vinceglb.filekit.manualFileKitCoreInitialization
@@ -18,6 +19,8 @@ class MainActivity : ComponentActivity() {
     @RequiresApi(Build.VERSION_CODES.R)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // 让输入法起来后，界面不要自适应，完全由compose来处理动画
+        WindowCompat.setDecorFitsSystemWindows(window, false)
         FileKit.manualFileKitCoreInitialization(this)
         enableEdgeToEdge()
         setContent {

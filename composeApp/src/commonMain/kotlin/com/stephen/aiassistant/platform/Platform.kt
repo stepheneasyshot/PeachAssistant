@@ -1,6 +1,7 @@
 package com.stephen.aiassistant.platform
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.stephen.aiassistant.platform.network.ConnectionStateHolder
@@ -35,3 +36,8 @@ expect fun rememberSpeechToTextLauncher(): SpeechToTextLauncher
 expect fun BindActivitylauncher(launcher: SpeechToTextLauncher)
 
 expect fun createDataStoreMultiplatform(): DataStore<Preferences>
+
+expect class KeyboardHeightProvider() {
+    @Composable
+    fun getKeyboardHeightAsState(): State<Float>
+}

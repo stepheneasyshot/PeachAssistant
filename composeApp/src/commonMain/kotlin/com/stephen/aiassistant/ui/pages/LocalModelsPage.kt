@@ -25,6 +25,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,10 +38,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import com.stephen.aiassistant.data.navBarHeight
+import com.stephen.aiassistant.platform.KeyboardHeightProvider
 import com.stephen.aiassistant.ui.component.CenterText
 import com.stephen.aiassistant.ui.component.CommonButton
 import com.stephen.aiassistant.ui.component.WrappedEditText
-import com.stephen.aiassistant.ui.component.rememberToastState
 import com.stephen.aiassistant.ui.theme.titleSecondText
 import com.stephen.aiassistant.vm.MainViewModel
 import org.jetbrains.compose.resources.DrawableResource
@@ -55,9 +56,10 @@ fun SharedTransitionScope.LocalModelsPage(
     animatedVisibilityScope: AnimatedVisibilityScope,
     onBackPressed: () -> Unit = {}
 ) {
-    val toastState = rememberToastState()
-
     val listState = rememberLazyListState()
+
+    val keyboardHeightProvider = remember { KeyboardHeightProvider() }
+    val keyboardHeight by keyboardHeightProvider.getKeyboardHeightAsState()
 
     val chatEditText = remember { mutableStateOf("") }
     val focusRequester = remember { FocusRequester() }
@@ -119,7 +121,11 @@ fun SharedTransitionScope.LocalModelsPage(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             LazyColumn(
-                modifier = Modifier.fillMaxWidth(1f).weight(1f).padding(vertical = 10.dp)
+                modifier = Modifier
+                    .animateContentSize()
+                    .fillMaxWidth(1f)
+                    .weight(1f)
+                    .padding(vertical = 10.dp)
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
@@ -143,7 +149,6 @@ fun SharedTransitionScope.LocalModelsPage(
                     .fillMaxWidth(1f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
                 WrappedEditText(
                     modifier = Modifier
                         .padding(10.dp)
@@ -169,7 +174,6 @@ fun SharedTransitionScope.LocalModelsPage(
                 }) {
                     CenterText(text = "发送")
                 }
-
             }
         }
     }

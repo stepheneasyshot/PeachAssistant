@@ -5,10 +5,16 @@ import android.content.ClipboardManager
 import android.content.Context
 import android.os.Build
 import androidx.activity.ComponentActivity
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.ime
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import com.stephen.aiassistant.SpeechUtils
@@ -65,3 +71,17 @@ actual fun BindActivitylauncher(launcher: SpeechToTextLauncher) {
 actual fun createDataStoreMultiplatform(): DataStore<Preferences> = createDataStore(
     producePath = { appContext.filesDir.resolve(DATASTORE_FILE_NAME).absolutePath }
 )
+
+
+actual class KeyboardHeightProvider {
+    @Composable
+    actual fun getKeyboardHeightAsState(): State<Float> {
+        val view = LocalView.current
+        val density = LocalDensity.current
+
+        // 监听 ime inset 的变化
+        val imeBottom = WindowInsets.ime.getBottom(density)
+
+        return remember(imeBottom) { mutableStateOf(imeBottom.toFloat()) }
+    }
+}
